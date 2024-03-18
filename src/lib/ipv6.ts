@@ -10,9 +10,9 @@ export class Ipv6 {
       "a", "b", "c", "d", "e", "f"
     ])
 
-    // Check if user uses valid ipv6 characters.
+    // Check if user input uses valid ipv6 characters.
     for (const char of ipv6Address) {
-        
+      if (!ipv6Chars.has(char)) return false
     }
 
     // If not using :: for all zeros.
