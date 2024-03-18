@@ -1,4 +1,10 @@
-export class Ipv6 {
+type TIPv6Result = {
+  success: boolean
+  message: string
+}
+
+
+export class IPv6 {
 
   /**
    * This method is used to check format of user input IPv6 Address.
@@ -7,6 +13,9 @@ export class Ipv6 {
    * to get to the next one, otherwise will return false.
    */
   static isValidIpv6(ipv6Address: string): boolean {
+    // Sanitize user input first.
+    ipv6Address = ipv6Address.trim().toLowerCase()
+
     // [0-9a-f]{1,4} means a segment of at least one and max at four of hex digits.
     // [0-9a-f]{1,4}: means a segment that ends with a semi-colon.
     // ([0-9a-f]{1,4}:){7} means a segment ends with a semi-colon, seven times.
@@ -26,7 +35,7 @@ export class Ipv6 {
     }
 
     // Check if user input uses valid ipv6 characters.
-    for (const char of ipv6Address.toLowerCase()) {
+    for (const char of ipv6Address) {
       if (!ipv6Char.has(char)) {
         console.error("Invalid IPv6 format: Not valid IPv6 character(s).")
         return false
@@ -92,4 +101,69 @@ export class Ipv6 {
   }
   
 
+  /**
+   * This method expands an abbreviated IPv6 address.
+   * By Adding leading zeros to segment.
+   * Turning :: into a segment of zeros.
+   */
+  static expand(ipv6Address: string): TIPv6Result {
+    // Sanitize user input first.
+    ipv6Address = ipv6Address.trim().toLowerCase()
+
+    // /[0-9a-f]{1,4}/ - Segment of hex digits
+    let segments: RegExpMatchArray | null = ipv6Address.match(/[0-9a-f]{1,4}/g)
+    let doubleColonPattern: RegExp = /^::$/
+    const expandedIPv6: TIPv6Result = {success: true, message: ""}    
+
+    try {
+      // Check first if IPv6 Address is valid
+      if (!this.isValidIpv6(ipv6Address)) throw new Error("Invalid IPv6 Address")      
+
+    } catch (error: unknown) {
+
+      expandedIPv6.success = false
+      expandedIPv6. message = "Invalid IPv6 Address"      
+      return expandedIPv6
+
+    }
+
+    // Check if the user input is just ::    
+    if (doubleColonPattern.test(ipv6Address)) {
+      expandedIPv6.message = "0000:0000:0000:0000:0000:0000:0000:0000"
+      return expandedIPv6
+    }
+
+    // Add leading zeros if it has to.
+    if (segments !== null) {
+      for (let i = 0; i < segments.length; i++) {
+        if (segments[i].length !== 4) {
+          const zerosToPrepend = 4 - segments[i].length;
+          segments[i] = "0".repeat(zerosToPrepend) + segments[i]
+        }        
+      }
+    }
+
+    // Turn double colon:: into segments of zeros.
+    // Check if double colon(::) exists at the end.
+    if (ipv6Address.slice(-2) === "::") {
+      // Append segment of zeros until there's eight segments.
+      while (segments?.length !== 8) {
+        segments?.push("0000")
+      }      
+    }
+    else {
+      // Otherwise double colon(::) exists somewhere not at the end.
+      // Find the index of the double-colon(::)
+      const toInsertAt = ipv6Address.split(":").indexOf("");
+      // Keep adding until there's a total of 8 segments.
+      while(segments?.length !== 8) {                    
+        segments?.splice(toInsertAt, 0, "0000");
+      }
+    }
+
+    // Update message.
+    expandedIPv6.message = segments.join(':')
+    return expandedIPv6
+
+  }
 }
