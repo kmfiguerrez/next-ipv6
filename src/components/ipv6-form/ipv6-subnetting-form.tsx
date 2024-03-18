@@ -1,3 +1,5 @@
+'use client'
+
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import ipv6FormSchema, { type Tipv6Form } from '@/schemas/ipv6-form-schema'
