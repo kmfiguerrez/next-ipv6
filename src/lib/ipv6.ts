@@ -23,7 +23,7 @@ export class IPv6 {
     let segments: RegExpMatchArray | null
     let regexPattern: RegExp
     const ipv6Char = new Set<string>([
-      ":", "1", "2", "3", "4", "5", "6", "7", "8", "9",
+      ":", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
       "a", "b", "c", "d", "e", "f"
     ])
 
@@ -95,6 +95,7 @@ export class IPv6 {
         return false  
       }
     }
+
     // Finally return true if all checkings passed.
     console.log("Valid IPv6 Address.")
     return true
@@ -120,11 +121,9 @@ export class IPv6 {
       if (!this.isValidIpv6(ipv6Address)) throw new Error("Invalid IPv6 Address")      
 
     } catch (error: unknown) {
-
       expandedIPv6.success = false
       expandedIPv6. message = "Invalid IPv6 Address"      
       return expandedIPv6
-
     }
 
     // Check if the user input is just ::    
@@ -163,7 +162,94 @@ export class IPv6 {
 
     // Update message.
     expandedIPv6.message = segments.join(':')
+    // Finally
     return expandedIPv6
-
   }
+
+
+  /**
+   * This method abbreviates an IPv6 Address.
+   * By removing leading zeros and Turning a sequence of segments of 
+   * zeros.
+   */
+  static abbreviate(ipv6Address: string): TIPv6Result {
+    // Sanitize user input first.
+    ipv6Address = ipv6Address.trim().toLowerCase()
+
+    const abbreviatedIPv6: TIPv6Result = {success: true, message: ""}
+
+    let segments: Array<string>
+
+    const segmentAllZeroPattern = /^0000$/
+    const leadingZeroPattern = /^0+/
+
+    // This pattern assumes the IPv6 Address has no leading zeros.
+    const seriesOfZerosPattern: RegExp  = /(0(:0){1,})/g
+
+
+    // Try to expand the IPv6 first.
+    try {
+      if (!this.isValidIpv6(ipv6Address)) throw new Error("Invalid IPv6 Address")
+
+      const expandedIPv6 = this.expand(ipv6Address)
+      if (!expandedIPv6.success) throw new Error("Unable to expand IPv6 Address")
+
+      // Set the segments as array.
+      segments = expandedIPv6.message.split(':')
+
+      // Delete leading zeros first.
+      for (let index = 0; index < segments.length; index++) {
+        
+        if (segmentAllZeroPattern.test(segments[index])) {
+          segments[index] = "0"
+          continue
+        }
+              
+        segments[index] = segments[index].replace(leadingZeroPattern, "")      
+      }
+
+      // Get the instances of segments of zeros.
+      const ipv6String: string = segments.join(":")
+      const instances: RegExpMatchArray | null = ipv6String.match(seriesOfZerosPattern)
+      // Get the longest sequence.
+      let longestSequence: string
+      if (instances !== null) {
+        longestSequence = instances[0]
+        for (const instance of instances) {
+          if (instance.length > longestSequence.length) {
+            longestSequence = instance
+          }
+        }
+      }
+      else {
+        throw new Error("Couldn't get the instaces of segments of zeros.")
+      }
+
+      // Turn the longest sequence into double-colon(::)
+      // Update the message.
+      abbreviatedIPv6.message = ipv6String.replace(longestSequence, "::")
+      // The replace method above causes more than two of contiguous colons.
+      // So perform a replace again.
+      abbreviatedIPv6.message = abbreviatedIPv6.message.replace(/:{3,}/, "::")
+
+
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        abbreviatedIPv6.success = false
+        abbreviatedIPv6.message = error.message
+      }
+      return abbreviatedIPv6
+    }
+
+    // Finally.    
+    return abbreviatedIPv6
+  }
+
+
+
+
+
+
+
+
 }

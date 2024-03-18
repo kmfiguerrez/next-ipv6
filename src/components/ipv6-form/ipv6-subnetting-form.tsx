@@ -2,7 +2,9 @@
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
+
 import ipv6FormSchema, { type Tipv6Form } from '@/schemas/ipv6-form-schema'
+import { IPv6 } from "@/lib/ipv6"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -15,6 +17,9 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
+
+
+
 
 const Ipv6SubnettingForm = () => {
   // 1. Define your form.
@@ -29,7 +34,12 @@ const Ipv6SubnettingForm = () => {
   function onSubmit(values: Tipv6Form) {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
-    console.log(values)
+    // const expandedIPv6 = IPv6.expand(values.ipv6Address)
+    const abbreviatedIPv6 = IPv6.abbreviate(values.ipv6Address)
+
+    // console.log("Expanded: ", expandedIPv6)
+    console.log("Abbreviated: ", abbreviatedIPv6)
+
   }
   
   

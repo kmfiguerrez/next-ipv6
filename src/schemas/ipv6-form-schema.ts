@@ -1,11 +1,11 @@
-import { Ipv6 } from "@/lib/ipv6"
+import { IPv6 } from "@/lib/ipv6"
 import { z } from "zod"
 
 const ipv6FormSchema = z.object({
   ipv6Address: z
     .string()
     .refine((value) => {
-      if (Ipv6.isValidIpv6(value) === false) return false
+      if (IPv6.isValidIpv6(value) === false) return false
 
       return true
     },
