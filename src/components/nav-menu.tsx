@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button"
 
-import OffCanvas from "./off-canvas"
+import OffCanvas from "./features/off-canvas"
 
 import { ModeToggle } from "./theme-color/theme-toggler"
 
