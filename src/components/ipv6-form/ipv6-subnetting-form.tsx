@@ -35,10 +35,11 @@ const Ipv6SubnettingForm = () => {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
     // const expandedIPv6 = IPv6.expand(values.ipv6Address)
-    const abbreviatedIPv6 = IPv6.abbreviate(values.ipv6Address)
+    // const abbreviatedIPv6 = IPv6.abbreviate(values.ipv6Address)
 
     // console.log("Expanded: ", expandedIPv6)
-    console.log("Abbreviated: ", abbreviatedIPv6)
+    // console.log("Abbreviated: ", abbreviatedIPv6)
+    console.log(IPv6.isHex(values.ipv6Address))
 
   }
   

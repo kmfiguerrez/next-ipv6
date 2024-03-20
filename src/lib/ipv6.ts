@@ -11,6 +11,9 @@ export class IPv6 {
    * 
    * It performs a sequence of checkings where each checking must passed
    * to get to the next one, otherwise will return false.
+   * 
+   * @param {string} ipv6Address - A string of IPv6 address.
+   * @returns {boolean} Boolean
    */
   static isValidIpv6(ipv6Address: string): boolean {
     // Sanitize user input first.
@@ -104,6 +107,11 @@ export class IPv6 {
    * This method expands an abbreviated IPv6 address
    * by adding leading zeros to segment and 
    * turning :: into a segment of zeros.
+   * 
+   * @param {string} ipv6Address - A string of IPv6 address.
+   * 
+   * @returns {object} An object with three properties: success, error and data.
+   * 
    */
   static expand(ipv6Address: string): IPv6ReturnData {
     // Sanitize user input first.
@@ -170,9 +178,13 @@ export class IPv6 {
 
 
   /**
-   * This method abbreviates an IPv6 Address.
-   * By removing leading zeros and Turning a sequence of segments of 
-   * zeros.
+   * This method abbreviates an IPv6 Address
+   * by removing leading zeros and turning the longest sequence 
+   * of segments of zeros into ::
+   * 
+   * @param {string} ipv6Address - A string of IPv6 address.
+   * 
+   * @returns {object} An object with three properties: success, error and data.
    */
   static abbreviate(ipv6Address: string): IPv6ReturnData {
     // Sanitize user input first.
@@ -245,6 +257,32 @@ export class IPv6 {
 
     // Finally.    
     return abbreviatedIPv6
+  }
+
+
+  /**
+   * This method checks if the input hex string is a valid hex digits.
+   * 
+   * @param {string} hex - A string of hex digits.
+   * 
+   * @returns {boolean} Boolean
+   */
+  static isHex(hex: string): boolean {
+    // Sanitize user input first.
+    hex = hex.trim().toLowerCase()
+
+    // Regex pattern.
+    const hexCharsPattern = /^[0-9a-f]/
+    
+
+    // Check input first.
+    if (hex === undefined || hex === null || hex === "") return false
+
+    const invalidHex: boolean = hexCharsPattern.test(hex)
+    if (invalidHex) return false
+
+    // Finally
+    return true
   }
 
 
