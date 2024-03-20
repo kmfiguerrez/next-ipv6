@@ -1,19 +1,27 @@
 import { Button } from "@/components/ui/button"
 
+import OffCanvas from "./off-canvas"
+
+import { ModeToggle } from "./theme-color/theme-toggler"
+
 
 const NavMenu = () => {
   return (
-    <header className="container">
-      <nav className='flex justify-between'>
+    <header className="container mb-5 mt-1">
+      <nav className='flex justify-between '>
         
-        <h1>IPv6 Subnetting</h1>
+        <h1 className="flex items-center">IPv6 Subnetting</h1>
+
+        <ModeToggle />
 
         <div>
-          <Button
-            variant={"link"}
-          >
-            Features
-          </Button>
+          <OffCanvas>
+            <Button
+              variant={"link"}
+            >
+              Features
+            </Button>
+          </OffCanvas>
 
           <Button
             variant={"link"}

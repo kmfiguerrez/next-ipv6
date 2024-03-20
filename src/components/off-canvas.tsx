@@ -17,14 +17,17 @@ const OffCanvas: React.FC<OffCanvasProps> = ({ children }) => {
   return (
     <Sheet>
       <SheetTrigger asChild>{children}</SheetTrigger>
-      <SheetContent>
+      <SheetContent side={'left'}>
         <SheetHeader>
-          <SheetTitle>Are you absolutely sure?</SheetTitle>
+          <SheetTitle>Features</SheetTitle>
           <SheetDescription>
             This action cannot be undone. This will permanently delete your account
             and remove your data from our servers.
           </SheetDescription>
         </SheetHeader>
+        <div>
+          yo
+        </div>
       </SheetContent>
     </Sheet>
   )
