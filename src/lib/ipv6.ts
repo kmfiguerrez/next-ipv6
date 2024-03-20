@@ -1,8 +1,8 @@
 type IPv6ReturnData = {
   success: boolean
-  message: string
-}
-
+  data?: string
+  error?: string
+} 
 
 export class IPv6 {
 
@@ -109,26 +109,28 @@ export class IPv6 {
     // Sanitize user input first.
     ipv6Address = ipv6Address.trim().toLowerCase()
 
+    // Regex pattern.
     // /[0-9a-f]{1,4}/ - Segment of hex digits
     let segments: RegExpMatchArray | null = ipv6Address.match(/[0-9a-f]{1,4}/g)
     let doubleColonPattern: RegExp = /^::$/
-    const expandedIPv6: IPv6ReturnData = {success: true, message: ""}    
+
+    const expandedIPv6: IPv6ReturnData = {success: true};
 
     try {
       // Check first if IPv6 Address is valid
       if (!this.isValidIpv6(ipv6Address)) throw new Error("From expand: Invalid IPv6 Address provided.")      
 
     } catch (error: unknown) {
-      if (error instanceof Error) {
+      if (error instanceof RangeError) {
         expandedIPv6.success = false
-        expandedIPv6. message = error.message
+        expandedIPv6.error = error.message
       }
       return expandedIPv6
     }
 
     // Check if the user input is just ::    
     if (doubleColonPattern.test(ipv6Address)) {
-      expandedIPv6.message = "0000:0000:0000:0000:0000:0000:0000:0000"
+      expandedIPv6.data = "0000:0000:0000:0000:0000:0000:0000:0000"
       return expandedIPv6
     }
 
@@ -161,7 +163,7 @@ export class IPv6 {
     }
 
     // Update message.
-    expandedIPv6.message = segments.join(':')
+    expandedIPv6.data = segments.join(':')
     // Finally
     return expandedIPv6
   }
@@ -176,7 +178,7 @@ export class IPv6 {
     // Sanitize user input first.
     ipv6Address = ipv6Address.trim().toLowerCase()
 
-    const abbreviatedIPv6: IPv6ReturnData = {success: true, message: ""}
+    const abbreviatedIPv6: IPv6ReturnData = {success: true}
 
     let segments: Array<string>
 
@@ -189,13 +191,13 @@ export class IPv6 {
 
     // Try to expand the IPv6 first.
     try {
-      if (!this.isValidIpv6(ipv6Address)) throw new Error("Invalid IPv6 Address")
+      if (!this.isValidIpv6(ipv6Address)) throw new Error("From abbreviate: Invalid IPv6 address provided.")
 
       const expandedIPv6 = this.expand(ipv6Address)
-      if (!expandedIPv6.success) throw new Error("Unable to expand IPv6 Address")
-
       // Set the segments as array.
-      segments = expandedIPv6.message.split(':')
+      if (!expandedIPv6.success) throw new Error("From abbreviate: Expanding part failed.")
+
+      segments = (expandedIPv6.data as string).split(':')
 
       // Delete leading zeros first.
       for (let index = 0; index < segments.length; index++) {
@@ -227,16 +229,16 @@ export class IPv6 {
 
       // Turn the longest sequence into double-colon(::)
       // Update the message.
-      abbreviatedIPv6.message = ipv6String.replace(longestSequence, "::")
+      abbreviatedIPv6.data = ipv6String.replace(longestSequence, "::")
       // The replace method above causes more than two of contiguous colons.
       // So perform a replace again.
-      abbreviatedIPv6.message = abbreviatedIPv6.message.replace(/:{3,}/, "::")
+      abbreviatedIPv6.data = abbreviatedIPv6.data.replace(/:{3,}/, "::")
 
 
     } catch (error: unknown) {
       if (error instanceof Error) {
         abbreviatedIPv6.success = false
-        abbreviatedIPv6.message = error.message
+        abbreviatedIPv6.error = error.message
       }
       return abbreviatedIPv6
     }
