@@ -4,6 +4,21 @@ export type IPv6ReturnData = {
   error?: string
 } 
 
+// This type is used in  overloaded toBinary method.
+type TInputValue = {
+  type: "string" | "hex" | "integer"
+  data: string
+}
+
+
+/*
+  In this class definitions. I decided to use hexadecimals and binaries 
+  as type string because:
+  - Hex includes letters.
+  - The number Binary digits and its values large enough larger 
+  - to be outside of JS max safe integers loses precision.
+  - Data coming from user interfaces are of type string.
+*/
 class IPv6 {
 
   /**
@@ -312,60 +327,194 @@ class IPv6 {
 
 
   /**
-   * This overloaded method converts a hex to binaries.
+   * This overloaded method converts the input value to binaries of type string.
    * It uses four bits to output each hex digit
    * and does not omit leading zeros.
    * 
-   * @param hex - A string of hex digits.
+   * The input value is an `object` with two properties: `type` and `data`.
    * 
-   * @returns {object} An object with three properties: success, error and data.
+   * where:
+   * 
+   * `type` is a union of harcoded values: `string`, `hex` and `integer`.
+   * 
+   * `data` is of type `string` because input data comes from HTML input elements.
+   * 
+   * @param {TInputValue} inputValue - An `object` with two properties: `type` and `data`.
+   * 
+   * @returns {object} An `object` with three properties: `success`, `error` and `data`.
    */
-  static toBinary(hex: string): IPv6ReturnData {
-    // Sanitize user input first.
-    hex = hex.trim().toLowerCase()
+  // static toBinary(inputValue: TInputValue): IPv6ReturnData {
+  //   // Sanitize user input data first.
+  //   inputValue.data = inputValue.data.trim().toLowerCase()
 
-    let binaries = ""
+  //   let binaries = ""
 
-    // Return data.
+  //   // Return data.
+  //   const binaryData: IPv6ReturnData = {success: true}
+
+
+  //   // Check input first.
+  //   try {
+
+  //     if (!this.isHex(hex)) throw new Error("From toBinary: Invalid hex digits provided.")
+
+  //   } catch (error: unknown) {
+  //     if (error instanceof Error) {
+  //       binaryData.success = false
+  //       binaryData.error = error.message
+  //       return binaryData
+  //     }
+  //   }
+
+  //   /*
+  //   Because numbers greater than (2 ** 53 - 1) lose precision 
+  //   we have to convert individual hex from input if multiple hex 
+  //   are given rather than the whole hexadecimals in one go.        
+  //   */
+  //   for (const char of hex) {
+  //     // First, convert hex to number
+  //     const decimal = parseInt(char, 16)
+
+  //     // Then from number to binary
+  //     const binary = decimal.toString(2)
+
+  //     // Because toString method does not add leading zeros
+  //     // we have to prepend leading zeros.
+  //     const zeroesToPrepend = 4 - binary.length
+  //     binaries += "0".repeat(zeroesToPrepend) + binary
+  //   }
+
+  //   // Update return data.
+  //   binaryData.data = binaries
+  //   // Finally
+  //   return binaryData
+  // }
+
+  /**
+   * This overloaded method converts hex digits to binaries.
+   * It uses four bits to output each hex digit
+   * and does not omit leading zeros.
+   * 
+   * @param {string} hex - A string of hex digits.
+   * 
+   * @returns {object} An `object` with three properties: `success`, `error` and `data`.
+   */
+  static toBinary(hex: string): IPv6ReturnData
+  /**
+   * This overloaded method converts integer to binaries.
+   * 
+   * @param integer - An integer number.
+   * 
+   * @returns {object} An `object` with three properties: `success`, `error` and `data`.
+   */
+  static toBinary(integer: number): IPv6ReturnData
+  static toBinary(x: any): IPv6ReturnData {
+
+    let binaries: string = ""
+
+    // Return data
     const binaryData: IPv6ReturnData = {success: true}
 
-    
-    // Check input first.
-    try {
+    // Find out which data to work on.
+    switch (typeof x) {
+      case "string": {
+        /*
+          This version of the overloaded method converts string hex digit
+          to string binaries.
+        */
 
-      if (!this.isHex(hex)) throw new Error("From toBinary: Invalid hex digits provided.")
+        // Sanitize input data first.
+        const inputHex = x.trim().toLowerCase()
+        
+        // Validate input data first.
+        try {
+          if (!this.isHex(inputHex)) throw new Error("From toBinary: Invalid hex digits provided.")
+        } catch (error:unknown) {
+          if (error instanceof Error) {
+            binaryData.success = false
+            binaryData.error = error.message
+            return binaryData
+          }
+        }
+        
+        /*
+        Because numbers greater than (2 ** 53 - 1) lose precision 
+        we have to convert individual hex from input if multiple hex 
+        are given rather than the whole hexadecimals in one go.        
+        */
+        for (const hex of inputHex) {
+          // First, convert hex to number
+          const decimal = parseInt(hex, 16)
 
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        binaryData.success = false
-        binaryData.error = error.message
+          // Then from number to binary
+          const binary = decimal.toString(2)
+
+          // Because toString method does not add leading zeros
+          // we have to prepend leading zeros.
+          const zeroesToPrepend = 4 - binary.length
+          binaries += "0".repeat(zeroesToPrepend) + binary
+        }        
+
+        // Update return data.
+        binaryData.data = binaries
+        // Finally
         return binaryData
       }
+      case "number": {
+        /*
+          This version of the overloaded method will convert integer param 
+          to a string format because javascript cannot read integers 
+          outside js max safe integers and input data comes from HTML input
+          elements.
+          This method will use BigInt type.
+        */
+        
+        // Convert first integer to string and sanitize.
+        const inputInteger: string = x.toString().trim()
+
+        try {
+          // Validate input data.
+          if (inputInteger === undefined || inputInteger === null || inputInteger === "") throw new Error("From toBinary: Did not provide an integer.")
+          
+          /*
+          BigInt will only accept either integers or a string that
+          only contains integer characters. Otherwise it will throw
+          a syntax error.
+          */
+          const integer = BigInt(inputInteger)
+
+          // Convert to binary.
+          binaries = integer.toString(2)
+
+        } catch (error: unknown) {
+          binaryData.success = false
+          if (error instanceof SyntaxError) {
+            binaryData.error = "From toBinary: Cannot convert input data to BigInt."
+          }
+
+          if (error instanceof Error) {
+            binaryData.error = error.message
+          }
+
+          return binaryData
+        }
+
+        // Update return data.
+        binaryData.data = binaries
+        // Finally
+        return binaryData
+      }
+      default:
+        binaryData.success = false
+        binaryData.error = "From toBinary: Invalid data type of input data."
+        return binaryData
     }
-
-    /*
-    Because numbers greater than (2 ** 53 - 1) lose precision 
-    we have to convert individual hex from input if multiple hex 
-    are given rather than the whole hexadecimals in one go.        
-    */
-    for (const char of hex) {
-      // First, convert hex to number
-      const decimal = parseInt(char, 16)
-
-      // Then from number to binary
-      const binary = decimal.toString(2)
-
-      // Because toString method does not add leading zeros
-      // we have to prepend leading zeros.
-      const zeroesToPrepend = 4 - binary.length
-      binaries += "0".repeat(zeroesToPrepend) + binary
-    }
-
-    // Update return data.
-    binaryData.data = binaries
-    // Finally
-    return binaryData
   }
+
+
+
+
+
 
 
 
