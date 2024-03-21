@@ -77,7 +77,6 @@ class IPv6 {
     }
 
     // If double colon doesn't exist then a valid ipv6 address has an eight groups of segments and should only have a max of 7 colons.
-
     regexPattern = /::/
     if (!regexPattern.test(ipv6Address)) {
       if (!completeIPv6AddPattern.test(ipv6Address)) {
@@ -285,6 +284,32 @@ class IPv6 {
     // Finally
     return true
   }
+
+
+  /**
+   * This method checks if the input string is a valid binaries.
+   * 
+   * @param binary - A string of binaries.
+   * 
+   * @returns {boolean} Boolean
+   */
+  static isBinary(binary: string): boolean {
+    // Sanitize user input first.
+    binary = binary.trim()
+
+    // Regex pattern.
+    const binaryCharsPattern = /[^0-1]/
+
+    // Check input first.
+    if (binary === undefined || binary === null || binary === "") return false
+
+    const invalidBinary: boolean = binaryCharsPattern.test(binary)
+    if (invalidBinary) return false
+    
+    // Finally
+    return true
+  }
+
 
 
 

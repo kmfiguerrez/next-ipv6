@@ -57,7 +57,6 @@ const UtilitiesForm: React.FC<UtilitiesFormProps> = ({ operation }) => {
       setOutput(result)
     }
   }
-  console.log({Output: output})
   
   
   return (
