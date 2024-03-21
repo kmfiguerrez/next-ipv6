@@ -8,6 +8,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
+import UtilitiesForm from './utilities/utilities-form'
 
 type Utilities = {
   category: "utilities"
@@ -23,9 +24,10 @@ type FeaturesDialogProps = {
   children: React.ReactNode
   title: string
   feature: Feature
+  description: string
 }
 
-const FeaturesDialog: React.FC<FeaturesDialogProps> = ({ children, title, feature }) => {
+const FeaturesDialog: React.FC<FeaturesDialogProps> = ({ children, title, feature, description }) => {
   return (
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
@@ -33,12 +35,16 @@ const FeaturesDialog: React.FC<FeaturesDialogProps> = ({ children, title, featur
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>
-            This action cannot be undone. This will permanently delete your account
-            and remove your data from our servers.
+            {description}
           </DialogDescription>
         </DialogHeader>
         <div>
-          {feature.operation}
+          {/* Form here */}
+          {feature.category === 'utilities' &&
+            <UtilitiesForm 
+              operation={title.toLowerCase() === "expand" ? "Expand" : "Abbreviate"} 
+            />
+          }
         </div>
       </DialogContent>
     </Dialog>

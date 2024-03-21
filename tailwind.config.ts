@@ -18,6 +18,9 @@ const config = {
       },
     },
     extend: {
+      // fontFamily: {
+      //   mono: ['var(--font-inconsolata)']
+      // },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",

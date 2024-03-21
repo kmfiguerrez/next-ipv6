@@ -1,25 +1,40 @@
 'use client'
 
+
+import React, { useState } from 'react'
+
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 
 import utilitiesFormSchema, { type TutilitiesForm } from "@/schemas/utilities-form-schema"
 
-import { IPv6 } from "@/lib/ipv6"
+import IPv6, { type IPv6ReturnData } from "@/lib/ipv6"
+
+import FeaturesOutputBox from '../features-output-box'
+
+import { inconsolata } from '@/lib/fonts'
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
 
-const UtilitiesForm = () => {
+
+type UtilitiesFormProps = {
+  operation: string
+}
+
+const UtilitiesForm: React.FC<UtilitiesFormProps> = ({ operation }) => {
+  const [output, setOutput] = useState<IPv6ReturnData>()
+
+
+
   // 1. Define your form.
   const form = useForm<TutilitiesForm>({
     resolver: zodResolver(utilitiesFormSchema),
@@ -32,12 +47,17 @@ const UtilitiesForm = () => {
   function onSubmit(values: TutilitiesForm) {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
-    // const expandedIPv6 = IPv6.expand(values.ipv6Address)
-    // const abbreviatedIPv6 = IPv6.abbreviate(values.ipv6Address)
+    
+    let result: IPv6ReturnData
 
-    // console.log("Expanded: ", expandedIPv6)
-    // console.log("Abbreviated: ", abbreviatedIPv6)
-    console.log(IPv6.isHex(values.ipv6Address)) 
+    if (operation.toLowerCase() === "expand") {
+      result = IPv6.expand(values.ipv6Address)
+      setOutput(result)
+    }
+    else {
+      result = IPv6.abbreviate(values.ipv6Address)
+      setOutput(result)
+    }
   }
   
   
@@ -45,6 +65,7 @@ const UtilitiesForm = () => {
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
 
+        {/* Input */}
         <FormField
           control={form.control}
           name="ipv6Address"
@@ -52,17 +73,26 @@ const UtilitiesForm = () => {
             <FormItem>
               <FormLabel>IPv6 Address</FormLabel>
               <FormControl>
-                <Input placeholder="Enter IPv6 Address here" {...field} />
+                <Input 
+                  placeholder="Enter IPv6 Address here" 
+                  {...field} 
+                  className={`${inconsolata.className} text-base`} 
+                />
               </FormControl>
-              <FormDescription>
-                This is your public display name.
-              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
         />
 
-        <Button type="submit">Submit</Button>
+        {/* Output */}
+        <FeaturesOutputBox result={output}/>
+
+        <Button 
+          type="submit"
+          onClick={() => setOutput(undefined)}
+        >
+          {operation}
+        </Button>
 
       </form>
     </Form>

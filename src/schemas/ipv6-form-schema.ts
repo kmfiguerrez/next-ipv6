@@ -1,4 +1,4 @@
-import { IPv6 } from "@/lib/ipv6"
+import IPv6 from "@/lib/ipv6"
 import { z } from "zod"
 
 const ipv6FormSchema = z.object({

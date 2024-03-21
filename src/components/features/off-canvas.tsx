@@ -35,7 +35,11 @@ const OffCanvas: React.FC<OffCanvasProps> = ({ children }) => {
           <ul className='list-inside border ps-1'>
 
             <li>
-              <FeaturesDialog title='Expand' feature={{category: "utilities", operation: "expand"}}>
+              <FeaturesDialog 
+                title='Expand'
+                description='This action will expand abbreviated IPv6 addresss.'
+                feature={{category: "utilities", operation: "expand"}}
+              >
                 <Button
                   variant={'ghost'}
                   size={'sm'}
@@ -46,7 +50,11 @@ const OffCanvas: React.FC<OffCanvasProps> = ({ children }) => {
             </li>
             
             <li>
-              <FeaturesDialog title='Abbreviate' feature={{category: "utilities", operation: "abbreviate"}}>
+              <FeaturesDialog 
+                title='Abbreviate'
+                description='This action will abbreviate IPv6 addresss.'
+                feature={{category: "utilities", operation: "abbreviate"}}
+              >
                 <Button
                   variant={'ghost'}
                   size={'sm'}

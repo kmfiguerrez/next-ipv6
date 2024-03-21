@@ -1,10 +1,10 @@
-type IPv6ReturnData = {
+export type IPv6ReturnData = {
   success: boolean
   data?: string
   error?: string
 } 
 
-export class IPv6 {
+class IPv6 {
 
   /**
    * This method is used to check format of user input IPv6 Address.
@@ -293,3 +293,5 @@ export class IPv6 {
 
 
 }
+
+export default IPv6

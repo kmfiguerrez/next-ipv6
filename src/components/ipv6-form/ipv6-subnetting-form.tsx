@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 
 import ipv6FormSchema, { type Tipv6Form } from '@/schemas/ipv6-form-schema'
-import { IPv6 } from "@/lib/ipv6"
+import IPv6 from "@/lib/ipv6"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
