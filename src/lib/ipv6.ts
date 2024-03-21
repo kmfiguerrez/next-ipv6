@@ -222,30 +222,31 @@ class IPv6 {
         segments[index] = segments[index].replace(leadingZeroPattern, "")      
       }
 
-      // Get the instances of segments of zeros.
       const ipv6String: string = segments.join(":")
+
+      // Get the instances of segments of zeroes if exist.
       const instances: RegExpMatchArray | null = ipv6String.match(seriesOfZerosPattern)
-      // Get the longest sequence.
-      let longestSequence: string
       if (instances !== null) {
-        longestSequence = instances[0]
+        // Get the longest sequence.
+        let longestSequence: string = instances[0]
         for (const instance of instances) {
           if (instance.length > longestSequence.length) {
             longestSequence = instance
           }
         }
+
+        // Turn the longest sequence into double-colon(::)
+        // Update the data.
+        abbreviatedIPv6.data = ipv6String.replace(longestSequence, "::")
+        // The replace method above causes more than two of contiguous colons.
+        // So perform a replace again.
+        abbreviatedIPv6.data = abbreviatedIPv6.data.replace(/:{3,}/, "::")
       }
       else {
-        throw new Error("Couldn't get the instaces of segments of zeros.")
+        // Otherwise none.
+        // Update the data.
+        abbreviatedIPv6.data = ipv6String
       }
-
-      // Turn the longest sequence into double-colon(::)
-      // Update the message.
-      abbreviatedIPv6.data = ipv6String.replace(longestSequence, "::")
-      // The replace method above causes more than two of contiguous colons.
-      // So perform a replace again.
-      abbreviatedIPv6.data = abbreviatedIPv6.data.replace(/:{3,}/, "::")
-
 
     } catch (error: unknown) {
       if (error instanceof Error) {

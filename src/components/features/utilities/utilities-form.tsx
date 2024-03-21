@@ -33,8 +33,6 @@ type UtilitiesFormProps = {
 const UtilitiesForm: React.FC<UtilitiesFormProps> = ({ operation }) => {
   const [output, setOutput] = useState<IPv6ReturnData>()
 
-
-
   // 1. Define your form.
   const form = useForm<TutilitiesForm>({
     resolver: zodResolver(utilitiesFormSchema),
@@ -59,6 +57,7 @@ const UtilitiesForm: React.FC<UtilitiesFormProps> = ({ operation }) => {
       setOutput(result)
     }
   }
+  console.log({Output: output})
   
   
   return (
