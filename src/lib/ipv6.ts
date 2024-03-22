@@ -287,7 +287,7 @@ class IPv6 {
     hex = hex.trim().toLowerCase()
 
     // Regex pattern.
-    const hexCharsPattern = /^[0-9a-f]/
+    const hexCharsPattern = /[^0-9a-f]/
     
 
     // Check input first.
@@ -325,70 +325,6 @@ class IPv6 {
     return true
   }
 
-
-  /**
-   * This overloaded method converts the input value to binaries of type string.
-   * It uses four bits to output each hex digit
-   * and does not omit leading zeros.
-   * 
-   * The input value is an `object` with two properties: `type` and `data`.
-   * 
-   * where:
-   * 
-   * `type` is a union of harcoded values: `string`, `hex` and `integer`.
-   * 
-   * `data` is of type `string` because input data comes from HTML input elements.
-   * 
-   * @param {TInputValue} inputValue - An `object` with two properties: `type` and `data`.
-   * 
-   * @returns {object} An `object` with three properties: `success`, `error` and `data`.
-   */
-  // static toBinary(inputValue: TInputValue): IPv6ReturnData {
-  //   // Sanitize user input data first.
-  //   inputValue.data = inputValue.data.trim().toLowerCase()
-
-  //   let binaries = ""
-
-  //   // Return data.
-  //   const binaryData: IPv6ReturnData = {success: true}
-
-
-  //   // Check input first.
-  //   try {
-
-  //     if (!this.isHex(hex)) throw new Error("From toBinary: Invalid hex digits provided.")
-
-  //   } catch (error: unknown) {
-  //     if (error instanceof Error) {
-  //       binaryData.success = false
-  //       binaryData.error = error.message
-  //       return binaryData
-  //     }
-  //   }
-
-  //   /*
-  //   Because numbers greater than (2 ** 53 - 1) lose precision 
-  //   we have to convert individual hex from input if multiple hex 
-  //   are given rather than the whole hexadecimals in one go.        
-  //   */
-  //   for (const char of hex) {
-  //     // First, convert hex to number
-  //     const decimal = parseInt(char, 16)
-
-  //     // Then from number to binary
-  //     const binary = decimal.toString(2)
-
-  //     // Because toString method does not add leading zeros
-  //     // we have to prepend leading zeros.
-  //     const zeroesToPrepend = 4 - binary.length
-  //     binaries += "0".repeat(zeroesToPrepend) + binary
-  //   }
-
-  //   // Update return data.
-  //   binaryData.data = binaries
-  //   // Finally
-  //   return binaryData
-  // }
 
   /**
    * This overloaded method converts hex digits to binaries.

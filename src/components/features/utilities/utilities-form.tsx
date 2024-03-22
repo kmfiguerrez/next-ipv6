@@ -56,6 +56,9 @@ const UtilitiesForm: React.FC<UtilitiesFormProps> = ({ operation }) => {
       result = IPv6.abbreviate(values.ipv6Address)
       setOutput(result)
     }
+
+    const toBinary = IPv6.toBinary("4")
+    console.log(toBinary)
   }
   
   
