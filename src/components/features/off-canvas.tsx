@@ -1,7 +1,5 @@
 import React from 'react'
 
-import FeaturesDialog from './features-dialog'
-
 import { Button } from '../ui/button'
 import {
   Sheet,
@@ -11,7 +9,16 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet"
-import { SidebarAccordion, SidebarAccordionContent, SidebarAccordionItem, SidebarAccordionTrigger } from './sidebar-accordion'
+
+import FeaturesDialog from './features-dialog'
+
+import { 
+  SidebarAccordion, 
+  SidebarAccordionContent, 
+  SidebarAccordionItem, 
+  SidebarAccordionTrigger
+} from './sidebar-accordion'
+import UtilitiesContent from './utilities/utilities-content'
 
 
 type OffCanvasProps = {
@@ -33,59 +40,25 @@ const OffCanvas: React.FC<OffCanvasProps> = ({ children }) => {
         </SheetHeader>
         <div>
 
-          <h3>Utilities</h3>
-          <ul className='list-inside border ps-1'>
 
-            <li>
-              <FeaturesDialog 
-                title='Expand'
-                description='This action will expand abbreviated IPv6 addresss.'
-                feature={{category: "utilities", operation: "expand"}}
-              >
-                <Button
-                  variant={'ghost'}
-                  size={'sm'}
-                >
-                  <p>taebitch</p>
-                </Button>
-              </FeaturesDialog>
-            </li>
-            
-            <li>
-              <FeaturesDialog 
-                title='Abbreviate'
-                description='This action will abbreviate IPv6 addresss.'
-                feature={{category: "utilities", operation: "abbreviate"}}
-              >
-                <Button
-                  variant={'ghost'}
-                  size={'sm'}
-                >
-                  Abbreviate
-                </Button>
-              </FeaturesDialog>
-            </li>
-            
-          </ul>
+        <SidebarAccordion>
+          
+          <SidebarAccordionItem key='item-1'>
+            <SidebarAccordionTrigger>Test</SidebarAccordionTrigger>
+            <SidebarAccordionContent>
+              tae
+              <p>poop</p>
+            </SidebarAccordionContent>
+          </SidebarAccordionItem>
 
-          <SidebarAccordion>
-            <SidebarAccordionItem key='item-1'>
-              <SidebarAccordionTrigger>Test</SidebarAccordionTrigger>
-              <SidebarAccordionContent>
-                tae
-                <p>poop</p>
-              </SidebarAccordionContent>
-            </SidebarAccordionItem>
+          <SidebarAccordionItem key='item-2'>
+            <SidebarAccordionTrigger>Utilities</SidebarAccordionTrigger>
+            <SidebarAccordionContent>
+              <UtilitiesContent />
+            </SidebarAccordionContent>
+          </SidebarAccordionItem>
 
-            <SidebarAccordionItem key='item-2'>
-              <SidebarAccordionTrigger>Test1</SidebarAccordionTrigger>
-              <SidebarAccordionContent>
-                tae
-                <p>poop</p>
-              </SidebarAccordionContent>
-            </SidebarAccordionItem>
-
-          </SidebarAccordion>
+        </SidebarAccordion>
 
         </div>
       </SheetContent>
