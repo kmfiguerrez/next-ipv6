@@ -21,11 +21,12 @@ import gsap from "gsap"
 import React, { useEffect, useRef } from "react"
 
 import { Button } from "../ui/button"
+import { cn } from "@/lib/utils"
 
 
-const SidebarAccordion = ({children}: {children: React.ReactNode}) => {
+const SidebarAccordion = ({children, className}: {children: React.ReactNode, className?: string}) => {
   return (
-    <ul role="menu" className='flex flex-col mt-5'>
+    <ul className={cn("flex flex-col", className)}>
       {children}
     </ul>
   )
@@ -81,7 +82,6 @@ const SidebarAccordionItem = ({children, key}: {key: string, children: React.Rea
 
   return (
     <li
-      role="menu-item"
       ref={saItemRef}
       key={key}
     >
@@ -132,7 +132,6 @@ const SidebarAccordionTrigger = ({children}: {children: React.ReactNode}) => {
   return (
     <Button
       variant={"ghost"}
-      role="trigger"
       onClick={handleClick}
       className="sa-trigger"
     >
@@ -144,12 +143,11 @@ const SidebarAccordionTrigger = ({children}: {children: React.ReactNode}) => {
   )
 }
 
-const SidebarAccordionContent = ({children}: {children: React.ReactNode}) => {
+const SidebarAccordionContent = ({children, className}: {children: React.ReactNode, className?: string}) => {
   return (
     <div 
-      role="content"
       aria-orientation="vertical"
-      className="sa-content overflow-hidden h-0 ps-6"
+      className={cn("sa-content overflow-hidden h-0 ps-10", className)}
     >
       <div>
         {children}
