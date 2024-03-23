@@ -11,6 +11,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet"
+import { SidebarAccordion, SidebarAccordionContent, SidebarAccordionItem, SidebarAccordionTrigger } from './sidebar-accordion'
 
 
 type OffCanvasProps = {
@@ -31,6 +32,7 @@ const OffCanvas: React.FC<OffCanvasProps> = ({ children }) => {
           </SheetDescription> */}
         </SheetHeader>
         <div>
+
           <h3>Utilities</h3>
           <ul className='list-inside border ps-1'>
 
@@ -44,7 +46,7 @@ const OffCanvas: React.FC<OffCanvasProps> = ({ children }) => {
                   variant={'ghost'}
                   size={'sm'}
                 >
-                  Expand
+                  <p>taebitch</p>
                 </Button>
               </FeaturesDialog>
             </li>
@@ -65,6 +67,17 @@ const OffCanvas: React.FC<OffCanvasProps> = ({ children }) => {
             </li>
             
           </ul>
+
+          <SidebarAccordion>
+            <SidebarAccordionItem>
+              <SidebarAccordionTrigger>Test</SidebarAccordionTrigger>
+              <SidebarAccordionContent>
+                tae
+                <p>poop</p>
+              </SidebarAccordionContent>
+            </SidebarAccordionItem>
+          </SidebarAccordion>
+
         </div>
       </SheetContent>
     </Sheet>
