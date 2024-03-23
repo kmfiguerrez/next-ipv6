@@ -7,6 +7,7 @@ export default function Home() {
       <NavMenu />
       <main className="container">
         <Ipv6SubnettingForm />
+        <br />
       </main>
     </>
   );
