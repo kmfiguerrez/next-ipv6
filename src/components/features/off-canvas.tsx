@@ -69,13 +69,22 @@ const OffCanvas: React.FC<OffCanvasProps> = ({ children }) => {
           </ul>
 
           <SidebarAccordion>
-            <SidebarAccordionItem>
+            <SidebarAccordionItem key='item-1'>
               <SidebarAccordionTrigger>Test</SidebarAccordionTrigger>
               <SidebarAccordionContent>
                 tae
                 <p>poop</p>
               </SidebarAccordionContent>
             </SidebarAccordionItem>
+
+            <SidebarAccordionItem key='item-2'>
+              <SidebarAccordionTrigger>Test1</SidebarAccordionTrigger>
+              <SidebarAccordionContent>
+                tae
+                <p>poop</p>
+              </SidebarAccordionContent>
+            </SidebarAccordionItem>
+
           </SidebarAccordion>
 
         </div>
