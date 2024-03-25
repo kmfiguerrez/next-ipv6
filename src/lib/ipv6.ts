@@ -2,7 +2,7 @@ import { getErrorMessage } from "./error-message"
 
 export type IPv6ReturnData = {
   success: boolean
-  data?: string
+  data?: string | number | bigint
   error?: string
 } 
 
@@ -14,6 +14,10 @@ export type IPv6ReturnData = {
   - The number Binary digits and its values large enough larger 
   - to be outside of JS max safe integers loses precision.
   - Data coming from user interfaces are of type string.
+
+  Exception for above statements.
+  - hexadecimals as a paramerter in toDecimal overloaded method
+    is of type number or bigint.
 */
 class IPv6 {
 
@@ -270,7 +274,7 @@ class IPv6 {
   /**
    * This method checks if the input hex string is a valid hex digits.
    * 
-   * @param {string} hex - A string of hex digits.
+   * @param {string} hex - A string of positive hex digits.
    * 
    * @returns {boolean} Boolean
    */
@@ -296,7 +300,7 @@ class IPv6 {
   /**
    * This method checks if the input string is a valid binaries.
    * 
-   * @param binary - A string of binaries.
+   * @param binary - A string of positive binaries.
    * 
    * @returns {boolean} Boolean
    */
@@ -323,7 +327,7 @@ class IPv6 {
    * It uses four bits to output each hex digit
    * and does not omit leading zeros.
    * 
-   * @param {string} hex - A string of hex digits.
+   * @param {string} hex - A string of positive hex digits.
    * 
    * @returns {object} An `object` with three properties: `success`, `error` and `data`.
    */
@@ -482,7 +486,7 @@ class IPv6 {
   /**
    * This method converts a string of binaries into hexadecimals.
    * 
-   * @param {string} binary - A string of binaries.
+   * @param {string} binary - A string of positive binaries.
    * 
    * @returns {object} An `object` with three properties: `success`, `error` and `data`.
    */
@@ -630,6 +634,98 @@ class IPv6 {
       }
     }    
   }
+
+
+  /**
+   * This method converts a string of binaries to decimal form (integers)
+   * 
+   * @param {string} binary - A string of positive binaries.
+   * 
+   * @returns {object} An `object` with three properties: `success`, `error` and `data`.
+   */
+  static toDecimal(binary: string): IPv6ReturnData
+
+  /**
+   * This method converts hexadecimals to decimal form (integers)
+   * 
+   * __Note__: Argument (integers) passed to `hexadecimals` param must be 
+   * preceded by `0x` for JS engine to recognize it as hexadecimals.
+   * Otherwise argument is passed as base 10 (decimal).
+   * 
+   * @param {number} hexadecimals - Positive hexadecimals (integers less than Number.MAX_SAFE_INTEGER or 2^53 - 1).
+   * 
+   * @returns {object} An `object` with three properties: `success`, `error` and `data`.
+   */  
+  static toDecimal(hexadecimals: number): IPv6ReturnData
+
+  /**
+   * This method converts hexadecimals to decimal form (integers)
+   * 
+   * __Note__: Argument (integers) passed to `hexadecimals` param must be 
+   * preceded by `0x` for JS engine to recognize it as hexadecimals.
+   * Otherwise argument is passed as base 10 (decimal).
+   * 
+   * @param {bigint} hexadecimals - Positive hexadecimals (integers equal or greater than Number.MAX_SAFE_INTEGER or 2^53 - 1).
+   * 
+   * @returns {object} An `object` with three properties: `success`, `error` and `data`.
+   */  
+  static toDecimal(hexadecimals: bigint): IPv6ReturnData
+  static toDecimal(x: string | number | bigint): IPv6ReturnData {
+
+    let decimals: bigint | number
+
+    // Return data.
+    const decimalsData: IPv6ReturnData = {success: true}
+
+    // Figure out which data to work on.
+    switch (typeof x) {
+      case "string": {
+        /*
+          This version of the overloaded method converst a string binaries
+          into decimals.
+        */
+       
+        // Sanitize input data first.
+        const inputBinary = x.trim()
+
+
+        // Validate input data.
+        try {
+          if (!this.isBinary(inputBinary)) throw new Error("From toDecimal: Provided with invalid binaries.")
+
+          /*
+            Because number greater than (2 ** 53 - 1) loses precision we will
+            use bigint too.
+            Note that the BigInt constructor throws a SyntaxError if argument
+            is invalid.
+          */
+          
+         // Convert binary to decimal form (integer).
+          decimals = parseInt(inputBinary, 2)
+          if (decimals >= Number.MAX_SAFE_INTEGER) {
+            // Update decimal as bigint.
+            decimals = BigInt(`0b${inputBinary}`)
+          }
+          
+        } catch (error: unknown) {
+          decimalsData.success = false
+          decimalsData.error = getErrorMessage(error)
+          return decimalsData          
+        }
+
+        // Otherwise valid.
+        // Update return data.
+        decimalsData.data = decimals
+        // Finally
+        return decimalsData
+      }
+      default:
+        decimalsData.success = false
+        decimalsData.error = "From toHex: Received unkown data type."
+        return decimalsData
+    }
+  }
+
 
 
 
