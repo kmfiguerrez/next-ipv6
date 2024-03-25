@@ -347,23 +347,22 @@ class IPv6 {
   static toBinary(integer: number): IPv6ReturnData
 
   /**
-   * This method converts positve integers greater than or equal 
-   * to 2 raised to 53 to binary.
+   * This method converts positve integers to binary.
    * 
-   * The input positive integers must be in BigInt format to support
-   * JS version lower than ES2020.
+   * JS version lower than ES2020 does not support BigInt literals.
+   * Must use the following example.
    * 
    * ex.) const integer = BigInt("9007199254740991")
    * 
-   * __where__: Positive `integer` argument to `BigInt` function in `string` format 
-   * to avoid losing precision.
+   * __where__: Positive `integer` argument to `BigInt` constructor is in 
+   * `string` format to avoid losing precision of the argument.
    * 
-   * @param {BigInt} integer - Positive integers (greater than or equal to Number.MAX_SAFE_INTEGER).
+   * @param {BigInt} integer - Positive integers (greater than or equal to Number.MAX_SAFE_INTEGER or 2^53 - 1).
    * 
    * @returns {object} An `object` with three properties: `success`, `error` and `data`.
    */
-  // static toBinary(integer: BigInt): IPv6ReturnData
-  static toBinary(x: string | number): IPv6ReturnData {
+  static toBinary(integer: BigInt): IPv6ReturnData
+  static toBinary(x: string | number | BigInt): IPv6ReturnData {
 
     let binaries: string = ""
 
@@ -423,20 +422,16 @@ class IPv6 {
         */
         
         const inputInteger: number = x
-
+        
+        // Validate input data.
         try {
-          // Validate input data.
           if (inputInteger === undefined || inputInteger === null) throw new Error("From toBinary: Did not provide an integer.")
           
           // This version of the overloaded method rejects integers >= Number.MAX_SAFE_INTEGER (2^53 - 1).
           if (inputInteger >= Number.MAX_SAFE_INTEGER) throw new Error("From toBinary: Must use the method signature for numbers equal or greater than Number.MAX_SAFE_INTEGER.")
 
-          // Convert to binary.
-          binaries = inputInteger.toString(2)
-
         } catch (error: unknown) {
           binaryData.success = false
-
           if (error instanceof Error) {
             binaryData.error = error.message
           }
@@ -444,14 +439,48 @@ class IPv6 {
           return binaryData
         }
 
+        // Otherwise valid.
+        // Convert to binary.
+        binaries = inputInteger.toString(2)        
+
         // Update return data.
         binaryData.data = binaries
         // Finally
         return binaryData
       }
-      // case 'bigint': {
+      case "bigint": {
+        /*
+          This version of the overloaded method will convert integers equal or
+          greater than Number.MAX_SAFE_INTEGER.
+        */
 
-      // }
+        const inputInteger: BigInt = x
+
+        // Validate input data.
+        try {
+          if (inputInteger === undefined || inputInteger === null) throw new Error("From toBinary: Did not provide an integer.")
+          
+          // Input integer must be in BigInt format.
+          if (typeof inputInteger !== "bigint") throw new Error("From toBinary: Input integers must be in BigInt format.")
+
+        } catch (error: unknown) {
+          binaryData.success = false
+          if (error instanceof Error) {
+            binaryData.error = error.message
+          }
+          
+          return binaryData
+        }
+
+        // Otherwise valid.
+        // Convert to binary.
+        binaries = inputInteger.toString(2)        
+
+        // Update return data.
+        binaryData.data = binaries
+        // Finally
+        return binaryData          
+      }
       default:
         binaryData.success = false
         binaryData.error = "From toBinary: Invalid data type of input data."
