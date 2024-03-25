@@ -6,12 +6,6 @@ export type IPv6ReturnData = {
   error?: string
 } 
 
-// This type is used in  overloaded toBinary method.
-type TInputValue = {
-  type: "string" | "hex" | "integer"
-  data: string
-}
-
 
 /*
   In this class definitions. I decided to use hexadecimals and binaries 
@@ -359,7 +353,7 @@ class IPv6 {
    * 
    * @returns {object} An `object` with three properties: `success`, `error` and `data`.
    */
-  static toBinary(integer: BigInt): IPv6ReturnData
+  static toBinary(integer: bigint): IPv6ReturnData
   static toBinary(x: string | number | BigInt): IPv6ReturnData {
 
     let binaries: string = ""
@@ -423,6 +417,9 @@ class IPv6 {
         try {
           if (inputInteger === undefined || inputInteger === null) throw new Error("From toBinary: Did not provide an integer.")
           
+          // Must be positive.
+          if (inputInteger < 0) throw new Error("From toBinary: Integers must be positive.")
+
           // This version of the overloaded method rejects integers >= Number.MAX_SAFE_INTEGER (2^53 - 1).
           if (inputInteger >= Number.MAX_SAFE_INTEGER) throw new Error("From toBinary: Must use the method signature for numbers equal or greater than Number.MAX_SAFE_INTEGER.")
 
@@ -447,12 +444,15 @@ class IPv6 {
           greater than Number.MAX_SAFE_INTEGER.
         */
 
-        const inputInteger: BigInt = x
+        const inputInteger: bigint = x
 
         // Validate input data.
         try {
           if (inputInteger === undefined || inputInteger === null) throw new Error("From toBinary: Did not provide an integer.")
           
+          // Must be positive.
+          if (inputInteger < BigInt(0)) throw new Error("From toBinary: Integers must be positive.")
+
           // Input integer must be in BigInt format.
           if (typeof inputInteger !== "bigint") throw new Error("From toBinary: Input integers must be in BigInt format.")
 
@@ -480,7 +480,7 @@ class IPv6 {
 
 
   /**
-   * This method converts a string of Binaries into Hexadecimals.
+   * This method converts a string of binaries into hexadecimals.
    * 
    * @param {string} binary - A string of binaries.
    * 
@@ -515,15 +515,18 @@ class IPv6 {
       }
 
       // Convert decimal to hexadecimals.
-      decimal.toString(16)
-
+      hexadecimals = decimal.toString(16)
 
     } catch (error: unknown) {
       hexData.success = false
       hexData.error = getErrorMessage(error)
       return hexData
-      }
     }
+
+    // Update return data.
+    hexData.data = hexadecimals
+    // Finally
+    return hexData
   }
 
 
