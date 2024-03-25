@@ -349,12 +349,12 @@ class IPv6 {
    * __where__: Positive `integer` argument to `BigInt` constructor is in 
    * `string` format to avoid losing precision of the argument.
    * 
-   * @param {BigInt} integer - Positive integers (greater than or equal to Number.MAX_SAFE_INTEGER or 2^53 - 1).
+   * @param {bigint} integer - Positive integers (greater than or equal to Number.MAX_SAFE_INTEGER or 2^53 - 1).
    * 
    * @returns {object} An `object` with three properties: `success`, `error` and `data`.
    */
   static toBinary(integer: bigint): IPv6ReturnData
-  static toBinary(x: string | number | BigInt): IPv6ReturnData {
+  static toBinary(x: string | number | bigint): IPv6ReturnData {
 
     let binaries: string = ""
 
@@ -495,8 +495,17 @@ class IPv6 {
    * 
    * @returns {object} An `object` with three properties: `success`, `error` and `data`.
    */  
-  static toHex(binary: number): IPv6ReturnData
-  static toHex(x: string | number): IPv6ReturnData {
+  static toHex(integer: number): IPv6ReturnData
+
+  /**
+   * This method converts positive integers into hexadecimals.
+   * 
+   * @param {bigint} integer - Positive integers (integers equal or greater than Number.MAX_SAFE_INTEGER or 2^53 - 1).
+   * 
+   * @returns {object} An `object` with three properties: `success`, `error` and `data`.
+   */    
+  static toHex(integer: bigint): IPv6ReturnData
+  static toHex(x: string | number | bigint): IPv6ReturnData {
 
     let hexadecimals: string = ""
 
@@ -511,7 +520,7 @@ class IPv6 {
         */
 
         // Sanitize input data first.
-        const inputBinary = x.trim()
+        const inputBinary: string = x.trim()
 
 
         // Validate input data.
@@ -529,6 +538,7 @@ class IPv6 {
           // Convert binary to decimal form (integer).
           decimal = parseInt(inputBinary, 2)
           if (decimal >= Number.MAX_SAFE_INTEGER) {
+            // Update decimal as bigint.
             decimal = BigInt(`0b${inputBinary}`)
           }
 
@@ -552,8 +562,9 @@ class IPv6 {
           (less than Number.MAX_SAFE_INTEGER or 2^53 - 1) into hexadecimals.
         */
 
-        const inputInteger = x
+        const inputInteger: number = x
         
+
         // Validate input data first.
         try {
           if (inputInteger === undefined || inputInteger === null) throw new Error("From toHex: Did not provide integers.")
@@ -569,6 +580,7 @@ class IPv6 {
           return hexData
         }
 
+        // Otherwise valid.
         // Convert decimal to hexadecimals.
         hexadecimals = inputInteger.toString(16)
 
@@ -577,6 +589,40 @@ class IPv6 {
         // Finally
         return hexData
       }
+      case "bigint": {
+        /*
+          This version of the overloaded method will convert integers equal or
+          greater than Number.MAX_SAFE_INTEGER.
+        */
+
+        const inputInteger: bigint = x
+
+
+        // Validate input data.
+        try {
+          if (inputInteger === undefined || inputInteger === null) throw new Error("From toBinary: Did not provide an integer.")
+          
+          // Must be positive.
+          if (inputInteger < BigInt(0)) throw new Error("From toBinary: Integers must be positive.")
+
+          // Input integer must be in bigint format.
+          if (typeof inputInteger !== "bigint") throw new Error("From toBinary: Input integers must be in bigint format.")
+
+        } catch (error: unknown) {
+          hexData.success = false
+          hexData.error = getErrorMessage(error)
+          return hexData
+        }
+
+        // Otherwise valid.
+        // Convert decimal to hexadecimals.
+        hexadecimals = inputInteger.toString(16)        
+
+        // Update return data.
+        hexData.data = hexadecimals
+        // Finally
+        return hexData
+      }        
       default: {
         hexData.success = false
         hexData.error = "From toHex: Received unkown data type."
