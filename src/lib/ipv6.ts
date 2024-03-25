@@ -486,47 +486,103 @@ class IPv6 {
    * 
    * @returns {object} An `object` with three properties: `success`, `error` and `data`.
    */
-  static toHex(binary: string): IPv6ReturnData {
-    // Sanitize user input first.
-    binary = binary.trim()
+  static toHex(binary: string): IPv6ReturnData
+
+  /**
+   * This method converts positive integers into hexadecimals.
+   * 
+   * @param {number} integer - Positive integers (integers less than Number.MAX_SAFE_INTEGER or 2^53 - 1).
+   * 
+   * @returns {object} An `object` with three properties: `success`, `error` and `data`.
+   */  
+  static toHex(binary: number): IPv6ReturnData
+  static toHex(x: string | number): IPv6ReturnData {
 
     let hexadecimals: string = ""
 
     // Return data.
     const hexData: IPv6ReturnData = {success: true}
 
+    switch (typeof x) {
+      case "string": {
+        /*
+          This version of the overloaded method converst a string binaries
+          into hexadecimals.
+        */
 
-    // Validate input data.
-    try {
-      if (!this.isBinary(binary)) throw new Error("From toHex: Provided with invalid binaries.")
+        // Sanitize input data first.
+        const inputBinary = x.trim()
 
-      /*
-        Because number greater than (2 ** 53 - 1) loses precision we will
-        use bigint too.
-        Note that the BigInt constructor throws a SyntaxError if argument
-        is invalid.
-      */
-      let decimal: bigint | number 
-      
-      // Convert binary to decimal form (integer).
-      decimal = parseInt(binary, 2)
-      if (decimal >= Number.MAX_SAFE_INTEGER) {
-        decimal = BigInt(`0b${binary}`)
+
+        // Validate input data.
+        try {
+          if (!this.isBinary(inputBinary)) throw new Error("From toHex: Provided with invalid binaries.")
+
+          /*
+            Because number greater than (2 ** 53 - 1) loses precision we will
+            use bigint too.
+            Note that the BigInt constructor throws a SyntaxError if argument
+            is invalid.
+          */
+          let decimal: bigint | number 
+          
+          // Convert binary to decimal form (integer).
+          decimal = parseInt(inputBinary, 2)
+          if (decimal >= Number.MAX_SAFE_INTEGER) {
+            decimal = BigInt(`0b${inputBinary}`)
+          }
+
+          // Convert decimal to hexadecimals.
+          hexadecimals = decimal.toString(16)
+
+        } catch (error: unknown) {
+          hexData.success = false
+          hexData.error = getErrorMessage(error)
+          return hexData
+        }
+
+        // Update return data.
+        hexData.data = hexadecimals
+        // Finally
+        return hexData
       }
+      case "number": {
+        /*
+          This version of the overloaded method converts positive integer
+          (less than Number.MAX_SAFE_INTEGER or 2^53 - 1) into hexadecimals.
+        */
 
-      // Convert decimal to hexadecimals.
-      hexadecimals = decimal.toString(16)
+        const inputInteger = x
+        
+        // Validate input data first.
+        try {
+          if (inputInteger === undefined || inputInteger === null) throw new Error("From toHex: Did not provide integers.")
 
-    } catch (error: unknown) {
-      hexData.success = false
-      hexData.error = getErrorMessage(error)
-      return hexData
-    }
+          // Must be positive integers.
+          if (inputInteger < 0) throw new Error("From toHex: Must be positive integers.")
 
-    // Update return data.
-    hexData.data = hexadecimals
-    // Finally
-    return hexData
+          // This version of the overloaded method rejects integers >= Number.MAX_SAFE_INTEGER (2^53 - 1).
+          if (inputInteger >= Number.MAX_SAFE_INTEGER) throw new Error("From toHex: Must use the method signature for integers equal or greater than Number.MAX_SAFE_INTEGER.")
+        } catch (error: unknown) {
+          hexData.success = false
+          hexData.error = getErrorMessage(error)
+          return hexData
+        }
+
+        // Convert decimal to hexadecimals.
+        hexadecimals = inputInteger.toString(16)
+
+        // Update data return.
+        hexData.data = hexadecimals
+        // Finally
+        return hexData
+      }
+      default: {
+        hexData.success = false
+        hexData.error = "From toHex: Received unkown data type."
+        return hexData
+      }
+    }    
   }
 
 
