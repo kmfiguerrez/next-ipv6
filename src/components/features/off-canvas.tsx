@@ -38,9 +38,9 @@ const OffCanvas: React.FC<OffCanvasProps> = ({ children }) => {
             and remove your data from our servers.
           </SheetDescription> */}
         </SheetHeader>
+        
+        {/* Features list */}
         <div>
-
-
         <SidebarAccordion className='mt-5'>
           
           <SidebarAccordionItem key='item-1'>

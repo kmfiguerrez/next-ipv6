@@ -327,7 +327,7 @@ class IPv6 {
 
 
   /**
-   * This overloaded method converts hex digits to binaries.
+   * This method converts hexadecimals digits to binary.
    * It uses four bits to output each hex digit
    * and does not omit leading zeros.
    * 
@@ -336,15 +336,34 @@ class IPv6 {
    * @returns {object} An `object` with three properties: `success`, `error` and `data`.
    */
   static toBinary(hex: string): IPv6ReturnData
+
   /**
-   * This overloaded method converts integer to binaries.
+   * This method converts positive integers to binary.
    * 
-   * @param integer - An integer number.
+   * @param {number} integer - Positive integers (integers less than Number.MAX_SAFE_INTEGER or 2^53 - 1).
    * 
    * @returns {object} An `object` with three properties: `success`, `error` and `data`.
    */
   static toBinary(integer: number): IPv6ReturnData
-  static toBinary(x: any): IPv6ReturnData {
+
+  /**
+   * This method converts positve integers greater than or equal 
+   * to 2 raised to 53 to binary.
+   * 
+   * The input positive integers must be in BigInt format to support
+   * JS version lower than ES2020.
+   * 
+   * ex.) const integer = BigInt("9007199254740991")
+   * 
+   * __where__: Positive `integer` argument to `BigInt` function in `string` format 
+   * to avoid losing precision.
+   * 
+   * @param {BigInt} integer - Positive integers (greater than or equal to Number.MAX_SAFE_INTEGER).
+   * 
+   * @returns {object} An `object` with three properties: `success`, `error` and `data`.
+   */
+  // static toBinary(integer: BigInt): IPv6ReturnData
+  static toBinary(x: string | number): IPv6ReturnData {
 
     let binaries: string = ""
 
@@ -389,6 +408,7 @@ class IPv6 {
           // we have to prepend leading zeros.
           const zeroesToPrepend = 4 - binary.length
           binaries += "0".repeat(zeroesToPrepend) + binary
+          
         }        
 
         // Update return data.
@@ -398,35 +418,24 @@ class IPv6 {
       }
       case "number": {
         /*
-          This version of the overloaded method will convert integer param 
-          to a string format because javascript cannot read integers 
-          outside js max safe integers and input data comes from HTML input
-          elements.
-          This method will use BigInt type.
+          This version of the overloaded method will convert integers less than
+          Number.MAX_SAFE_INTEGER.
         */
         
-        // Convert first integer to string and sanitize.
-        const inputInteger: string = x.toString().trim()
+        const inputInteger: number = x
 
         try {
           // Validate input data.
-          if (inputInteger === undefined || inputInteger === null || inputInteger === "") throw new Error("From toBinary: Did not provide an integer.")
+          if (inputInteger === undefined || inputInteger === null) throw new Error("From toBinary: Did not provide an integer.")
           
-          /*
-          BigInt will only accept either integers or a string that
-          only contains integer characters. Otherwise it will throw
-          a syntax error.
-          */
-          const integer = BigInt(inputInteger)
+          // This version of the overloaded method rejects integers >= Number.MAX_SAFE_INTEGER (2^53 - 1).
+          if (inputInteger >= Number.MAX_SAFE_INTEGER) throw new Error("From toBinary: Must use the method signature for numbers equal or greater than Number.MAX_SAFE_INTEGER.")
 
           // Convert to binary.
-          binaries = integer.toString(2)
+          binaries = inputInteger.toString(2)
 
         } catch (error: unknown) {
           binaryData.success = false
-          if (error instanceof SyntaxError) {
-            binaryData.error = "From toBinary: Cannot convert input data to BigInt."
-          }
 
           if (error instanceof Error) {
             binaryData.error = error.message
@@ -440,6 +449,9 @@ class IPv6 {
         // Finally
         return binaryData
       }
+      // case 'bigint': {
+
+      // }
       default:
         binaryData.success = false
         binaryData.error = "From toBinary: Invalid data type of input data."

@@ -17,6 +17,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
+import { number } from "zod"
 
 
 
@@ -40,6 +41,7 @@ const Ipv6SubnettingForm = () => {
     // console.log("Expanded: ", expandedIPv6)
     // console.log("Abbreviated: ", abbreviatedIPv6)
     console.log(IPv6.isHex(values.ipv6Address))
+    // IPv6.toBinary()
 
   }
   

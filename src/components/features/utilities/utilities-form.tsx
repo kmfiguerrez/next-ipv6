@@ -57,8 +57,14 @@ const UtilitiesForm: React.FC<UtilitiesFormProps> = ({ operation }) => {
       setOutput(result)
     }
 
-    const toBinary = IPv6.toBinary("4")
-    console.log(toBinary)
+    // const toBinary = IPv6.toBinary(BigInt(90071992547409915))
+    const toBinary = IPv6.toBinary(5)
+
+    // console.log(Number.MAX_SAFE_INTEGER);
+    // console.log(Math.log2(9007199254740991));
+    console.log(toBinary.data);
+
+
   }
   
   
