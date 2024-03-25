@@ -1,3 +1,5 @@
+import { getErrorMessage } from "./error-message"
+
 export type IPv6ReturnData = {
   success: boolean
   data?: string
@@ -143,10 +145,8 @@ class IPv6 {
       if (!this.isValidIpv6(ipv6Address)) throw new Error("From expand: Invalid IPv6 Address provided.")      
 
     } catch (error: unknown) {
-      if (error instanceof RangeError) {
-        expandedIPv6.success = false
-        expandedIPv6.error = error.message
-      }
+      expandedIPv6.success = false
+      expandedIPv6.error = getErrorMessage(error)
       return expandedIPv6
     }
 
@@ -263,10 +263,8 @@ class IPv6 {
       }
 
     } catch (error: unknown) {
-      if (error instanceof Error) {
-        abbreviatedIPv6.success = false
-        abbreviatedIPv6.error = error.message
-      }
+      abbreviatedIPv6.success = false
+      abbreviatedIPv6.error = getErrorMessage(error)
       return abbreviatedIPv6
     }
 
@@ -350,7 +348,7 @@ class IPv6 {
    * This method converts positve integers to binary.
    * 
    * JS version lower than ES2020 does not support BigInt literals.
-   * Must use the following example.
+   * Argument passed to toBinary method must use the following example.
    * 
    * ex.) const integer = BigInt("9007199254740991")
    * 
@@ -384,11 +382,9 @@ class IPv6 {
         try {
           if (!this.isHex(inputHex)) throw new Error("From toBinary: Invalid hex digits provided.")
         } catch (error:unknown) {
-          if (error instanceof Error) {
-            binaryData.success = false
-            binaryData.error = error.message
-            return binaryData
-          }
+          binaryData.success = false
+          binaryData.error = getErrorMessage(error)
+          return binaryData
         }
         
         /*
@@ -432,10 +428,7 @@ class IPv6 {
 
         } catch (error: unknown) {
           binaryData.success = false
-          if (error instanceof Error) {
-            binaryData.error = error.message
-          }
-
+          binaryData.error = getErrorMessage(error)
           return binaryData
         }
 
@@ -465,10 +458,7 @@ class IPv6 {
 
         } catch (error: unknown) {
           binaryData.success = false
-          if (error instanceof Error) {
-            binaryData.error = error.message
-          }
-          
+          binaryData.error = getErrorMessage(error)
           return binaryData
         }
 
@@ -485,6 +475,54 @@ class IPv6 {
         binaryData.success = false
         binaryData.error = "From toBinary: Invalid data type of input data."
         return binaryData
+    }
+  }
+
+
+  /**
+   * This method converts a string of Binaries into Hexadecimals.
+   * 
+   * @param {string} binary - A string of binaries.
+   * 
+   * @returns {object} An `object` with three properties: `success`, `error` and `data`.
+   */
+  static toHex(binary: string): IPv6ReturnData {
+    // Sanitize user input first.
+    binary = binary.trim()
+
+    let hexadecimals: string = ""
+
+    // Return data.
+    const hexData: IPv6ReturnData = {success: true}
+
+
+    // Validate input data.
+    try {
+      if (!this.isBinary(binary)) throw new Error("From toHex: Provided with invalid binaries.")
+
+      /*
+        Because number greater than (2 ** 53 - 1) loses precision we will
+        use bigint too.
+        Note that the BigInt constructor throws a SyntaxError if argument
+        is invalid.
+      */
+      let decimal: bigint | number 
+      
+      // Convert binary to decimal form (integer).
+      decimal = parseInt(binary, 2)
+      if (decimal >= Number.MAX_SAFE_INTEGER) {
+        decimal = BigInt(`0b${binary}`)
+      }
+
+      // Convert decimal to hexadecimals.
+      decimal.toString(16)
+
+
+    } catch (error: unknown) {
+      hexData.success = false
+      hexData.error = getErrorMessage(error)
+      return hexData
+      }
     }
   }
 
