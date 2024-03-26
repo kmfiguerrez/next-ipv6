@@ -734,8 +734,8 @@ class IPv6 {
         /*
           This version of the overloaded method convert positive hexadecimals
           into decimals.
-          Note that when hex literal (number preceded by 0x) passed to a
-          function, becomes a number literal (without the prefix 0x).
+          Note that when hex literal (number preceded by 0x) passed as 
+          arguemtn to a function, it turns into decimal form (base 10).
         */
        
         const inputHexadecimals: number = x
@@ -743,13 +743,13 @@ class IPv6 {
 
         // Validate input data first.
         try {
-          if (inputHexadecimals === undefined || inputHexadecimals === null) throw new Error("From toHex: Did not provide hexadecimals.")
+          if (inputHexadecimals === undefined || inputHexadecimals === null) throw new SyntaxError("From toHex: Did not provide hexadecimals.")
 
           // Must be positive hexadecimals.
-          if (inputHexadecimals < 0) throw new Error("From toHex: Must be positive hexadecimals.")
+          if (inputHexadecimals < 0) throw new TypeError("From toHex: Must be positive hexadecimals.")
 
           // This version of the overloaded method rejects hexadecimals >= Number.MAX_SAFE_INTEGER (2^53 - 1).
-          if (inputHexadecimals >= Number.MAX_SAFE_INTEGER) throw new Error("From toHex: Must use the method signature for hexadecimals equal or greater than Number.MAX_SAFE_INTEGER.")
+          if (inputHexadecimals >= Number.MAX_SAFE_INTEGER) throw new TypeError("From toHex: Must use the method signature for hexadecimals equal or greater than Number.MAX_SAFE_INTEGER.")
         } catch (error: unknown) {
           decimalsData.success = false
           decimalsData.error = getErrorMessage(error)
@@ -767,6 +767,44 @@ class IPv6 {
         decimalsData.data = decimals
         // Finally
         return decimalsData
+      }
+      case "bigint": {
+        /*
+          This version of the overloaded method will convert hexadecimals 
+          equal or greater than Number.MAX_SAFE_INTEGER or 2^53 - 1.
+          Note that when hex literal (number preceded by 0x) passed 
+          as argument to a function, it turns into decimal form (base 10).
+        */
+
+        const inputHexadecimals: bigint = x
+
+
+        // Validate input data first.
+        try {
+          if (inputHexadecimals === undefined || inputHexadecimals === null) throw new Error("From toHex: Did not provide hexadecimals.")
+
+          // Must be positive hexadecimals.
+          if (inputHexadecimals < 0) throw new Error("From toHex: Must be positive hexadecimals.")
+
+          // Must be of type bigint.
+          if (typeof inputHexadecimals !== "bigint") throw new Error("From toHex: Must be of type bigint.")
+        } catch (error: unknown) {
+          decimalsData.success = false
+          decimalsData.error = getErrorMessage(error)
+          return decimalsData
+        }        
+
+        /*
+          Otherwise valid.
+          Convert hexadecimals to decimal.
+          Hexadecimals is just decimals when passed as argument lol.
+        */
+        decimals = inputHexadecimals
+
+        // Update data return.
+        decimalsData.data = decimals
+        // Finally
+        return decimalsData        
       }
       default: {
         decimalsData.success = false
