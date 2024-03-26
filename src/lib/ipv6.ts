@@ -1,5 +1,7 @@
 import { getErrorMessage } from "./error-message"
 
+
+
 export type IPv6ReturnData = {
   success: boolean
   data?: string | number | bigint
@@ -28,6 +30,7 @@ class IPv6 {
    * to get to the next one, otherwise will return false.
    * 
    * @param {string} ipv6Address - A string of IPv6 address.
+   * 
    * @returns {boolean} Boolean
    */
   static isValidIpv6(ipv6Address: string): boolean {
@@ -125,7 +128,6 @@ class IPv6 {
    * @param {string} ipv6Address - A string of IPv6 address.
    * 
    * @returns {object} An object with three properties: success, error and data.
-   * 
    */
   static expand(ipv6Address: string): IPv6ReturnData {
     // Sanitize user input first.
@@ -136,7 +138,7 @@ class IPv6 {
     let segments: RegExpMatchArray | null = ipv6Address.match(/[0-9a-f]{1,4}/g)
     let doubleColonPattern: RegExp = /^::$/
 
-    const expandedIPv6: IPv6ReturnData = {success: true};
+    let expandedIPv6: IPv6ReturnData = {success: true};
 
     try {
       // Check first if IPv6 Address is valid
@@ -661,11 +663,20 @@ class IPv6 {
   /**
    * This method converts hexadecimals to decimal form (integers)
    * 
-   * __Note__: Argument (integers) passed to `hexadecimals` param must be 
-   * preceded by `0x` for JS engine to recognize it as hexadecimals.
-   * Otherwise argument is passed as base 10 (decimal).
+   * __Note__: 
+   * - Argument (integers) passed to `hexadecimals` param must be 
+   *   preceded by `0x` for JS engine to recognize it as hexadecimals.
+   *   Otherwise argument is passed as base 10 (decimal).
    * 
-   * @param {bigint} hexadecimals - Positive hexadecimals (integers equal or greater than Number.MAX_SAFE_INTEGER or 2^53 - 1).
+   * - JS version lower than ES2020 does not support BigInt literals.
+   *   Argument passed to toBinary method must use the following example.
+   * 
+   *   ex.) `const hexadecimals = BigInt("0xffff")`
+   *   
+   *   Argument passed to BigInt constructor must be in string format to
+   *   avoid losing precision.
+   * 
+   * @param {bigint} hexadecimals - Positive hexadecimals (integers equal or greater than Number.MAX_SAFE_INTEGER or 2^53 - 1) in bigint format.
    * 
    * @returns {object} An `object` with three properties: `success`, `error` and `data`.
    */  
@@ -719,10 +730,49 @@ class IPv6 {
         // Finally
         return decimalsData
       }
-      default:
+      case "number": {
+        /*
+          This version of the overloaded method convert positive hexadecimals
+          into decimals.
+          Note that when hex literal (number preceded by 0x) passed to a
+          function, becomes a number literal (without the prefix 0x).
+        */
+       
+        const inputHexadecimals: number = x
+
+
+        // Validate input data first.
+        try {
+          if (inputHexadecimals === undefined || inputHexadecimals === null) throw new Error("From toHex: Did not provide hexadecimals.")
+
+          // Must be positive hexadecimals.
+          if (inputHexadecimals < 0) throw new Error("From toHex: Must be positive hexadecimals.")
+
+          // This version of the overloaded method rejects hexadecimals >= Number.MAX_SAFE_INTEGER (2^53 - 1).
+          if (inputHexadecimals >= Number.MAX_SAFE_INTEGER) throw new Error("From toHex: Must use the method signature for hexadecimals equal or greater than Number.MAX_SAFE_INTEGER.")
+        } catch (error: unknown) {
+          decimalsData.success = false
+          decimalsData.error = getErrorMessage(error)
+          return decimalsData
+        }
+
+        /*
+          Otherwise valid.
+          Convert hexadecimals to decimal.
+          Hexadecimals is just decimals when passed as argument lol.
+        */
+        decimals = inputHexadecimals
+
+        // Update data return.
+        decimalsData.data = decimals
+        // Finally
+        return decimalsData
+      }
+      default: {
         decimalsData.success = false
         decimalsData.error = "From toHex: Received unkown data type."
         return decimalsData
+      }
     }
   }
 
