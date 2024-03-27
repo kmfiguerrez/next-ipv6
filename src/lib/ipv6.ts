@@ -394,8 +394,11 @@ class IPv6 {
           // Then from number to binary
           const binary = decimal.toString(2)
 
-          // Because toString method does not add leading zeros
-          // we have to prepend leading zeros.
+          /*
+            Because toString method does not add leading zeroes
+            we have to prepend leading zeroes which is important
+            at this part of the process.
+          */
           const zeroesToPrepend = 4 - binary.length
           binaries += "0".repeat(zeroesToPrepend) + binary
           
@@ -664,7 +667,7 @@ class IPv6 {
             Number.MAX_SAFE_INTEGER.
           */
           decimals = parseInt(binaries, 2);
-          if (decimals > Number.MAX_SAFE_INTEGER) throw new Error("From toDecimal: Numbers greater or equal than Number.MAX_SAFE_INTEGER must use other method.")
+          if (decimals >= Number.MAX_SAFE_INTEGER) throw new Error("From toDecimal: Arguments greater or equal than Number.MAX_SAFE_INTEGER must use other method.")
 
           // Update data return.
           decimalsData.data = decimals
@@ -684,7 +687,7 @@ class IPv6 {
             Number.MAX_SAFE_INTEGER.
           */
           decimals = parseInt(hexadecimals, 16);
-          if (decimals > Number.MAX_SAFE_INTEGER) throw new Error("From toDecimal: Numbers greater or equal than Number.MAX_SAFE_INTEGER must use other method.")
+          if (decimals >= Number.MAX_SAFE_INTEGER) throw new Error("From toDecimal: Arguments greater or equal than Number.MAX_SAFE_INTEGER must use other method.")
 
           // Update data return.
           decimalsData.data = decimals
