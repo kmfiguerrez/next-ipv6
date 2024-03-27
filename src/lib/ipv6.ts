@@ -1,13 +1,12 @@
 import { getErrorMessage } from "./error-message"
 
-
-
 export type IPv6ReturnData = {
   success: boolean
   data?: string | number | bigint
   error?: string
 } 
 
+type TBaseNumberSystem = 2 | 16
 
 /*
   In this class definitions. I decided to use hexadecimals and binaries 
@@ -16,10 +15,6 @@ export type IPv6ReturnData = {
   - The number Binary digits and its values large enough larger 
   - to be outside of JS max safe integers loses precision.
   - Data coming from user interfaces are of type string.
-
-  Exception for above statements.
-  - hexadecimals as a paramerter in toDecimal overloaded method
-    is of type number or bigint.
 */
 class IPv6 {
 
@@ -609,10 +604,10 @@ class IPv6 {
           if (inputInteger === undefined || inputInteger === null) throw new Error("From toBinary: Did not provide an integer.")
           
           // Must be positive.
-          if (inputInteger < BigInt(0)) throw new Error("From toBinary: Integers must be positive.")
+          if (inputInteger < BigInt(0)) throw new Error("From toHex: Integers must be positive.")
 
           // Input integer must be in bigint format.
-          if (typeof inputInteger !== "bigint") throw new Error("From toBinary: Input integers must be in bigint format.")
+          if (typeof inputInteger !== "bigint") throw new Error("From toHex: Input integers must be in bigint format.")
 
         } catch (error: unknown) {
           hexData.success = false
@@ -637,181 +632,77 @@ class IPv6 {
     }    
   }
 
-
+  
   /**
-   * This method converts a string of binaries to decimal form (integers)
+   * Converts a string of binaries or hexadecimals to decimal form (integer).
    * 
-   * @param {string} binary - A string of positive binaries.
+   * @param {string} binOrHex - A string of binaries or hexadecimals.
+   * @param {TBaseNumberSystem} fromBase - A union numbers of `2` and `16`.
    * 
    * @returns {object} An `object` with three properties: `success`, `error` and `data`.
    */
-  static toDecimal(binary: string): IPv6ReturnData
-
-  /**
-   * This method converts hexadecimals to decimal form (integers)
-   * 
-   * __Note__: Argument (integers) passed to `hexadecimals` param must be 
-   * preceded by `0x` for JS engine to recognize it as hexadecimals.
-   * Otherwise argument is passed as base 10 (decimal).
-   * 
-   * @param {number} hexadecimals - Positive hexadecimals (integers less than Number.MAX_SAFE_INTEGER or 2^53 - 1).
-   * 
-   * @returns {object} An `object` with three properties: `success`, `error` and `data`.
-   */  
-  static toDecimal(hexadecimals: number): IPv6ReturnData
-
-  /**
-   * This method converts hexadecimals to decimal form (integers)
-   * 
-   * __Note__: 
-   * - Argument (integers) passed to `hexadecimals` param must be 
-   *   preceded by `0x` for JS engine to recognize it as hexadecimals.
-   *   Otherwise argument is passed as base 10 (decimal).
-   * 
-   * - JS version lower than ES2020 does not support BigInt literals.
-   *   Argument passed to toBinary method must use the following example.
-   * 
-   *   ex.) `const hexadecimals = BigInt("0xffff")`
-   *   
-   *   Argument passed to BigInt constructor must be in string format to
-   *   avoid losing precision.
-   * 
-   * @param {bigint} hexadecimals - Positive hexadecimals (integers equal or greater than Number.MAX_SAFE_INTEGER or 2^53 - 1) in bigint format.
-   * 
-   * @returns {object} An `object` with three properties: `success`, `error` and `data`.
-   */  
-  static toDecimal(hexadecimals: bigint): IPv6ReturnData
-  static toDecimal(x: string | number | bigint): IPv6ReturnData {
-
-    let decimals: bigint | number
-
+  static toDecimal(binOrHex: string, fromBase: TBaseNumberSystem): IPv6ReturnData {
+    let decimals: number
+    
     // Return data.
     const decimalsData: IPv6ReturnData = {success: true}
 
-    // Figure out which data to work on.
-    switch (typeof x) {
-      case "string": {
-        /*
-          This version of the overloaded method converst a string binaries
-          into decimals.
-        */
-       
-        // Sanitize input data first.
-        const inputBinary = x.trim()
 
+    try {
+      switch (fromBase) {
+        case 2: {
+          // Sanitize input data first.
+          const binaries: string = binOrHex.trim()
 
-        // Validate input data.
-        try {
-          if (!this.isBinary(inputBinary)) throw new Error("From toDecimal: Provided with invalid binaries.")
-
-          /*
-            Because number greater than (2 ** 53 - 1) loses precision we will
-            use bigint too.
-            Note that the BigInt constructor throws a SyntaxError if argument
-            is invalid.
-          */
-          
-         // Convert binary to decimal form (integer).
-          decimals = parseInt(inputBinary, 2)
-          if (decimals >= Number.MAX_SAFE_INTEGER) {
-            // Update decimal as bigint.
-            decimals = BigInt(`0b${inputBinary}`)
+          // Validate input data.
+          if (binaries === undefined || binaries === null || binaries === "" || !this.isBinary(binaries)) {
+            throw new Error("From toDecimal: Must provide a valid binaries.");
           }
           
-        } catch (error: unknown) {
-          decimalsData.success = false
-          decimalsData.error = getErrorMessage(error)
-          return decimalsData          
+          /*
+            This method rejects numbers greater than or equal to 
+            Number.MAX_SAFE_INTEGER.
+          */
+          decimals = parseInt(binaries, 2);
+          if (decimals > Number.MAX_SAFE_INTEGER) throw new Error("From toDecimal: Numbers greater or equal than Number.MAX_SAFE_INTEGER must use other method.")
+
+          // Update data return.
+          decimalsData.data = decimals
+          break;
         }
+        case 16:{
+          // Sanitize input data first.
+          const hexadecimals: string = binOrHex.trim()
 
-        // Otherwise valid.
-        // Update return data.
-        decimalsData.data = decimals
-        // Finally
-        return decimalsData
-      }
-      case "number": {
-        /*
-          This version of the overloaded method convert positive hexadecimals
-          into decimals.
-          Note that when hex literal (number preceded by 0x) passed as 
-          arguemtn to a function, it turns into decimal form (base 10).
-        */
-       
-        const inputHexadecimals: number = x
+          // Validate input data.
+          if (hexadecimals === undefined || hexadecimals === null || hexadecimals === "" || !this.isBinary(hexadecimals)) {
+            throw new Error("From toDecimal: Must provide a valid binaries.");
+          }
+          
+          /*
+            This method rejects numbers greater than or equal to 
+            Number.MAX_SAFE_INTEGER.
+          */
+          decimals = parseInt(hexadecimals, 16);
+          if (decimals > Number.MAX_SAFE_INTEGER) throw new Error("From toDecimal: Numbers greater or equal than Number.MAX_SAFE_INTEGER must use other method.")
 
-
-        // Validate input data first.
-        try {
-          if (inputHexadecimals === undefined || inputHexadecimals === null) throw new SyntaxError("From toHex: Did not provide hexadecimals.")
-
-          // Must be positive hexadecimals.
-          if (inputHexadecimals < 0) throw new TypeError("From toHex: Must be positive hexadecimals.")
-
-          // This version of the overloaded method rejects hexadecimals >= Number.MAX_SAFE_INTEGER (2^53 - 1).
-          if (inputHexadecimals >= Number.MAX_SAFE_INTEGER) throw new TypeError("From toHex: Must use the method signature for hexadecimals equal or greater than Number.MAX_SAFE_INTEGER.")
-        } catch (error: unknown) {
-          decimalsData.success = false
-          decimalsData.error = getErrorMessage(error)
-          return decimalsData
+          // Update data return.
+          decimalsData.data = decimals
+          break;          
         }
-
-        /*
-          Otherwise valid.
-          Convert hexadecimals to decimal.
-          Hexadecimals is just decimals when passed as argument lol.
-        */
-        decimals = inputHexadecimals
-
-        // Update data return.
-        decimalsData.data = decimals
-        // Finally
-        return decimalsData
+      
+        default: {
+          throw new Error("From toDecimal: Received invalid arguments.")
+        }
       }
-      case "bigint": {
-        /*
-          This version of the overloaded method will convert hexadecimals 
-          equal or greater than Number.MAX_SAFE_INTEGER or 2^53 - 1.
-          Note that when hex literal (number preceded by 0x) passed 
-          as argument to a function, it turns into decimal form (base 10).
-        */
-
-        const inputHexadecimals: bigint = x
-
-
-        // Validate input data first.
-        try {
-          if (inputHexadecimals === undefined || inputHexadecimals === null) throw new Error("From toHex: Did not provide hexadecimals.")
-
-          // Must be positive hexadecimals.
-          if (inputHexadecimals < 0) throw new Error("From toHex: Must be positive hexadecimals.")
-
-          // Must be of type bigint.
-          if (typeof inputHexadecimals !== "bigint") throw new Error("From toHex: Must be of type bigint.")
-        } catch (error: unknown) {
-          decimalsData.success = false
-          decimalsData.error = getErrorMessage(error)
-          return decimalsData
-        }        
-
-        /*
-          Otherwise valid.
-          Convert hexadecimals to decimal.
-          Hexadecimals is just decimals when passed as argument lol.
-        */
-        decimals = inputHexadecimals
-
-        // Update data return.
-        decimalsData.data = decimals
-        // Finally
-        return decimalsData        
-      }
-      default: {
-        decimalsData.success = false
-        decimalsData.error = "From toHex: Received unkown data type."
-        return decimalsData
-      }
+    } catch (error: unknown) {
+      decimalsData.success = false
+      decimalsData.error = getErrorMessage(error)
+      return decimalsData
     }
+
+    // Finally
+    return decimalsData
   }
 
 

@@ -5,6 +5,10 @@ export const getErrorMessage = (error: unknown): string => {
     message = error.message
     return message
   }
+  else if (error instanceof TypeError) {
+    message = error.message
+    return message
+  }
   else if (error instanceof Error) {
     message = error.message
     return message
