@@ -880,7 +880,6 @@ class IPv6 {
       firstUsableAddress: "",
       lastUsableAddresss: "",
     }
-
     
     // Return data.
     const prefixData: TPrefixData = {success: true}
@@ -889,26 +888,25 @@ class IPv6 {
       // validate input data first.
       if (!this.isValidIpv6(ipv6Address)) {
         // Set the error field (param).
-        prefixData.errorFields?.push("ipv6Address")
-        throw new Error("From getPrefix: Invalid IPv6 address.")
+        prefixData.errorFields?.push({field: "ipv6Address", message: "Invalid IPv6 address."})
+        throw new Error("From getPrefix: Invalid argument(s) provided.")
 
       }
       if (prefixLength === undefined || prefixLength === null || prefixLength < 0 || prefixLength >= 128) {
         // Set the error field (param).
-        prefixData.errorFields?.push("prefixLenth")
-        throw new Error("From getPrefix: Invalid prefix length.")
+        prefixData.errorFields?.push({field: "prefixLenth", message: "Invalid prefix length."})
+        throw new Error("From getPrefix: Invalid argument(s) provided.")
       }
       if (subnetBits === undefined || subnetBits === null || subnetBits < prefixLength || subnetBits >= (128 - prefixLength)) {
         // Set the error field (param).
-        prefixData.errorFields?.push("subnetBits")
-        throw new Error("From getPrefix: Invalid subnet bits.")
+        prefixData.errorFields?.push({field: "subnetBits", message: "Invalid subnet bits."})
+        throw new Error("From getPrefix: Invalid argument(s) provided.")
       }
       if (BigInt(subnetToFind) < 0 || BigInt(subnetToFind) > (BigInt(2 ** subnetBits) - BigInt(1))) {
         // Set the error field (param).
-        prefixData.errorFields?.push("subnetToFind")        
-        throw new Error(`From getPrefix: Subnet ${subnetToFind} does not exists.`)
+        prefixData.errorFields?.push({field: "subnetToFind", message: "Subnet ${subnetToFind} does not exists."})
+        throw new Error(`From getPrefix: Invalid argument(s) provided.`)
       }
-
 
 
       // Make sure the IPv6 address is in expanded format.
@@ -919,7 +917,6 @@ class IPv6 {
       const interfaceIdBits: number = 128 - newPrefixLength
       const networkPortionBin: string = (this.#IPv6ToBinary(expandedIPv6Address).data as string).slice(0, prefixLength)
       const subnetNumber: bigint = BigInt(subnetToFind)
-      let subnetPortionBin: string
 
 
       // Initialize the interfaceID object (Host portion).
@@ -937,7 +934,7 @@ class IPv6 {
       prefix.networkPortionBin = networkPortionBin
 
       // Set the prefix subnet portion binaries.
-      subnetPortionBin = subnetNumber.toString(2)
+      const subnetPortionBin: string = subnetNumber.toString(2)
       // Include leading zeroes.
       const zeroesToPrepend = subnetBits - subnetPortionBin.length;
       // If not subnetted then subnet portion is 0.
