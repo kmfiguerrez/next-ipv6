@@ -8,18 +8,28 @@ export type TIPv6ReturnData = {
 
 type TBaseNumberSystem = 2 | 16
 
+/**
+ * @property `id` is string of binaries.
+ * @property `firstUsableAddressBin` is string of binaries.
+ * @property `lastUsableAddresssBin` is string of binaries.
+ */
 type TInterfaceID = {
   id: string
   bits: number
-  firstUsableAddress: string
-  lastUsableAddresss: string
+  firstUsableAddressBin: string
+  lastUsableAddresssBin: string
 }
 
+/**
+ * @property `id` is a string of hexadecimals.
+ * @property `networkPortionBin` is a string of hexadecimals.
+ * @property `subnetPortionBin` is a string of hexadecimals.
+ */
 type TPrefix = {
   id: string
   subnetNumber: bigint
-  networkPortion: string
-  subnetPortion: string
+  networkPortionBin: string
+  subnetPortionBin: string
   interfaceIdPortion: TInterfaceID
   newPrefixLength: number
   firstUsableAddress: string
@@ -140,7 +150,9 @@ class IPv6 {
    * 
    * @param {string} ipv6Address - A string of IPv6 address.
    * 
-   * @returns {object} An object with three properties: success, error and data.
+   * @returns {object} An `object` with three properties: `success`, `error` and `data`.
+   * 
+   * @property `data` is of type `string`.
    */
   static expand(ipv6Address: string): TIPv6ReturnData {
     // Sanitize user input first.
@@ -211,7 +223,9 @@ class IPv6 {
    * 
    * @param {string} ipv6Address - A string of IPv6 address.
    * 
-   * @returns {object} An object with three properties: success, error and data.
+   * @returns {object} An `object` with three properties: `success`, `error` and `data`.
+   * 
+   * @property `data` is of type `string`.
    */
   static abbreviate(ipv6Address: string): TIPv6ReturnData {
     // Sanitize user input first.
@@ -345,6 +359,8 @@ class IPv6 {
    * @param {string} hex - A string of positive hex digits.
    * 
    * @returns {object} An `object` with three properties: `success`, `error` and `data`.
+   * 
+   * @property `data` is of type `string`.
    */
   static toBinary(hex: string): TIPv6ReturnData
 
@@ -354,6 +370,8 @@ class IPv6 {
    * @param {number} integer - Positive integers (integers less than Number.MAX_SAFE_INTEGER or 2^53 - 1).
    * 
    * @returns {object} An `object` with three properties: `success`, `error` and `data`.
+   * 
+   * @property `data` is of type `string`.
    */
   static toBinary(integer: number): TIPv6ReturnData
 
@@ -371,6 +389,8 @@ class IPv6 {
    * @param {bigint} integer - Positive integers (greater than or equal to Number.MAX_SAFE_INTEGER or 2^53 - 1).
    * 
    * @returns {object} An `object` with three properties: `success`, `error` and `data`.
+   * 
+   * @property `data` is of type `string`.
    */
   static toBinary(integer: bigint): TIPv6ReturnData
   static toBinary(x: string | number | bigint): TIPv6ReturnData {
@@ -507,6 +527,8 @@ class IPv6 {
    * @param {string} binary - A string of positive binaries.
    * 
    * @returns {object} An `object` with three properties: `success`, `error` and `data`.
+   * 
+   * @property `data` is of type `string`.
    */
   static toHex(binary: string): TIPv6ReturnData
 
@@ -516,6 +538,8 @@ class IPv6 {
    * @param {number} integer - Positive integers (integers less than Number.MAX_SAFE_INTEGER or 2^53 - 1).
    * 
    * @returns {object} An `object` with three properties: `success`, `error` and `data`.
+   * 
+   * @property `data` is of type `string`.
    */  
   static toHex(integer: number): TIPv6ReturnData
 
@@ -525,6 +549,8 @@ class IPv6 {
    * @param {bigint} integer - Positive integers (integers equal or greater than Number.MAX_SAFE_INTEGER or 2^53 - 1).
    * 
    * @returns {object} An `object` with three properties: `success`, `error` and `data`.
+   * 
+   * @property `data` is of type `string`.
    */    
   static toHex(integer: bigint): TIPv6ReturnData
   static toHex(x: string | number | bigint): TIPv6ReturnData {
@@ -661,6 +687,8 @@ class IPv6 {
    * @param {TBaseNumberSystem} fromBase - A union numbers of `2` and `16`.
    * 
    * @returns {object} An `object` with three properties: `success`, `error` and `data`.
+   * 
+   * @property `data` is of type `number`.
    */
   static toDecimal(binOrHex: string, fromBase: TBaseNumberSystem): TIPv6ReturnData {
     let decimals: number
@@ -734,6 +762,8 @@ class IPv6 {
    * @param {TBaseNumberSystem} fromBase - A union numbers of `2` and `16`.
    * 
    * @returns {object} An `object` with three properties: `success`, `error` and `data`.
+   * 
+   * @property `data` is of type `bigint`.
    */
   static toBigIntDecimal(binOrHex: string, fromBase: TBaseNumberSystem): TIPv6ReturnData {
     let decimals: bigint
@@ -804,14 +834,33 @@ class IPv6 {
    * 
    * @property `data` is of type `TPrefix`.
    */
-  static getPrefix(ipv6Address: string, prefixLength: number, subnetBits: number, subnetNumber = "0"): TIPv6ReturnData {
+  static getPrefix(ipv6Address: string, prefixLength: number, subnetBits: number, subnetToFind: string = "0"): TIPv6ReturnData {
     /*
       Note
-      The subnetNumber (Prefix number) is just the integer equivalent of
-      the subnetBits which specifies the number of bits to represent
-      the subnetNumber (Prefix number). By default set to zero (subnet zero)
-      and of type string to avoid losing precision.
+      The subnetToFind (Subnet number or Prefix number) is used to find
+      the desired subnet. By default set to zero (subnet zero) and of 
+      type string to avoid losing precision.
+      The subnetBits specifies the length of the subnet portion. 
     */
+
+    // Declare objects.
+    const interfaceID: TInterfaceID = {
+      id: "",
+      bits: 0,
+      firstUsableAddressBin: "",
+      lastUsableAddresssBin: ""
+    }
+
+    const prefix: TPrefix = {
+      id: "", 
+      subnetNumber: BigInt(0),
+      newPrefixLength: 0,
+      networkPortionBin: "",
+      subnetPortionBin: "",
+      interfaceIdPortion: interfaceID,
+      firstUsableAddress: "",
+      lastUsableAddresss: "",
+    }
 
     // Return data.
     const prefixData: TIPv6ReturnData = {success: true}
@@ -820,19 +869,59 @@ class IPv6 {
     try {
       if (!this.isValidIpv6(ipv6Address)) throw new Error("From getPrefix: Invalid IPv6 address.")
       if (prefixLength === undefined || prefixLength === null || prefixLength < 0 || prefixLength >= 128) throw new Error("From getPrefix: Invalid prefix length.")
-      if (BigInt(subnetNumber) < 0 || BigInt(subnetNumber) > (BigInt(2 ** subnetBits) - BigInt(1))) throw new Error(`From getPrefix: Subnet ${subnetNumber} does not exists.`)
+      if (subnetBits === undefined || subnetBits === null || subnetBits < prefixLength || subnetBits >= (128 - prefixLength)) throw new Error("From getPrefix: Invalid subnet bits.")
+      if (BigInt(subnetToFind) < 0 || BigInt(subnetToFind) > (BigInt(2 ** subnetBits) - BigInt(1))) throw new Error(`From getPrefix: Subnet ${subnetToFind} does not exists.`)
+
+
+
+      // Make sure the IPv6 address is in expanded format.
+      const expandedIPv6Address: string = this.expand(ipv6Address).data as string
+      // Number of bits.
+      const newPrefixLength: number = prefixLength + subnetBits
+      // Number of bits.
+      const interfaceIdBits: number = 128 - newPrefixLength
+      const networkPortionBin: string = (this.#IPv6ToBinary(expandedIPv6Address).data as string).slice(0, prefixLength)
+      const subnetNumber: bigint = BigInt(subnetToFind)
+      let subnetPortionBin: string
+
+
+      // Initialize the interfaceID object (Host portion).
+      interfaceID.bits = interfaceIdBits
+      // The id prop is all zeroes (Network address or id in IPv4).
+      interfaceID.id = "0".repeat(interfaceIdBits)
+      // The first usable address is 1 more than the id.
+      interfaceID.firstUsableAddressBin = "1".padStart(interfaceIdBits, "0")
+      // The last usable address is all ones in IPv6.
+      interfaceID.lastUsableAddresssBin = "1".repeat(interfaceIdBits)
+
+      // Intialize prefix object.
+      prefix.subnetNumber = BigInt(subnetNumber)
+      prefix.newPrefixLength = newPrefixLength
+      prefix.networkPortionBin = networkPortionBin
+
+      // Set the prefix subnet portion binaries.
+      subnetPortionBin = subnetNumber.toString(2)
+      // Include leading zeroes.
+      const zeroesToPrepend = subnetBits - subnetPortionBin.length;
+      // If not subnetted then subnet portion is 0.
+      if (subnetBits === 0) {
+        prefix.subnetPortionBin = "";
+      }
+      else {
+        // Otherwise subnetted.
+        prefix.subnetPortionBin = "0".repeat(zeroesToPrepend) + subnetPortionBin
+      }
+
+      // Set the prefix id (Network address or id in IPv4).
+      
+
+
 
     } catch (error: unknown) {
       prefixData.success = false
       prefixData.error = getErrorMessage(error)
       return prefixData
     }
-
-    const networkPortion: string = this.expand(ipv6Address).data as string
-    // Number of bits.
-    const newPrefixLength = prefixLength + subnetBits
-    // Number of bits.
-    const interfaceIdLength = 128 - newPrefixLength
 
     // Finally.
     return prefixData
@@ -843,17 +932,19 @@ class IPv6 {
    * Converts IPv6 address into string contiguous binaries.
    * 
    * @param ipv6Address - A string of IPv6 address.
-   * @param skipArgumentValidation - An optional boolean param default to true.
+   * @param skipArgumentValidation - An optional boolean param default to `true`.
    * 
    * @returns {object} An `object` with three properties: `success`, `error` and `data`.
    * 
-  * @property `data` is of type `string`.
+   * @property `data` is of type `string`.
    */
-   static IPv6ToBinary(ipv6Address: string, skipArgumentValidation: boolean = true): TIPv6ReturnData {
+   static #IPv6ToBinary(ipv6Address: string, skipArgumentValidation: boolean = true): TIPv6ReturnData {
     /*
       Note
       It is up to the method caller to validate input data.
     */
+
+    let binaries: string = ""
 
     // Return data.
     const binaryData: TIPv6ReturnData = {success: true} 
@@ -865,9 +956,7 @@ class IPv6 {
         binaryData.error = "From IPv6ToBinary: Invalid IPv6 address."
       }
     }
-
     
-    let binaries: string = ""
 
     for (const hex of ipv6Address.split(":")) {
       binaries += this.toBinary(hex).data
@@ -878,6 +967,65 @@ class IPv6 {
     // Finally.
     return binaryData
   }
+
+
+  /**
+   * Converts a string of 128-bit binaries into a string IPv6 address.
+   * 
+   * @param binaries - A string of binaries.
+   * @param skipArgumentValidation - An optional boolean param default to `true`.
+   * 
+   * @returns {object} An `object` with three properties: `success`, `error` and `data`.
+   * 
+   * @property `data` is of type `string`.
+   */
+  static BinaryToIPv6(binaries: string, skipArgumentValidation: boolean = true): TIPv6ReturnData {
+    /*
+      Note
+      It is up to the method caller to validate input data.
+    */
+
+    let ipv6Address: string
+    let segmentArray: Array<string> = []
+    let hexadecimals: string;
+
+    // Return data.
+    const binaryData: TIPv6ReturnData = {success: true} 
+
+    // Input data validation.
+    if (skipArgumentValidation === false) {
+      binaryData.success = false
+
+      if (!this.isBinary(binaries)) {
+        binaryData.error = "From BinaryToIPv6: Invalid IPv6 address."
+      }
+
+      if (binaries.length !== 128 || binaries.length % 128 !== 0) {
+        binaryData.error = "From BinaryToIPv6: Input binaries must be 128-bit long."
+      }
+
+      return binaryData
+    }
+    
+    // Convert first to hexadecimals.
+    hexadecimals = this.toHex(binaries).data as string
+
+    // Get each segment.
+    for (let index = 0; index < hexadecimals.length; index += 4) {
+      // Extract four hex on each iteration.
+      const hexChars: Array<string> = hexadecimals.split("")
+      const segment = hexChars.splice(index, 4, "ex").join("")
+      segmentArray.push(segment)
+    }
+
+    // Join array of segments into a single string.
+    ipv6Address = segmentArray.join(":")
+
+    // Update return data.
+    binaryData.data = ipv6Address
+    // Finally.
+    return binaryData
+  }  
 
 
 
