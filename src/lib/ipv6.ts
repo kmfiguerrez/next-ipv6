@@ -6,14 +6,16 @@ export type TIPv6ReturnData = {
   error?: string
 }
 
+
 /**
  * This type is used in IPv6 static getPrefix method.
  * 
  * @property `errorFields` is the param list of getPrefix method.
  */
-type TPrefixData = TIPv6ReturnData & {
+export type TPrefixData = TIPv6ReturnData & {
   errorFields?: Array<TParamError>
 }
+
 
 /**
  * This type is used in IPv6 static getPrefix method.
@@ -24,6 +26,7 @@ type TParamError = {
   field: string
   message: string
 }
+
 
 type TBaseNumberSystem = 2 | 16
 
@@ -39,12 +42,13 @@ type TInterfaceID = {
   lastUsableAddresssBin: string
 }
 
+
 /**
  * @property `id` is a string of hexadecimals.
  * @property `networkPortionBin` is a string of binaries.
  * @property `subnetPortionBin` is a string of binaries.
  */
-type TPrefix = {
+export type TPrefix = {
   id: string
   subnetNumber: bigint
   networkPortionBin: string
@@ -54,6 +58,7 @@ type TPrefix = {
   firstUsableAddress: string
   lastUsableAddresss: string
 }
+
 
 /*
   In this class definitions. I decided to use hexadecimals and binaries 
@@ -254,6 +259,7 @@ class IPv6 {
 
     let segments: Array<string>
 
+    // Regex pattern.
     const segmentAllZeroPattern = /^0000$/
     const leadingZeroPattern = /^0+/
 
@@ -372,8 +378,6 @@ class IPv6 {
 
   /**
    * This method converts hexadecimals digits to binary.
-   * It uses four bits to output each hex digit
-   * and does not omit leading zeros.
    * 
    * @param {string} hex - A string of positive hex digits.
    * 
@@ -429,6 +433,9 @@ class IPv6 {
 
         // Sanitize input data first.
         const inputHex = x.trim().toLowerCase()
+
+        // Regex pattern.
+        const leadingZeroPattern = /^0+/
         
         // Validate input data first.
         try {
@@ -459,7 +466,13 @@ class IPv6 {
           const zeroesToPrepend = 4 - binary.length
           binaries += "0".repeat(zeroesToPrepend) + binary
           
-        }        
+        }
+
+        /*
+          The final binaries leading zeroes does not affect the value.
+          It is omitted in this method.
+        */
+        binaries = binaries.replace(leadingZeroPattern, "");
 
         // Update return data.
         binaryData.data = binaries
@@ -910,12 +923,17 @@ class IPv6 {
 
 
       // Make sure the IPv6 address is in expanded format.
-      const expandedIPv6Address: string = this.expand(ipv6Address).data as string
+      const expandingResult = this.expand(ipv6Address)
+      if (!expandingResult.success) throw new Error(expandingResult.error)
+      const expandedIPv6Address: string = expandingResult.data as string
       // Number of bits.
       const newPrefixLength: number = prefixLength + subnetBits
       // Number of bits.
       const interfaceIdBits: number = 128 - newPrefixLength
-      const networkPortionBin: string = (this.#IPv6ToBinary(expandedIPv6Address).data as string).slice(0, prefixLength)
+      // Get the network portion binary.
+      const toBinaryResult = this.#IPv6ToBinary(expandedIPv6Address, false)
+      if (!toBinaryResult.success) throw new Error(expandingResult.error)
+      const networkPortionBin: string = (toBinaryResult.data as string).slice(0, prefixLength)
       const subnetNumber: bigint = BigInt(subnetToFind)
 
 
@@ -946,30 +964,39 @@ class IPv6 {
         prefix.subnetPortionBin = "0".repeat(zeroesToPrepend) + subnetPortionBin
       }
 
-      let toIPv6result;
+      let toIPv6result: TIPv6ReturnData;
       // Set the prefix id (Network address or id in IPv4).
       const prefixIdBin = prefix.networkPortionBin + prefix.subnetPortionBin + interfaceID.id
+      console.log(prefixIdBin.length)
       toIPv6result = this.#BinaryToIPv6(prefixIdBin, false)
       if (!toIPv6result.success) throw new Error(toIPv6result.error)
       prefix.id = toIPv6result.data as string
+      console.log(prefix.id)
+
 
       // Set the prefix first usable address.
       const prefixFirstAddressBin = prefix.networkPortionBin + prefix.subnetPortionBin + interfaceID.firstUsableAddressBin
+      console.log(prefixFirstAddressBin)
       toIPv6result = this.#BinaryToIPv6(prefixFirstAddressBin, false)
       if (!toIPv6result.success) throw new Error(toIPv6result.error)
       prefix.firstUsableAddress = toIPv6result.data as string
 
       // Set the prefix last usable address.
       const prefixLastAddressBin = prefix.networkPortionBin + prefix.subnetPortionBin + interfaceID.lastUsableAddresssBin      
+      console.log(prefixLastAddressBin)
       toIPv6result = this.#BinaryToIPv6(prefixLastAddressBin, false)
       if (!toIPv6result.success) throw new Error(toIPv6result.error)
       prefix.lastUsableAddresss = toIPv6result.data as string
 
     } catch (error: unknown) {
+      console.log("From inside catch: ey")
       prefixData.success = false
       prefixData.error = getErrorMessage(error)
       return prefixData
     }
+
+    // Update return data.
+    prefixData.data = prefix
 
     // Finally.
     return prefixData
@@ -1002,8 +1029,8 @@ class IPv6 {
       if (!this.isValidIpv6(ipv6Address)) {
         binaryData.success = false
         binaryData.error = "From IPv6ToBinary: Invalid IPv6 address."
+        return binaryData
       }
-      return binaryData
     }
     
 
@@ -1043,22 +1070,25 @@ class IPv6 {
 
     // Input data validation.
     if (skipArgumentValidation === false) {
-      ipv6AddressData.success = false
 
       if (!this.isBinary(binaries)) {
+        ipv6AddressData.success = false
         ipv6AddressData.error = "From BinaryToIPv6: Invalid IPv6 address."
+        return ipv6AddressData
       }
 
       if (binaries.length !== 128 || binaries.length % 128 !== 0) {
+        ipv6AddressData.success = false
         ipv6AddressData.error = "From BinaryToIPv6: Input binaries must be 128-bit long."
+        return ipv6AddressData
       }
 
-      return ipv6AddressData
     }
     
     // Convert first to hexadecimals.
     hexadecimals = this.toHex(binaries).data as string
-
+    console.log(hexadecimals
+      )
     // Get each segment.
     for (let index = 0; index < hexadecimals.length; index += 4) {
       // Extract four hex on each iteration.
