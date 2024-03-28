@@ -639,7 +639,7 @@ class IPv6 {
   /**
    * Converts a string of binaries or hexadecimals to decimal form (integer).
    * 
-   * @param {string} binOrHex - A string of binaries or hexadecimals.
+   * @param {string} binOrHex - A string of binaries or hexadecimals. Must be positive.
    * @param {TBaseNumberSystem} fromBase - A union numbers of `2` and `16`.
    * 
    * @returns {object} An `object` with three properties: `success`, `error` and `data`.
@@ -708,6 +708,70 @@ class IPv6 {
     return decimalsData
   }
 
+
+  /**
+   * Converts a string of binaries or hexadecimals to decimal form (Bigint).
+   * 
+   * @param {string} binOrHex - A string of binaries or hexadecimals. Must be positive.
+   * @param {TBaseNumberSystem} fromBase - A union numbers of `2` and `16`.
+   * 
+   * @returns {object} An `object` with three properties: `success`, `error` and `data`.
+   */
+  static toBigIntDecimal(binOrHex: string, fromBase: TBaseNumberSystem): IPv6ReturnData {
+    let decimals: bigint
+    
+    // Return data.
+    const decimalsData: IPv6ReturnData = {success: true}
+
+
+    try {
+      switch (fromBase) {
+        case 2: {
+          // Sanitize input data first.
+          const binaries: string = binOrHex.trim()
+
+          // Validate input data.
+          if (binaries === undefined || binaries === null || binaries === "" || !this.isBinary(binaries)) {
+            throw new Error("From toDecimal: Must provide a valid binaries.");
+          }
+          
+          // Convert binaries to decimal form (integer).
+          decimals = BigInt(`0b${binaries}`)
+
+          // Update data return.
+          decimalsData.data = decimals
+          break;
+        }
+        case 16:{
+          // Sanitize input data first.
+          const hexadecimals: string = binOrHex.trim()
+
+          // Validate input data.
+          if (hexadecimals === undefined || hexadecimals === null || hexadecimals === "" || !this.isBinary(hexadecimals)) {
+            throw new Error("From toDecimal: Must provide a valid binaries.");
+          }
+          
+          // Convert binaries to decimal form (integer).
+          decimals = BigInt(`0x${hexadecimals}`)
+
+          // Update data return.
+          decimalsData.data = decimals
+          break;          
+        }
+      
+        default: {
+          throw new Error("From toDecimal: Received invalid arguments.")
+        }
+      }
+    } catch (error: unknown) {
+      decimalsData.success = false
+      decimalsData.error = getErrorMessage(error)
+      return decimalsData
+    }
+
+    // Finally
+    return decimalsData
+  }  
 
 
 
