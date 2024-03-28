@@ -8,7 +8,7 @@ import { useForm } from "react-hook-form"
 
 import utilitiesFormSchema, { type TutilitiesForm } from "@/schemas/utilities-form-schema"
 
-import IPv6, { type IPv6ReturnData } from "@/lib/ipv6"
+import IPv6, { type TIPv6ReturnData } from "@/lib/ipv6"
 
 import FeaturesOutputBox from '../features-output-box'
 
@@ -31,7 +31,7 @@ type UtilitiesFormProps = {
 }
 
 const UtilitiesForm: React.FC<UtilitiesFormProps> = ({ operation }) => {
-  const [output, setOutput] = useState<IPv6ReturnData>()
+  const [output, setOutput] = useState<TIPv6ReturnData>()
 
   // 1. Define your form.
   const form = useForm<TutilitiesForm>({
@@ -46,7 +46,7 @@ const UtilitiesForm: React.FC<UtilitiesFormProps> = ({ operation }) => {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
     
-    let result: IPv6ReturnData
+    let result: TIPv6ReturnData
 
     if (operation.toLowerCase() === "expand") {
       result = IPv6.expand(values.ipv6Address)
@@ -56,15 +56,6 @@ const UtilitiesForm: React.FC<UtilitiesFormProps> = ({ operation }) => {
       result = IPv6.abbreviate(values.ipv6Address)
       setOutput(result)
     }
-
-    // const toBinary = IPv6.toBinary(BigInt(90071992547409915))
-    const toBinary = IPv6.toBinary(5)
-
-    // console.log(Number.MAX_SAFE_INTEGER);
-    // console.log(Math.log2(9007199254740991));
-    console.log(toBinary.data);
-
-
   }
   
   
