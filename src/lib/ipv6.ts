@@ -4,7 +4,14 @@ export type TIPv6ReturnData = {
   success: boolean
   data?: string | number | bigint | TPrefix
   error?: string
-} 
+}
+
+/**
+ * @property `errorFields` is the param list of getPrefix method.
+ */
+type TPrefixData = TIPv6ReturnData & {
+  errorFields?: Array<string>
+}
 
 type TBaseNumberSystem = 2 | 16
 
@@ -834,7 +841,7 @@ class IPv6 {
    * 
    * @property `data` is of type `TPrefix`.
    */
-  static getPrefix(ipv6Address: string, prefixLength: number, subnetBits: number, subnetToFind: string = "0"): TIPv6ReturnData {
+  static getPrefix(ipv6Address: string, prefixLength: number, subnetBits: number, subnetToFind: string = "0"): TPrefixData {
     /*
       Note
       The subnetToFind (Subnet number or Prefix number) is used to find
@@ -913,7 +920,10 @@ class IPv6 {
       }
 
       // Set the prefix id (Network address or id in IPv4).
-      
+      const prefixIdBin = prefix.networkPortionBin + prefix.subnetPortionBin + interfaceID.id
+      const toIPv6result = this.#BinaryToIPv6(prefixIdBin, false)
+
+
 
 
 
@@ -955,6 +965,7 @@ class IPv6 {
         binaryData.success = false
         binaryData.error = "From IPv6ToBinary: Invalid IPv6 address."
       }
+      return binaryData
     }
     
 
@@ -979,7 +990,7 @@ class IPv6 {
    * 
    * @property `data` is of type `string`.
    */
-  static BinaryToIPv6(binaries: string, skipArgumentValidation: boolean = true): TIPv6ReturnData {
+  static #BinaryToIPv6(binaries: string, skipArgumentValidation: boolean = true): TIPv6ReturnData {
     /*
       Note
       It is up to the method caller to validate input data.
@@ -990,21 +1001,21 @@ class IPv6 {
     let hexadecimals: string;
 
     // Return data.
-    const binaryData: TIPv6ReturnData = {success: true} 
+    const ipv6AddressData: TIPv6ReturnData = {success: true} 
 
     // Input data validation.
     if (skipArgumentValidation === false) {
-      binaryData.success = false
+      ipv6AddressData.success = false
 
       if (!this.isBinary(binaries)) {
-        binaryData.error = "From BinaryToIPv6: Invalid IPv6 address."
+        ipv6AddressData.error = "From BinaryToIPv6: Invalid IPv6 address."
       }
 
       if (binaries.length !== 128 || binaries.length % 128 !== 0) {
-        binaryData.error = "From BinaryToIPv6: Input binaries must be 128-bit long."
+        ipv6AddressData.error = "From BinaryToIPv6: Input binaries must be 128-bit long."
       }
 
-      return binaryData
+      return ipv6AddressData
     }
     
     // Convert first to hexadecimals.
@@ -1022,9 +1033,9 @@ class IPv6 {
     ipv6Address = segmentArray.join(":")
 
     // Update return data.
-    binaryData.data = ipv6Address
+    ipv6AddressData.data = ipv6Address
     // Finally.
-    return binaryData
+    return ipv6AddressData
   }  
 
 
