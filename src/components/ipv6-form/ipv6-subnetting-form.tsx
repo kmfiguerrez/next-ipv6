@@ -17,7 +17,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
-import { number } from "zod"
 
 
 
@@ -28,6 +27,8 @@ const Ipv6SubnettingForm = () => {
     resolver: zodResolver(ipv6FormSchema),
     defaultValues: {
       ipv6Address: "",
+      prefixLength: "",
+      subnetBits: "",
     },
   })
 
@@ -59,13 +60,50 @@ const Ipv6SubnettingForm = () => {
               <FormControl>
                 <Input placeholder="Enter IPv6 Address here" {...field} />
               </FormControl>
-              <FormDescription>
-                This is your public display name.
-              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
         />
+
+        <FormField
+          control={form.control}
+          name="prefixLength"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Prefix length</FormLabel>
+              <FormControl>
+                <Input 
+                  type="number"
+                  min={0}
+                  max={128}
+                  placeholder="Enter Prefix length here" 
+                  {...field} 
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />        
+
+        <FormField
+          control={form.control}
+          name="subnetBits"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Subnet bits</FormLabel>
+              <FormControl>
+                <Input 
+                type="number"
+                min={0}
+                max={128}
+                placeholder="Enter Subnet bits here" 
+                {...field} 
+              />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />   
 
         <Button type="submit">Submit</Button>
 
