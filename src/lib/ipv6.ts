@@ -847,7 +847,7 @@ class IPv6 {
    * @param {string} ipv6Address - A string of IPv6 address.
    * @param {number} prefixLength - An integer range from 0 to 128.
    * @param {number} subnetBits - An integer range from 0 to 128.
-   * @param {string} subnetNumber - An optional string param represents the current subnet number (default to zero).
+   * @param {string} subnetToFind - An optional string param represents the current subnet number (default to zero).
    * 
    * @returns {object} An `object` with three properties: `success`, `error` and `data`.
    * 
@@ -897,7 +897,7 @@ class IPv6 {
         prefixData.errorFields?.push({field: "prefixLenth", message: "Invalid prefix length."})
         throw new Error("From getPrefix: Invalid argument(s) provided.")
       }
-      if (subnetBits === undefined || subnetBits === null || subnetBits < prefixLength || subnetBits >= (128 - prefixLength)) {
+      if (subnetBits === undefined || subnetBits === null || subnetBits < 0 || subnetBits >= (128 - prefixLength)) {
         // Set the error field (param).
         prefixData.errorFields?.push({field: "subnetBits", message: "Invalid subnet bits."})
         throw new Error("From getPrefix: Invalid argument(s) provided.")
