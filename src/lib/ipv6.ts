@@ -7,10 +7,22 @@ export type TIPv6ReturnData = {
 }
 
 /**
+ * This type is used in IPv6 static getPrefix method.
+ * 
  * @property `errorFields` is the param list of getPrefix method.
  */
 type TPrefixData = TIPv6ReturnData & {
-  errorFields?: Array<string>
+  errorFields?: Array<TParamError>
+}
+
+/**
+ * This type is used in IPv6 static getPrefix method.
+ * 
+ * @property `field` is a parameter name.
+ */
+type TParamError = {
+  field: string
+  message: string
 }
 
 type TBaseNumberSystem = 2 | 16
@@ -29,8 +41,8 @@ type TInterfaceID = {
 
 /**
  * @property `id` is a string of hexadecimals.
- * @property `networkPortionBin` is a string of hexadecimals.
- * @property `subnetPortionBin` is a string of hexadecimals.
+ * @property `networkPortionBin` is a string of binaries.
+ * @property `subnetPortionBin` is a string of binaries.
  */
 type TPrefix = {
   id: string
@@ -869,15 +881,33 @@ class IPv6 {
       lastUsableAddresss: "",
     }
 
-    // Return data.
-    const prefixData: TIPv6ReturnData = {success: true}
     
-    // validate input data first.
+    // Return data.
+    const prefixData: TPrefixData = {success: true}
+    
     try {
-      if (!this.isValidIpv6(ipv6Address)) throw new Error("From getPrefix: Invalid IPv6 address.")
-      if (prefixLength === undefined || prefixLength === null || prefixLength < 0 || prefixLength >= 128) throw new Error("From getPrefix: Invalid prefix length.")
-      if (subnetBits === undefined || subnetBits === null || subnetBits < prefixLength || subnetBits >= (128 - prefixLength)) throw new Error("From getPrefix: Invalid subnet bits.")
-      if (BigInt(subnetToFind) < 0 || BigInt(subnetToFind) > (BigInt(2 ** subnetBits) - BigInt(1))) throw new Error(`From getPrefix: Subnet ${subnetToFind} does not exists.`)
+      // validate input data first.
+      if (!this.isValidIpv6(ipv6Address)) {
+        // Set the error field (param).
+        prefixData.errorFields?.push("ipv6Address")
+        throw new Error("From getPrefix: Invalid IPv6 address.")
+
+      }
+      if (prefixLength === undefined || prefixLength === null || prefixLength < 0 || prefixLength >= 128) {
+        // Set the error field (param).
+        prefixData.errorFields?.push("prefixLenth")
+        throw new Error("From getPrefix: Invalid prefix length.")
+      }
+      if (subnetBits === undefined || subnetBits === null || subnetBits < prefixLength || subnetBits >= (128 - prefixLength)) {
+        // Set the error field (param).
+        prefixData.errorFields?.push("subnetBits")
+        throw new Error("From getPrefix: Invalid subnet bits.")
+      }
+      if (BigInt(subnetToFind) < 0 || BigInt(subnetToFind) > (BigInt(2 ** subnetBits) - BigInt(1))) {
+        // Set the error field (param).
+        prefixData.errorFields?.push("subnetToFind")        
+        throw new Error(`From getPrefix: Subnet ${subnetToFind} does not exists.`)
+      }
 
 
 
@@ -919,13 +949,24 @@ class IPv6 {
         prefix.subnetPortionBin = "0".repeat(zeroesToPrepend) + subnetPortionBin
       }
 
+      let toIPv6result;
       // Set the prefix id (Network address or id in IPv4).
       const prefixIdBin = prefix.networkPortionBin + prefix.subnetPortionBin + interfaceID.id
-      const toIPv6result = this.#BinaryToIPv6(prefixIdBin, false)
+      toIPv6result = this.#BinaryToIPv6(prefixIdBin, false)
+      if (!toIPv6result.success) throw new Error(toIPv6result.error)
+      prefix.id = toIPv6result.data as string
 
+      // Set the prefix first usable address.
+      const prefixFirstAddressBin = prefix.networkPortionBin + prefix.subnetPortionBin + interfaceID.firstUsableAddressBin
+      toIPv6result = this.#BinaryToIPv6(prefixFirstAddressBin, false)
+      if (!toIPv6result.success) throw new Error(toIPv6result.error)
+      prefix.firstUsableAddress = toIPv6result.data as string
 
-
-
+      // Set the prefix last usable address.
+      const prefixLastAddressBin = prefix.networkPortionBin + prefix.subnetPortionBin + interfaceID.lastUsableAddresssBin      
+      toIPv6result = this.#BinaryToIPv6(prefixLastAddressBin, false)
+      if (!toIPv6result.success) throw new Error(toIPv6result.error)
+      prefix.lastUsableAddresss = toIPv6result.data as string
 
     } catch (error: unknown) {
       prefixData.success = false
