@@ -666,72 +666,61 @@ class IPv6 {
    * @param {string} binOrHex - A string of binaries or hexadecimals. Must be positive.
    * @param {TBaseNumberSystem} fromBase - A union numbers of `2` and `16`.
    * 
-   * @returns {object} An `object` with three properties: `success`, `error` and `data`.
+   * @returns {number} A positive integer.
    * 
-   * @property `data` is of type `number`.
+   * @throws `ArgumentError` is thrown if arguments is invalid.
    */
-  static toDecimal(binOrHex: string, fromBase: TBaseNumberSystem): TIPv6ReturnData {
-    let decimals: number
+  static toDecimal(binOrHex: string, fromBase: TBaseNumberSystem): number {
     
     // Return data.
-    const decimalsData: TIPv6ReturnData = {success: true}
+    let decimals: number
 
+    // Determine what base system number to work on.
+    switch (fromBase) {
+      case 2: {
+        // Sanitize input data first.
+        const binaries: string = binOrHex.trim()
 
-    try {
-      switch (fromBase) {
-        case 2: {
-          // Sanitize input data first.
-          const binaries: string = binOrHex.trim()
-
-          // Validate input data.
-          if (binaries === undefined || binaries === null || binaries === "" || !this.isBinary(binaries)) {
-            throw new Error("From toDecimal: Must provide a valid binaries.");
-          }
-          
-          /*
-            This method rejects numbers greater than or equal to 
-            Number.MAX_SAFE_INTEGER.
-          */
-          decimals = parseInt(binaries, 2);
-          if (decimals >= Number.MAX_SAFE_INTEGER) throw new Error("From toDecimal: Arguments greater or equal than Number.MAX_SAFE_INTEGER must use other method.")
-
-          // Update data return.
-          decimalsData.data = decimals
-          break;
+        // Validate input data.
+        if (binaries === undefined || binaries === null || binaries === "" || !this.isBinary(binaries)) {
+          throw new ArgumentError("From toDecimal: Must provide a valid binaries.");
         }
-        case 16:{
-          // Sanitize input data first.
-          const hexadecimals: string = binOrHex.trim()
+        
+        /*
+          This method rejects numbers greater than or equal to 
+          Number.MAX_SAFE_INTEGER.
+        */
+        decimals = parseInt(binaries, 2);
+        if (decimals >= Number.MAX_SAFE_INTEGER) throw new ArgumentError("From toDecimal: Arguments greater or equal than Number.MAX_SAFE_INTEGER must use other method.")
 
-          // Validate input data.
-          if (hexadecimals === undefined || hexadecimals === null || hexadecimals === "" || !this.isBinary(hexadecimals)) {
-            throw new Error("From toDecimal: Must provide a valid binaries.");
-          }
-          
-          /*
-            This method rejects numbers greater than or equal to 
-            Number.MAX_SAFE_INTEGER.
-          */
-          decimals = parseInt(hexadecimals, 16);
-          if (decimals >= Number.MAX_SAFE_INTEGER) throw new Error("From toDecimal: Arguments greater or equal than Number.MAX_SAFE_INTEGER must use other method.")
-
-          // Update data return.
-          decimalsData.data = decimals
-          break;          
-        }
-      
-        default: {
-          throw new Error("From toDecimal: Received invalid arguments.")
-        }
+        break;
       }
-    } catch (error: unknown) {
-      decimalsData.success = false
-      decimalsData.error = getErrorMessage(error)
-      return decimalsData
+      case 16:{
+        // Sanitize input data first.
+        const hexadecimals: string = binOrHex.trim()
+
+        // Validate input data.
+        if (hexadecimals === undefined || hexadecimals === null || hexadecimals === "" || !this.isBinary(hexadecimals)) {
+          throw new ArgumentError("From toDecimal: Must provide a valid binaries.");
+        }
+        
+        /*
+          This method rejects numbers greater than or equal to 
+          Number.MAX_SAFE_INTEGER.
+        */
+        decimals = parseInt(hexadecimals, 16);
+        if (decimals >= Number.MAX_SAFE_INTEGER) throw new ArgumentError("From toDecimal: Arguments greater or equal than Number.MAX_SAFE_INTEGER must use other method.")
+
+        break;          
+      }
+      default: {
+        throw new ArgumentError("From toDecimal: Received invalid number base system.")
+      }
     }
 
+
     // Finally
-    return decimalsData
+    return decimals
   }
 
 
@@ -741,17 +730,16 @@ class IPv6 {
    * @param {string} binOrHex - A string of binaries or hexadecimals. Must be positive.
    * @param {TBaseNumberSystem} fromBase - A union numbers of `2` and `16`.
    * 
-   * @returns {object} An `object` with three properties: `success`, `error` and `data`.
+   * @returns {bigint} A positive BigInteger.
    * 
-   * @property `data` is of type `bigint`.
+   * @throws `ArgumentError` is thrown if arguments is invalid.
    */
-  static toBigIntDecimal(binOrHex: string, fromBase: TBaseNumberSystem): TIPv6ReturnData {
-    let decimals: bigint
+  static toBigIntDecimal(binOrHex: string, fromBase: TBaseNumberSystem): bigint {
     
     // Return data.
-    const decimalsData: TIPv6ReturnData = {success: true}
+    let decimals: bigint
 
-
+    // Determine what base system number to work on.
     try {
       switch (fromBase) {
         case 2: {
@@ -760,14 +748,12 @@ class IPv6 {
 
           // Validate input data.
           if (binaries === undefined || binaries === null || binaries === "" || !this.isBinary(binaries)) {
-            throw new Error("From toDecimal: Must provide a valid binaries.");
+            throw new ArgumentError("From toDecimal: Must provide a valid binaries.");
           }
           
           // Convert binaries to decimal form (integer).
           decimals = BigInt(`0b${binaries}`)
 
-          // Update data return.
-          decimalsData.data = decimals
           break;
         }
         case 16:{
@@ -776,29 +762,25 @@ class IPv6 {
 
           // Validate input data.
           if (hexadecimals === undefined || hexadecimals === null || hexadecimals === "" || !this.isBinary(hexadecimals)) {
-            throw new Error("From toDecimal: Must provide a valid binaries.");
+            throw new ArgumentError("From toDecimal: Must provide a valid binaries.");
           }
           
           // Convert binaries to decimal form (integer).
           decimals = BigInt(`0x${hexadecimals}`)
 
-          // Update data return.
-          decimalsData.data = decimals
           break;          
         }
       
         default: {
-          throw new Error("From toDecimal: Received invalid arguments.")
+          throw new Error("Received invalid number base system.")
         }
       }
     } catch (error: unknown) {
-      decimalsData.success = false
-      decimalsData.error = getErrorMessage(error)
-      return decimalsData
+      throw new ArgumentError(`From toDecimal: ${getErrorMessage(error)}.`)
     }
 
     // Finally
-    return decimalsData
+    return decimals
   }  
 
 
