@@ -964,7 +964,7 @@ class IPv6 {
       }      
     } catch (error: unknown) {
       if (error instanceof ArgumentError) throw new ArgumentError(getErrorMessage(error))
-      
+
       throw new ArgumentError(getErrorMessage(error))
     }
 
@@ -983,55 +983,57 @@ class IPv6 {
    * 
    * @property `data` is of type `string`.
    */
-  static #BinaryToIPv6(binaries: string, skipArgumentValidation: boolean = true): TIPv6ReturnData {
+  static #BinaryToIPv6(binaries: string, skipArgumentValidation: boolean = true): string {
     /*
       Note
       It is up to the method caller to validate input data.
     */
 
-    let ipv6Address: string
     let segmentArray: Array<string> = []
     let hexadecimals: string;
 
     // Return data.
-    const ipv6AddressData: TIPv6ReturnData = {success: true} 
+    let ipv6Address: string
 
-    // Input data validation.
-    if (skipArgumentValidation === false) {
+    try {
+      // Input data validation.
+      if (skipArgumentValidation === false) {
+        if (!this.isBinary(binaries)) throw new Error("From BinaryToIPv6: Invalid IPv6 address.")
 
-      if (!this.isBinary(binaries)) {
-        ipv6AddressData.success = false
-        ipv6AddressData.error = "From BinaryToIPv6: Invalid IPv6 address."
-        return ipv6AddressData
+        if (binaries.length !== 128 || binaries.length % 128 !== 0) {
+          throw new RangeError("From BinaryToIPv6: Input binaries must be 128-bit long.")
+        }
       }
+      
+      // Convert first to hexadecimals.
+      hexadecimals = this.toHex(binaries)
+      console.log(hexadecimals)
 
-      if (binaries.length !== 128 || binaries.length % 128 !== 0) {
-        ipv6AddressData.success = false
-        ipv6AddressData.error = "From BinaryToIPv6: Input binaries must be 128-bit long."
-        return ipv6AddressData
+      // Get each segment.
+      for (let index = 0; index < hexadecimals.length; index += 4) {
+        // Extract four hex on each iteration.
+        const hexChars: Array<string> = hexadecimals.split("")
+        const segment = hexChars.splice(index, 4, "ex").join("")
+        segmentArray.push(segment)
       }
+    } catch (error: unknown) {
+        if (error instanceof RangeError) {
+          throw new ArgumentError(getErrorMessage(error))
+        }
 
-    }
-    
-    // Convert first to hexadecimals.
-    hexadecimals = this.toHex(binaries).data as string
-    console.log(hexadecimals
-      )
-    // Get each segment.
-    for (let index = 0; index < hexadecimals.length; index += 4) {
-      // Extract four hex on each iteration.
-      const hexChars: Array<string> = hexadecimals.split("")
-      const segment = hexChars.splice(index, 4, "ex").join("")
-      segmentArray.push(segment)
-    }
+        if (error instanceof ArgumentError) {
+          
+        }
+
+        // Otherwise erros is Error.
+        throw new ArgumentError(getErrorMessage(error))
+    }    
 
     // Join array of segments into a single string.
     ipv6Address = segmentArray.join(":")
 
-    // Update return data.
-    ipv6AddressData.data = ipv6Address
     // Finally.
-    return ipv6AddressData
+    return ipv6Address
   }  
 
 
