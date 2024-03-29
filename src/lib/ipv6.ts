@@ -1,10 +1,7 @@
+import { ArgumentError } from "./custom-error"
 import { getErrorMessage } from "./error-message"
 
-export type TIPv6ReturnData = {
-  success: boolean
-  data?: string | number | bigint | TPrefix
-  error?: string
-}
+
 
 
 /**
@@ -12,7 +9,8 @@ export type TIPv6ReturnData = {
  * 
  * @property `errorFields` is the param list of getPrefix method.
  */
-export type TPrefixData = TIPv6ReturnData & {
+export type TPrefixData = {
+  data: TPrefix
   errorFields?: Array<TParamError>
 }
 
@@ -174,11 +172,10 @@ class IPv6 {
    * 
    * @param {string} ipv6Address - A string of IPv6 address.
    * 
-   * @returns {object} An `object` with three properties: `success`, `error` and `data`.
+   * @returns {object} A string of expanded IPv6 address.
    * 
-   * @property `data` is of type `string`.
    */
-  static expand(ipv6Address: string): TIPv6ReturnData {
+  static expand(ipv6Address: string): string {
     // Sanitize user input first.
     ipv6Address = ipv6Address.trim().toLowerCase()
 
@@ -187,21 +184,16 @@ class IPv6 {
     let segments: RegExpMatchArray | null = ipv6Address.match(/[0-9a-f]{1,4}/g)
     let doubleColonPattern: RegExp = /^::$/
 
-    let expandedIPv6: TIPv6ReturnData = {success: true};
+    // Return data.
+    let expandedIPv6: string
 
-    try {
-      // Check first if IPv6 Address is valid
-      if (!this.isValidIpv6(ipv6Address)) throw new Error("From expand: Invalid IPv6 Address provided.")      
 
-    } catch (error: unknown) {
-      expandedIPv6.success = false
-      expandedIPv6.error = getErrorMessage(error)
-      return expandedIPv6
-    }
+    // Check first if IPv6 Address is valid
+    if (!this.isValidIpv6(ipv6Address)) throw new ArgumentError("From expand: Invalid IPv6 Address provided.")      
 
     // Check if the user input is just ::    
     if (doubleColonPattern.test(ipv6Address)) {
-      expandedIPv6.data = "0000:0000:0000:0000:0000:0000:0000:0000"
+      expandedIPv6 = "0000:0000:0000:0000:0000:0000:0000:0000"
       return expandedIPv6
     }
 
@@ -234,7 +226,7 @@ class IPv6 {
     }
 
     // Update message.
-    expandedIPv6.data = segments.join(':')
+    expandedIPv6 = segments.join(':')
     // Finally
     return expandedIPv6
   }
