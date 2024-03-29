@@ -376,6 +376,9 @@ class IPv6 {
   /**
    * This method converts hexadecimals digits to binary.
    * 
+   * __Notes__:
+   * This method include leading zeroes.
+   * 
    * @param {string} hex - A string of positive hex digits.
    * 
    * @returns {string} A string binaries.
@@ -429,9 +432,6 @@ class IPv6 {
         // Sanitize input data first.
         const inputHex = x.trim().toLowerCase()
 
-        // Regex pattern.
-        const leadingZeroPattern = /^0+/
-        
         // Validate input data first.
         if (!this.isHex(inputHex)) throw new ArgumentError("From toBinary: Invalid hex digits provided.")
         
@@ -456,12 +456,6 @@ class IPv6 {
           binaries += "0".repeat(zeroesToPrepend) + binary
           
         }
-
-        /*
-          The final binaries leading zeroes does not affect the value.
-          It is omitted in this method.
-        */
-        binaries = binaries.replace(leadingZeroPattern, "");
 
         // Finally
         return binaries
@@ -799,142 +793,221 @@ class IPv6 {
    * 
    * @throws `ArgumentError` is thrown if arguments is invalid.
    */
-  static getPrefix(ipv6Address: string, prefixLength: number, subnetBits: number, subnetToFind: string = "0"): TPrefixData {
+  // static getPrefix(ipv6Address: string, prefixLength: number, subnetBits: number, subnetToFind: string = "0"): TPrefixData {
+  //   /*
+  //     Note
+  //     The subnetToFind (Subnet number or Prefix number) is used to find
+  //     the desired subnet. By default set to zero (subnet zero) and of 
+  //     type string to avoid losing precision.
+  //     The subnetBits specifies the length of the subnet portion. 
+  //   */
+
+  //   // Declare objects.
+  //   const interfaceID: TInterfaceID = {
+  //     id: "",
+  //     bits: 0,
+  //     firstUsableAddressBin: "",
+  //     lastUsableAddresssBin: ""
+  //   }
+
+  //   const prefix: TPrefix = {
+  //     id: "", 
+  //     subnetNumber: BigInt(0),
+  //     newPrefixLength: 0,
+  //     networkPortionBin: "",
+  //     subnetPortionBin: "",
+  //     interfaceIdPortion: interfaceID,
+  //     firstUsableAddress: "",
+  //     lastUsableAddresss: "",
+  //   }
+    
+  //   // Return data.
+  //   const prefixData: TPrefixData = {data: prefix}
+    
+  //   try {
+  //     // validate input data first.
+  //     if (!this.isValidIpv6(ipv6Address)) {
+  //       // Set the error field (param).
+  //       prefixData.errorFields?.push({field: "ipv6Address", message: "Invalid IPv6 address."})
+  //       throw new Error("From getPrefix: Invalid argument(s) provided.")
+
+  //     }
+  //     if (prefixLength === undefined || prefixLength === null || prefixLength < 0 || prefixLength >= 128) {
+  //       // Set the error field (param).
+  //       prefixData.errorFields?.push({field: "prefixLenth", message: "Invalid prefix length."})
+  //       throw new Error("From getPrefix: Invalid argument(s) provided.")
+  //     }
+  //     if (subnetBits === undefined || subnetBits === null || subnetBits < 0 || subnetBits >= (128 - prefixLength)) {
+  //       // Set the error field (param).
+  //       prefixData.errorFields?.push({field: "subnetBits", message: "Invalid subnet bits."})
+  //       throw new Error("From getPrefix: Invalid argument(s) provided.")
+  //     }
+  //     if (BigInt(subnetToFind) < 0 || BigInt(subnetToFind) > (BigInt(2 ** subnetBits) - BigInt(1))) {
+  //       // Set the error field (param).
+  //       prefixData.errorFields?.push({field: "subnetToFind", message: "Subnet ${subnetToFind} does not exists."})
+  //       throw new Error(`From getPrefix: Invalid argument(s) provided.`)
+  //     }
+
+
+  //     // Make sure the IPv6 address is in expanded format.
+  //     const expandedIPv6Address: string = this.expand(ipv6Address)
+  //     // Number of bits.
+  //     const newPrefixLength: number = prefixLength + subnetBits
+  //     // Number of bits.
+  //     const interfaceIdBits: number = 128 - newPrefixLength
+  //     // Get the network portion binary.
+  //     const networkPortionBin: string = this.#IPv6ToBinary(expandedIPv6Address, false).slice(0, prefixLength)
+  //     const subnetNumber: bigint = BigInt(subnetToFind)
+
+
+  //     // Initialize the interfaceID object (Host portion).
+  //     interfaceID.bits = interfaceIdBits
+  //     // The id prop is all zeroes (Network address or id in IPv4).
+  //     interfaceID.id = "0".repeat(interfaceIdBits)
+  //     // The first usable address is 1 more than the id.
+  //     interfaceID.firstUsableAddressBin = "1".padStart(interfaceIdBits, "0")
+  //     // The last usable address is all ones in IPv6.
+  //     interfaceID.lastUsableAddresssBin = "1".repeat(interfaceIdBits)
+
+  //     // Intialize prefix object.
+  //     prefix.subnetNumber = BigInt(subnetNumber)
+  //     prefix.newPrefixLength = newPrefixLength
+  //     prefix.networkPortionBin = networkPortionBin
+
+  //     // Set the prefix subnet portion binaries.
+  //     const subnetPortionBin: string = subnetNumber.toString(2)
+  //     // Include leading zeroes.
+  //     const zeroesToPrepend = subnetBits - subnetPortionBin.length;
+  //     // If not subnetted then subnet portion is 0.
+  //     if (subnetBits === 0) {
+  //       prefix.subnetPortionBin = "";
+  //     }
+  //     else {
+  //       // Otherwise subnetted.
+  //       prefix.subnetPortionBin = "0".repeat(zeroesToPrepend) + subnetPortionBin
+  //     }
+
+  //     let toIPv6result: TIPv6ReturnData;
+  //     // Set the prefix id (Network address or id in IPv4).
+  //     const prefixIdBin = prefix.networkPortionBin + prefix.subnetPortionBin + interfaceID.id
+  //     console.log(prefixIdBin.length)
+  //     toIPv6result = this.#BinaryToIPv6(prefixIdBin, false)
+  //     if (!toIPv6result.success) throw new Error(toIPv6result.error)
+  //     prefix.id = toIPv6result.data as string
+  //     console.log(prefix.id)
+
+
+  //     // Set the prefix first usable address.
+  //     const prefixFirstAddressBin = prefix.networkPortionBin + prefix.subnetPortionBin + interfaceID.firstUsableAddressBin
+  //     console.log(prefixFirstAddressBin)
+  //     toIPv6result = this.#BinaryToIPv6(prefixFirstAddressBin, false)
+  //     if (!toIPv6result.success) throw new Error(toIPv6result.error)
+  //     prefix.firstUsableAddress = toIPv6result.data as string
+
+  //     // Set the prefix last usable address.
+  //     const prefixLastAddressBin = prefix.networkPortionBin + prefix.subnetPortionBin + interfaceID.lastUsableAddresssBin      
+  //     console.log(prefixLastAddressBin)
+  //     toIPv6result = this.#BinaryToIPv6(prefixLastAddressBin, false)
+  //     if (!toIPv6result.success) throw new Error(toIPv6result.error)
+  //     prefix.lastUsableAddresss = toIPv6result.data as string
+
+  //   } catch (error: unknown) {
+  //     console.log("From inside catch: ey")
+  //   }
+
+  //   // Update return data.
+  //   prefixData.data = prefix
+
+  //   // Finally.
+  //   return prefixData
+  // }
+
+  /**
+   * Converts a string binaries into hexadecimals.
+   * 
+   * __Note__: 
+   * May throw an `ArgumentError` exception if `skipArgumentValidation`
+   * param is set to `false`.
+   * 
+   * @param {string} binary - A string of binaries.
+   * @param {boolean} skipArgumentValidation - An optional boolean param default to `true`.
+   * 
+   * @returns {string}  A string of hexadecimals
+   * 
+   * @throws `ArgumentError` is thrown if argument is invalid.
+   */
+  static BinaryToHex(binary: string, skipArgumentValidation: boolean = true) {
     /*
       Note
-      The subnetToFind (Subnet number or Prefix number) is used to find
-      the desired subnet. By default set to zero (subnet zero) and of 
-      type string to avoid losing precision.
-      The subnetBits specifies the length of the subnet portion. 
+      It is up to the method caller to validate input data.
+      This method is created because JS built-in methods and static toHex
+      method does not take leading zeroes into account when converting
+      a string of binaries into hexadecimals.
     */
 
-    // Declare objects.
-    const interfaceID: TInterfaceID = {
-      id: "",
-      bits: 0,
-      firstUsableAddressBin: "",
-      lastUsableAddresssBin: ""
-    }
+    // Sanitize input data first.
+    binary = binary.trim()
 
-    const prefix: TPrefix = {
-      id: "", 
-      subnetNumber: BigInt(0),
-      newPrefixLength: 0,
-      networkPortionBin: "",
-      subnetPortionBin: "",
-      interfaceIdPortion: interfaceID,
-      firstUsableAddress: "",
-      lastUsableAddresss: "",
-    }
-    
+    const divisibleByFour: boolean = binary.length % 4 === 0
+
+    const nibbles: Array<string> = []
     // Return data.
-    const prefixData: TPrefixData = {data: prefix}
-    
-    try {
-      // validate input data first.
-      if (!this.isValidIpv6(ipv6Address)) {
-        // Set the error field (param).
-        prefixData.errorFields?.push({field: "ipv6Address", message: "Invalid IPv6 address."})
-        throw new Error("From getPrefix: Invalid argument(s) provided.")
-
-      }
-      if (prefixLength === undefined || prefixLength === null || prefixLength < 0 || prefixLength >= 128) {
-        // Set the error field (param).
-        prefixData.errorFields?.push({field: "prefixLenth", message: "Invalid prefix length."})
-        throw new Error("From getPrefix: Invalid argument(s) provided.")
-      }
-      if (subnetBits === undefined || subnetBits === null || subnetBits < 0 || subnetBits >= (128 - prefixLength)) {
-        // Set the error field (param).
-        prefixData.errorFields?.push({field: "subnetBits", message: "Invalid subnet bits."})
-        throw new Error("From getPrefix: Invalid argument(s) provided.")
-      }
-      if (BigInt(subnetToFind) < 0 || BigInt(subnetToFind) > (BigInt(2 ** subnetBits) - BigInt(1))) {
-        // Set the error field (param).
-        prefixData.errorFields?.push({field: "subnetToFind", message: "Subnet ${subnetToFind} does not exists."})
-        throw new Error(`From getPrefix: Invalid argument(s) provided.`)
-      }
+    let hexadecimals: string = ""
 
 
-      // Make sure the IPv6 address is in expanded format.
-      const expandedIPv6Address: string = this.expand(ipv6Address)
-      // Number of bits.
-      const newPrefixLength: number = prefixLength + subnetBits
-      // Number of bits.
-      const interfaceIdBits: number = 128 - newPrefixLength
-      // Get the network portion binary.
-      const networkPortionBin: string = this.#IPv6ToBinary(expandedIPv6Address, false).slice(0, prefixLength)
-      const subnetNumber: bigint = BigInt(subnetToFind)
-
-
-      // Initialize the interfaceID object (Host portion).
-      interfaceID.bits = interfaceIdBits
-      // The id prop is all zeroes (Network address or id in IPv4).
-      interfaceID.id = "0".repeat(interfaceIdBits)
-      // The first usable address is 1 more than the id.
-      interfaceID.firstUsableAddressBin = "1".padStart(interfaceIdBits, "0")
-      // The last usable address is all ones in IPv6.
-      interfaceID.lastUsableAddresssBin = "1".repeat(interfaceIdBits)
-
-      // Intialize prefix object.
-      prefix.subnetNumber = BigInt(subnetNumber)
-      prefix.newPrefixLength = newPrefixLength
-      prefix.networkPortionBin = networkPortionBin
-
-      // Set the prefix subnet portion binaries.
-      const subnetPortionBin: string = subnetNumber.toString(2)
-      // Include leading zeroes.
-      const zeroesToPrepend = subnetBits - subnetPortionBin.length;
-      // If not subnetted then subnet portion is 0.
-      if (subnetBits === 0) {
-        prefix.subnetPortionBin = "";
-      }
-      else {
-        // Otherwise subnetted.
-        prefix.subnetPortionBin = "0".repeat(zeroesToPrepend) + subnetPortionBin
-      }
-
-      let toIPv6result: TIPv6ReturnData;
-      // Set the prefix id (Network address or id in IPv4).
-      const prefixIdBin = prefix.networkPortionBin + prefix.subnetPortionBin + interfaceID.id
-      console.log(prefixIdBin.length)
-      toIPv6result = this.#BinaryToIPv6(prefixIdBin, false)
-      if (!toIPv6result.success) throw new Error(toIPv6result.error)
-      prefix.id = toIPv6result.data as string
-      console.log(prefix.id)
-
-
-      // Set the prefix first usable address.
-      const prefixFirstAddressBin = prefix.networkPortionBin + prefix.subnetPortionBin + interfaceID.firstUsableAddressBin
-      console.log(prefixFirstAddressBin)
-      toIPv6result = this.#BinaryToIPv6(prefixFirstAddressBin, false)
-      if (!toIPv6result.success) throw new Error(toIPv6result.error)
-      prefix.firstUsableAddress = toIPv6result.data as string
-
-      // Set the prefix last usable address.
-      const prefixLastAddressBin = prefix.networkPortionBin + prefix.subnetPortionBin + interfaceID.lastUsableAddresssBin      
-      console.log(prefixLastAddressBin)
-      toIPv6result = this.#BinaryToIPv6(prefixLastAddressBin, false)
-      if (!toIPv6result.success) throw new Error(toIPv6result.error)
-      prefix.lastUsableAddresss = toIPv6result.data as string
-
-    } catch (error: unknown) {
-      console.log("From inside catch: ey")
-      prefixData.success = false
-      prefixData.error = getErrorMessage(error)
-      return prefixData
+    /*
+      Validate input data. Disabled by default. 
+      It's up to the method caller.
+    */
+    if (skipArgumentValidation == false) {
+      if (!this.isBinary(binary)) throw new ArgumentError("From ConvertBinaryToHex: Invalid binaries provided.");
     }
 
-    // Update return data.
-    prefixData.data = prefix
+    // Check if not divisible by four.
+    if (!divisibleByFour) {
+      // Extract the first x bits.
+      const bits: number = binary.length % 4
+      // Turn it to hex and append it to the array of nibbles.
+      const extractedBin: string = binary.slice(0, bits)
+      const integer = parseInt(extractedBin, 2)
+      const hex: string = integer.toString(16)
+      nibbles.push(hex)
 
-    // Finally.
-    return prefixData
+      // Then remove the extracted bits to binary.
+      binary = binary.slice(bits)
+    }
+
+    // When binary is now divisible by four.
+    for (let index = 0; index < binary.length; index += 4) {
+      // Turn string binaries into array because string doesn't have a
+      // splice method.
+      const tempBinArray: Array<string> = binary.split("")
+      // Extract four bits on each iteration.
+      const nibble: string = tempBinArray.splice(index, 4, "del").join("")
+      // Convert four bits to decimal form (integer).
+      const integer: number = parseInt(nibble, 2)
+      // Convert decimal to hexadecimals.
+      const hex: string = integer.toString(16)
+      console.log(`Bits: ${nibble} - Dec: ${integer} - Hex: ${hex}`)
+
+      // Append hex to the array of nibbles.
+      nibbles.push(hex)
+    }
+
+    // Turn Array of nibbles into a single string.
+    hexadecimals = nibbles.join("")
+
+    // Finally
+    return hexadecimals
   }
-  // TODO: CREATE A METHOD TO CONVERT BINARIES TO HEX THAT TAKES INTO
-  //       ACCOUNT LEADING ZEROUS.
+
 
   /**
    * Converts IPv6 address into string contiguous binaries.
+   * 
+   * __Note__: 
+   * May throw an `ArgumentError` exception if `skipArgumentValidation`
+   * param is set to `false`.
    * 
    * @param ipv6Address - A string of IPv6 address.
    * @param skipArgumentValidation - An optional boolean param default to `true`.
@@ -976,12 +1049,16 @@ class IPv6 {
   /**
    * Converts a string of 128-bit binaries into a string IPv6 address.
    * 
+   * __Note__: 
+   * May throw an `ArgumentError` exception if `skipArgumentValidation`
+   * param is set to `false`.
+   * 
    * @param binaries - A string of binaries.
    * @param skipArgumentValidation - An optional boolean param default to `true`.
    * 
-   * @returns {object} An `object` with three properties: `success`, `error` and `data`.
+   * @returns {string} A string IPv6 address.
    * 
-   * @property `data` is of type `string`.
+   * @throws `ArgumentError` is thrown if argument is invalid.
    */
   static #BinaryToIPv6(binaries: string, skipArgumentValidation: boolean = true): string {
     /*
