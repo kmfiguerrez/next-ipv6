@@ -1,5 +1,7 @@
 import React from 'react'
 
+import UtilitiesForm from './utilities/utilities-form'
+
 import {
   Dialog,
   DialogContent,
@@ -8,22 +10,26 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import UtilitiesForm from './utilities/utilities-form'
+import ConversionForm from './conversion/conversion-form'
 
-type Utilities = {
+
+type TUtilities = {
   category: "utilities"
   operation: "expand" | "abbreviate"
 }
 
+type TConversion = {
+  category: "conversion"
+  operation: "convert"
+}
 
-
-type Feature = Utilities
+type TFeature = TUtilities | TConversion
 
 
 type FeaturesDialogProps = {
   children: React.ReactNode
   title: string
-  feature: Feature
+  feature: TFeature
   description: string
 }
 
@@ -43,6 +49,12 @@ const FeaturesDialog: React.FC<FeaturesDialogProps> = ({ children, title, featur
           {feature.category === 'utilities' &&
             <UtilitiesForm 
               operation={title.toLowerCase() === "expand" ? "Expand" : "Abbreviate"} 
+            />
+          }
+
+          {feature.category === "conversion" &&
+            <ConversionForm
+             operation='Convert'
             />
           }
         </div>

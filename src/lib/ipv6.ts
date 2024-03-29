@@ -1001,7 +1001,8 @@ class IPv6 {
     // Finally.
     return prefixData
   }
-
+  // TODO: CREATE A METHOD TO CONVERT BINARIES TO HEX THAT TAKES INTO
+  //       ACCOUNT LEADING ZEROUS.
 
   /**
    * Converts IPv6 address into string contiguous binaries.

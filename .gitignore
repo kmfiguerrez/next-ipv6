@@ -34,3 +34,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Temporary
+src/components/features/conversion/
+src/schemas/conversion-form-schema.ts

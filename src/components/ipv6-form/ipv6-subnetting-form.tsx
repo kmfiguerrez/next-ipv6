@@ -4,14 +4,13 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 
 import ipv6FormSchema, { type Tipv6Form } from '@/schemas/ipv6-form-schema'
-import IPv6 from "@/lib/ipv6"
+import IPv6, { TPrefix, TPrefixData } from "@/lib/ipv6"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -36,13 +35,15 @@ const Ipv6SubnettingForm = () => {
   function onSubmit(values: Tipv6Form) {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
-    // const expandedIPv6 = IPv6.expand(values.ipv6Address)
-    // const abbreviatedIPv6 = IPv6.abbreviate(values.ipv6Address)
+    const ipv6Address = values.ipv6Address;
+    const prefixLength = parseInt(values.prefixLength)
+    const subnetBits = parseInt(values.subnetBits)
 
-    // console.log("Expanded: ", expandedIPv6)
-    // console.log("Abbreviated: ", abbreviatedIPv6)
-    console.log(IPv6.isHex(values.ipv6Address))
-    // IPv6.toBinary()
+    // form.setError("ipv6Address", {type: "value", message: "test lang"})
+    const prefix: TPrefixData = IPv6.getPrefix(ipv6Address, prefixLength, subnetBits)
+    console.log("Status:", prefix.success)
+    console.log("Error:", prefix.error)
+    console.log((prefix.data as TPrefix))
 
   }
   

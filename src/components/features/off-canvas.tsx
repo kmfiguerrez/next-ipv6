@@ -44,9 +44,20 @@ const OffCanvas: React.FC<OffCanvasProps> = ({ children }) => {
         <SidebarAccordion className='mt-5'>
           
           <SidebarAccordionItem key='item-1'>
-            <SidebarAccordionTrigger>Test</SidebarAccordionTrigger>
+            <SidebarAccordionTrigger>Conversion</SidebarAccordionTrigger>
             <SidebarAccordionContent>
-              <p>poop</p>
+              <FeaturesDialog 
+                title='Conversion'
+                description='This action will convert hexadecimals to binaries.'
+                feature={{category: "conversion", operation: "convert"}}
+              >
+                <Button
+                  variant={'ghost'}
+                  size={'sm'}
+                >
+                  Hex To Bin
+                </Button>
+              </FeaturesDialog>
             </SidebarAccordionContent>
           </SidebarAccordionItem>
 
