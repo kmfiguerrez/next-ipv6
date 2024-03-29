@@ -172,8 +172,9 @@ class IPv6 {
    * 
    * @param {string} ipv6Address - A string of IPv6 address.
    * 
-   * @returns {object} A string of expanded IPv6 address.
+   * @returns {string} A string of expanded IPv6 address.
    * 
+   * @throws `ArgumentError` is thrown if argument is invalid.
    */
   static expand(ipv6Address: string): string {
     // Sanitize user input first.
@@ -239,35 +240,40 @@ class IPv6 {
    * 
    * @param {string} ipv6Address - A string of IPv6 address.
    * 
-   * @returns {object} An `object` with three properties: `success`, `error` and `data`.
+   * @returns {string} A string of abbreviated IPv6 address.
    * 
-   * @property `data` is of type `string`.
+   * @throws `ArgumentError` is thrown if argument is invalid.
    */
-  static abbreviate(ipv6Address: string): TIPv6ReturnData {
+  static abbreviate(ipv6Address: string): string {
     // Sanitize user input first.
     ipv6Address = ipv6Address.trim().toLowerCase()
-
-    const abbreviatedIPv6: TIPv6ReturnData = {success: true}
-
-    let segments: Array<string>
-
+    
     // Regex pattern.
     const segmentAllZeroPattern = /^0000$/
     const leadingZeroPattern = /^0+/
-
     // This pattern assumes the IPv6 Address has no leading zeros.
     const seriesOfZerosPattern: RegExp  = /(0(:0){1,})/g
+
+    let segments: Array<string>
+
+    // Return data.
+    let abbreviatedIPv6: string    
 
 
     // Try to expand the IPv6 first.
     try {
-      if (!this.isValidIpv6(ipv6Address)) throw new Error("From abbreviate: Invalid IPv6 address provided.")
+      /*
+        Input data validation of this method relies on Expand method because
+        it also validates the same argument which is the IPv6 addresss of
+        type string. This way avoids slowing down the application by not
+        having the same data validation.
+      */      
+      // if (!this.isValidIpv6(ipv6Address)) throw new Error("From abbreviate: Invalid IPv6 address provided.")
 
       const expandedIPv6 = this.expand(ipv6Address)
       // Set the segments as array.
-      if (!expandedIPv6.success) throw new Error("From abbreviate: Expanding part failed.")
 
-      segments = (expandedIPv6.data as string).split(':')
+      segments = expandedIPv6.split(':')
 
       // Delete leading zeros first.
       for (let index = 0; index < segments.length; index++) {
@@ -280,6 +286,7 @@ class IPv6 {
         segments[index] = segments[index].replace(leadingZeroPattern, "")      
       }
 
+      // Combine the segments into a single string as IPv6 address.
       const ipv6String: string = segments.join(":")
 
       // Get the instances of segments of zeroes if exist.
@@ -294,22 +301,20 @@ class IPv6 {
         }
 
         // Turn the longest sequence into double-colon(::)
-        // Update the data.
-        abbreviatedIPv6.data = ipv6String.replace(longestSequence, "::")
+        // Update the return data.
+        abbreviatedIPv6 = ipv6String.replace(longestSequence, "::")
         // The replace method above causes more than two of contiguous colons.
         // So perform a replace again.
-        abbreviatedIPv6.data = abbreviatedIPv6.data.replace(/:{3,}/, "::")
+        abbreviatedIPv6 = abbreviatedIPv6.replace(/:{3,}/, "::")
       }
       else {
         // Otherwise none.
-        // Update the data.
-        abbreviatedIPv6.data = ipv6String
+        // Update the return data.
+        abbreviatedIPv6 = ipv6String
       }
 
     } catch (error: unknown) {
-      abbreviatedIPv6.success = false
-      abbreviatedIPv6.error = getErrorMessage(error)
-      return abbreviatedIPv6
+      throw new ArgumentError("From abbreviate: Expanding Part Failed.")
     }
 
     // Finally.    
