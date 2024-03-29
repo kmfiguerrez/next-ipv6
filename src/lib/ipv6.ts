@@ -382,7 +382,7 @@ class IPv6 {
    * 
    * @property `data` is of type `string`.
    */
-  static toBinary(hex: string): TIPv6ReturnData
+  static toBinary(hex: string): string
 
   /**
    * This method converts positive integers to binary.
@@ -393,7 +393,7 @@ class IPv6 {
    * 
    * @property `data` is of type `string`.
    */
-  static toBinary(integer: number): TIPv6ReturnData
+  static toBinary(integer: number): string
 
   /**
    * This method converts positve integers to binary.
@@ -412,13 +412,11 @@ class IPv6 {
    * 
    * @property `data` is of type `string`.
    */
-  static toBinary(integer: bigint): TIPv6ReturnData
-  static toBinary(x: string | number | bigint): TIPv6ReturnData {
-
+  static toBinary(integer: bigint): string
+  static toBinary(x: string | number | bigint): string {
+    // Return data
     let binaries: string = ""
 
-    // Return data
-    const binaryData: TIPv6ReturnData = {success: true}
 
     // Find out which data to work on.
     switch (typeof x) {
@@ -435,13 +433,7 @@ class IPv6 {
         const leadingZeroPattern = /^0+/
         
         // Validate input data first.
-        try {
-          if (!this.isHex(inputHex)) throw new Error("From toBinary: Invalid hex digits provided.")
-        } catch (error:unknown) {
-          binaryData.success = false
-          binaryData.error = getErrorMessage(error)
-          return binaryData
-        }
+        if (!this.isHex(inputHex)) throw new ArgumentError("From toBinary: Invalid hex digits provided.")
         
         /*
         Because numbers greater than (2 ** 53 - 1) lose precision 
@@ -450,10 +442,10 @@ class IPv6 {
         */
         for (const hex of inputHex) {
           // First, convert hex to number
-          const decimal = parseInt(hex, 16)
+          const decimal: number = parseInt(hex, 16)
 
           // Then from number to binary
-          const binary = decimal.toString(2)
+          const binary: string = decimal.toString(2)
 
           /*
             Because toString method does not add leading zeroes
@@ -471,10 +463,8 @@ class IPv6 {
         */
         binaries = binaries.replace(leadingZeroPattern, "");
 
-        // Update return data.
-        binaryData.data = binaries
         // Finally
-        return binaryData
+        return binaries
       }
       case "number": {
         /*
@@ -485,29 +475,21 @@ class IPv6 {
         const inputInteger: number = x
         
         // Validate input data.
-        try {
-          if (inputInteger === undefined || inputInteger === null) throw new Error("From toBinary: Did not provide an integer.")
-          
-          // Must be positive.
-          if (inputInteger < 0) throw new Error("From toBinary: Integers must be positive.")
+        if (inputInteger === undefined || inputInteger === null) throw new ArgumentError("From toBinary: Did not provide an argument.")
+        
+        // Must be positive.
+        if (inputInteger < 0) throw new ArgumentError("From toBinary: Argument integer must be positive.")
 
-          // This version of the overloaded method rejects integers >= Number.MAX_SAFE_INTEGER (2^53 - 1).
-          if (inputInteger >= Number.MAX_SAFE_INTEGER) throw new Error("From toBinary: Must use the method signature for numbers equal or greater than Number.MAX_SAFE_INTEGER.")
+        // This version of the overloaded method rejects integers >= Number.MAX_SAFE_INTEGER (2^53 - 1).
+        if (inputInteger >= Number.MAX_SAFE_INTEGER) throw new ArgumentError("From toBinary: Must use the method signature for numbers equal or greater than Number.MAX_SAFE_INTEGER.")
 
-        } catch (error: unknown) {
-          binaryData.success = false
-          binaryData.error = getErrorMessage(error)
-          return binaryData
-        }
 
         // Otherwise valid.
         // Convert to binary.
         binaries = inputInteger.toString(2)        
 
-        // Update return data.
-        binaryData.data = binaries
         // Finally
-        return binaryData
+        return binaries
       }
       case "bigint": {
         /*
@@ -518,34 +500,23 @@ class IPv6 {
         const inputInteger: bigint = x
 
         // Validate input data.
-        try {
-          if (inputInteger === undefined || inputInteger === null) throw new Error("From toBinary: Did not provide an integer.")
-          
-          // Must be positive.
-          if (inputInteger < BigInt(0)) throw new Error("From toBinary: Integers must be positive.")
+        if (inputInteger === undefined || inputInteger === null) throw new ArgumentError("From toBinary: Did not provide an argument.")
+        
+        // Must be positive.
+        if (inputInteger < BigInt(0)) throw new ArgumentError("From toBinary: Argument integers must be positive.")
 
-          // Input integer must be in BigInt format.
-          if (typeof inputInteger !== "bigint") throw new Error("From toBinary: Input integers must be in BigInt format.")
-
-        } catch (error: unknown) {
-          binaryData.success = false
-          binaryData.error = getErrorMessage(error)
-          return binaryData
-        }
+        // Input integer must be in BigInt format.
+        if (typeof inputInteger !== "bigint") throw new ArgumentError("From toBinary: Input integers must be in BigInt format.")
 
         // Otherwise valid.
         // Convert to binary.
         binaries = inputInteger.toString(2)        
 
-        // Update return data.
-        binaryData.data = binaries
         // Finally
-        return binaryData          
+        return binaries         
       }
       default:
-        binaryData.success = false
-        binaryData.error = "From toBinary: Invalid data type of input data."
-        return binaryData
+        throw new ArgumentError("From toBinary: Received nnvalid data type .")        
     }
   }
 
