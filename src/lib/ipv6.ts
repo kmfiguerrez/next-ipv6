@@ -11,7 +11,7 @@ import { getErrorMessage } from "./error-message"
  */
 export type TPrefixData = {
   data?: TPrefix
-  errorFields?: Array<TParamError>
+  errorFields: Array<TParamError>
 }
 
 
@@ -860,12 +860,11 @@ class IPv6 {
    * @param {number} subnetBits - An integer range from 0 to (128 - prefixLength).
    * @param {string} subnetToFind - An optional string param represents the current subnet number (default to zero).
    * 
-   * @returns {object} An `object` with two properties: `data` and an optional `errorFields`.
+   * @returns {object} An `object` with two optional properties: `data` and `errorFields`.
    * 
    * @property `data` is of type `TPrefix`. It is initialized if this method completes successfully.
-   * @property `errorFields` is an array of parameters of `getPrefix` method. It is initialized if this method fails to complete.
+   * @property `errorFields` is an array of parameters of `getPrefix` method. It is not empty if this method fails to complete.
    * 
-   * @throws `ArgumentError` is thrown if arguments is invalid.
    */
   static getPrefix(ipv6Address: string, prefixLength: number, subnetBits: number, subnetToFind: string = "0"): TPrefixData {
     /*
@@ -898,25 +897,28 @@ class IPv6 {
     }
     
     // Return data.
-    const prefixData: TPrefixData = {data: prefix}
+    const prefixData: TPrefixData = {
+      errorFields: []
+    }
+
     
     try {
       // validate input data first.
       if (!this.isValidIpv6(ipv6Address)) {
         // Set the error field (param).
-        prefixData.errorFields?.push({field: "ipv6Address", message: "Invalid IPv6 address."})
+        prefixData.errorFields.push({field: "ipv6Address", message: "Invalid IPv6 address."})
       }
       if (prefixLength === undefined || prefixLength === null || prefixLength < 0 || prefixLength >= 128) {
         // Set the error field (param).
-        prefixData.errorFields?.push({field: "prefixLenth", message: "Invalid prefix length."})
+        prefixData.errorFields.push({field: "prefixLenth", message: "Invalid prefix length."})
       }
       if (subnetBits === undefined || subnetBits === null || subnetBits < 0 || subnetBits >= (128 - prefixLength)) {
         // Set the error field (param).
-        prefixData.errorFields?.push({field: "subnetBits", message: "Invalid subnet bits."})
+        prefixData.errorFields.push({field: "subnetBits", message: "Invalid subnet bits."})
       }
       if (BigInt(subnetToFind) < 0 || BigInt(subnetToFind) > (BigInt(2 ** subnetBits) - BigInt(1))) {
         // Set the error field (param).
-        prefixData.errorFields?.push({field: "subnetToFind", message: "Subnet ${subnetToFind} does not exists."})
+        prefixData.errorFields.push({field: "subnetToFind", message: "Subnet ${subnetToFind} does not exists."})
       }
       // Throw error if there are.
       if (prefixData.errorFields && prefixData.errorFields.length > 0) {
