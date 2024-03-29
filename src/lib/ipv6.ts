@@ -10,7 +10,7 @@ import { getErrorMessage } from "./error-message"
  * @property `errorFields` is the param list of getPrefix method.
  */
 export type TPrefixData = {
-  data: TPrefix
+  data?: TPrefix
   errorFields?: Array<TParamError>
 }
 
@@ -714,7 +714,7 @@ class IPv6 {
       const integer: number = parseInt(nibble, 2)
       // Convert decimal to hexadecimals.
       const hex: string = integer.toString(16)
-      console.log(`Bits: ${nibble} - Dec: ${integer} - Hex: ${hex}`)
+      // console.log(`Bits: ${nibble} - Dec: ${integer} - Hex: ${hex}`)
 
       // Append hex to the array of nibbles.
       nibbles.push(hex)
@@ -862,8 +862,8 @@ class IPv6 {
    * 
    * @returns {object} An `object` with two properties: `data` and an optional `errorFields`.
    * 
-   * @property `data` is of type `TPrefix`.
-   * @property `errorFields` is an array of parameters of `getPrefix` method.
+   * @property `data` is of type `TPrefix`. It is initialized if this method completes successfully.
+   * @property `errorFields` is an array of parameters of `getPrefix` method. It is initialized if this method fails to complete.
    * 
    * @throws `ArgumentError` is thrown if arguments is invalid.
    */
@@ -905,22 +905,21 @@ class IPv6 {
       if (!this.isValidIpv6(ipv6Address)) {
         // Set the error field (param).
         prefixData.errorFields?.push({field: "ipv6Address", message: "Invalid IPv6 address."})
-        throw new ArgumentError("From getPrefix: Invalid argument(s) provided.")
-
       }
       if (prefixLength === undefined || prefixLength === null || prefixLength < 0 || prefixLength >= 128) {
         // Set the error field (param).
         prefixData.errorFields?.push({field: "prefixLenth", message: "Invalid prefix length."})
-        throw new ArgumentError("From getPrefix: Invalid argument(s) provided.")
       }
       if (subnetBits === undefined || subnetBits === null || subnetBits < 0 || subnetBits >= (128 - prefixLength)) {
         // Set the error field (param).
         prefixData.errorFields?.push({field: "subnetBits", message: "Invalid subnet bits."})
-        throw new ArgumentError("From getPrefix: Invalid argument(s) provided.")
       }
       if (BigInt(subnetToFind) < 0 || BigInt(subnetToFind) > (BigInt(2 ** subnetBits) - BigInt(1))) {
         // Set the error field (param).
         prefixData.errorFields?.push({field: "subnetToFind", message: "Subnet ${subnetToFind} does not exists."})
+      }
+      // Throw error if there are.
+      if (prefixData.errorFields && prefixData.errorFields.length > 0) {
         throw new ArgumentError(`From getPrefix: Invalid argument(s) provided.`)
       }
 
@@ -976,13 +975,14 @@ class IPv6 {
       prefix.lastUsableAddresss = this.#BinaryToIPv6(prefixLastAddressBin, false)
 
     } catch (error: unknown) {
-      if (error instanceof SyntaxError) {
-        throw new ArgumentError(`From getPrefix: ${getErrorMessage(error)}`)
-      }
+      // if (error instanceof SyntaxError) {
+      //   throw new ArgumentError(`From getPrefix: ${getErrorMessage(error)}`)
+      // }
       
-      if (error instanceof ArgumentError) {
-        throw new ArgumentError(getErrorMessage(error))
-      }
+      // if (error instanceof ArgumentError) {
+      //   throw new ArgumentError(getErrorMessage(error))
+      // }
+      return prefixData
     }
 
     // Update return data.
