@@ -785,16 +785,19 @@ class IPv6 {
 
 
   /**
-   * Initialize the Prefix object of typed `TPrefix`.
+   * Get the Prefix (subnet).
    * 
    * @param {string} ipv6Address - A string of IPv6 address.
    * @param {number} prefixLength - An integer range from 0 to 128.
-   * @param {number} subnetBits - An integer range from 0 to 128.
+   * @param {number} subnetBits - An integer range from 0 to (128 - prefixLength).
    * @param {string} subnetToFind - An optional string param represents the current subnet number (default to zero).
    * 
-   * @returns {object} An `object` with three properties: `success`, `error` and `data`.
+   * @returns {object} An `object` with two properties: `data` and an optional `errorFields`.
    * 
    * @property `data` is of type `TPrefix`.
+   * @property `errorFields` is an array of parameters of `getPrefix` method.
+   * 
+   * @throws `ArgumentError` is thrown if arguments is invalid.
    */
   static getPrefix(ipv6Address: string, prefixLength: number, subnetBits: number, subnetToFind: string = "0"): TPrefixData {
     /*
@@ -825,7 +828,7 @@ class IPv6 {
     }
     
     // Return data.
-    const prefixData: TPrefixData = {success: true}
+    const prefixData: TPrefixData = {data: prefix}
     
     try {
       // validate input data first.
@@ -853,17 +856,13 @@ class IPv6 {
 
 
       // Make sure the IPv6 address is in expanded format.
-      const expandingResult = this.expand(ipv6Address)
-      if (!expandingResult.success) throw new Error(expandingResult.error)
-      const expandedIPv6Address: string = expandingResult.data as string
+      const expandedIPv6Address: string = this.expand(ipv6Address)
       // Number of bits.
       const newPrefixLength: number = prefixLength + subnetBits
       // Number of bits.
       const interfaceIdBits: number = 128 - newPrefixLength
       // Get the network portion binary.
-      const toBinaryResult = this.#IPv6ToBinary(expandedIPv6Address, false)
-      if (!toBinaryResult.success) throw new Error(expandingResult.error)
-      const networkPortionBin: string = (toBinaryResult.data as string).slice(0, prefixLength)
+      const networkPortionBin: string = this.#IPv6ToBinary(expandedIPv6Address, false).slice(0, prefixLength)
       const subnetNumber: bigint = BigInt(subnetToFind)
 
 
@@ -940,39 +939,37 @@ class IPv6 {
    * @param ipv6Address - A string of IPv6 address.
    * @param skipArgumentValidation - An optional boolean param default to `true`.
    * 
-   * @returns {object} An `object` with three properties: `success`, `error` and `data`.
+   * @returns {string} A string of binaries.
    * 
-   * @property `data` is of type `string`.
+   * @throws `ArgumentError` is thrown if argument is invalid.
    */
-   static #IPv6ToBinary(ipv6Address: string, skipArgumentValidation: boolean = true): TIPv6ReturnData {
+   static #IPv6ToBinary(ipv6Address: string, skipArgumentValidation: boolean = true): string {
     /*
       Note
       It is up to the method caller to validate input data.
     */
 
+    // Return data.
     let binaries: string = ""
 
-    // Return data.
-    const binaryData: TIPv6ReturnData = {success: true} 
-
-    // Validate input data first.
-    if (skipArgumentValidation === false) {
-      if (!this.isValidIpv6(ipv6Address)) {
-        binaryData.success = false
-        binaryData.error = "From IPv6ToBinary: Invalid IPv6 address."
-        return binaryData
+    try {
+      // Validate input data first.
+      if (skipArgumentValidation === false) {
+        if (!this.isValidIpv6(ipv6Address)) throw new Error("From IPv6ToBinary: Invalid IPv6 address.")
       }
+      
+      
+      for (const hex of ipv6Address.split(":")) {
+        binaries += this.toBinary(hex)
+      }      
+    } catch (error: unknown) {
+      if (error instanceof ArgumentError) throw new ArgumentError(getErrorMessage(error))
+      
+      throw new ArgumentError(getErrorMessage(error))
     }
-    
 
-    for (const hex of ipv6Address.split(":")) {
-      binaries += this.toBinary(hex).data
-    }
-
-    // Update return data.
-    binaryData.data = binaries
     // Finally.
-    return binaryData
+    return binaries
   }
 
 
