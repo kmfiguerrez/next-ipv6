@@ -571,6 +571,11 @@ class IPv6 {
         try {
           if (!this.isBinary(inputBinary)) throw new ArgumentError("From toHex: Provided with invalid binaries.")
 
+          /*
+            The private static BinaryToHex is used instead of the 
+            built-in methods is because to include leading zeroes
+            and built-in methods don't do that.
+          */
           hexadecimals = this.BinaryToHex(inputBinary)
 
         } catch (error: unknown) {
@@ -640,6 +645,87 @@ class IPv6 {
     }    
   }
 
+
+  /**
+   * Converts a string binaries into hexadecimals.
+   * 
+   * __Notes__: 
+   * - This method include leading zeroes.
+   * - May throw an `ArgumentError` exception if `skipArgumentValidation`
+   * param is set to `false`.
+   * 
+   * @param {string} binary - A string of binaries.
+   * @param {boolean} skipArgumentValidation - An optional boolean param default to `true`.
+   * 
+   * @returns {string}  A string of hexadecimals
+   * 
+   * @throws `ArgumentError` is thrown if argument is invalid.
+   */
+  static BinaryToHex(binary: string, skipArgumentValidation: boolean = true) {
+    /*
+      Note
+      It is up to the method caller to validate input data.
+      This method is created because JS built-in methods 
+      do not take leading zeroes into account when converting
+      a string of binaries into hexadecimals.
+    */
+
+    // Sanitize input data first.
+    binary = binary.trim()
+
+    const divisibleByFour: boolean = binary.length % 4 === 0
+
+    const nibbles: Array<string> = []
+    // Return data.
+    let hexadecimals: string = ""
+
+
+    /*
+      Validate input data. Disabled by default. 
+      It's up to the method caller.
+    */
+    if (skipArgumentValidation == false) {
+      if (!this.isBinary(binary)) throw new ArgumentError("From ConvertBinaryToHex: Invalid binaries provided.");
+    }
+
+    // Check if not divisible by four.
+    if (!divisibleByFour) {
+      // Extract the first x bits.
+      const bits: number = binary.length % 4
+      // Turn it to hex and append it to the array of nibbles.
+      const extractedBin: string = binary.slice(0, bits)
+      const integer = parseInt(extractedBin, 2)
+      const hex: string = integer.toString(16)
+      nibbles.push(hex)
+
+      // Then remove the extracted bits to binary.
+      binary = binary.slice(bits)
+    }
+
+    // When binary is now divisible by four.
+    for (let index = 0; index < binary.length; index += 4) {
+      // Turn string binaries into array because string doesn't have a
+      // splice method.
+      const tempBinArray: Array<string> = binary.split("")
+      // Extract four bits on each iteration.
+      const nibble: string = tempBinArray.splice(index, 4, "del").join("")
+      // Convert four bits to decimal form (integer).
+      const integer: number = parseInt(nibble, 2)
+      // Convert decimal to hexadecimals.
+      const hex: string = integer.toString(16)
+      console.log(`Bits: ${nibble} - Dec: ${integer} - Hex: ${hex}`)
+
+      // Append hex to the array of nibbles.
+      nibbles.push(hex)
+    }
+
+    // Turn Array of nibbles into a single string.
+    hexadecimals = nibbles.join("")
+
+    // Finally
+    return hexadecimals
+  }  
+  
   
   /**
    * Converts a string of binaries or hexadecimals to decimal form (integer).
@@ -909,85 +995,7 @@ class IPv6 {
   //   return prefixData
   // }
 
-  /**
-   * Converts a string binaries into hexadecimals.
-   * 
-   * __Notes__: 
-   * - This method include leading zeroes.
-   * - May throw an `ArgumentError` exception if `skipArgumentValidation`
-   * param is set to `false`.
-   * 
-   * @param {string} binary - A string of binaries.
-   * @param {boolean} skipArgumentValidation - An optional boolean param default to `true`.
-   * 
-   * @returns {string}  A string of hexadecimals
-   * 
-   * @throws `ArgumentError` is thrown if argument is invalid.
-   */
-  static BinaryToHex(binary: string, skipArgumentValidation: boolean = true) {
-    /*
-      Note
-      It is up to the method caller to validate input data.
-      This method is created because JS built-in methods and static toHex
-      method does not take leading zeroes into account when converting
-      a string of binaries into hexadecimals.
-    */
 
-    // Sanitize input data first.
-    binary = binary.trim()
-
-    const divisibleByFour: boolean = binary.length % 4 === 0
-
-    const nibbles: Array<string> = []
-    // Return data.
-    let hexadecimals: string = ""
-
-
-    /*
-      Validate input data. Disabled by default. 
-      It's up to the method caller.
-    */
-    if (skipArgumentValidation == false) {
-      if (!this.isBinary(binary)) throw new ArgumentError("From ConvertBinaryToHex: Invalid binaries provided.");
-    }
-
-    // Check if not divisible by four.
-    if (!divisibleByFour) {
-      // Extract the first x bits.
-      const bits: number = binary.length % 4
-      // Turn it to hex and append it to the array of nibbles.
-      const extractedBin: string = binary.slice(0, bits)
-      const integer = parseInt(extractedBin, 2)
-      const hex: string = integer.toString(16)
-      nibbles.push(hex)
-
-      // Then remove the extracted bits to binary.
-      binary = binary.slice(bits)
-    }
-
-    // When binary is now divisible by four.
-    for (let index = 0; index < binary.length; index += 4) {
-      // Turn string binaries into array because string doesn't have a
-      // splice method.
-      const tempBinArray: Array<string> = binary.split("")
-      // Extract four bits on each iteration.
-      const nibble: string = tempBinArray.splice(index, 4, "del").join("")
-      // Convert four bits to decimal form (integer).
-      const integer: number = parseInt(nibble, 2)
-      // Convert decimal to hexadecimals.
-      const hex: string = integer.toString(16)
-      console.log(`Bits: ${nibble} - Dec: ${integer} - Hex: ${hex}`)
-
-      // Append hex to the array of nibbles.
-      nibbles.push(hex)
-    }
-
-    // Turn Array of nibbles into a single string.
-    hexadecimals = nibbles.join("")
-
-    // Finally
-    return hexadecimals
-  }
 
 
   /**
