@@ -378,9 +378,9 @@ class IPv6 {
    * 
    * @param {string} hex - A string of positive hex digits.
    * 
-   * @returns {object} An `object` with three properties: `success`, `error` and `data`.
+   * @returns {string} A string binaries.
    * 
-   * @property `data` is of type `string`.
+   * @throws `ArgumentError` is thrown if argument is invalid.
    */
   static toBinary(hex: string): string
 
@@ -389,9 +389,9 @@ class IPv6 {
    * 
    * @param {number} integer - Positive integers (integers less than Number.MAX_SAFE_INTEGER or 2^53 - 1).
    * 
-   * @returns {object} An `object` with three properties: `success`, `error` and `data`.
+   * @returns {string} A string binaries.
    * 
-   * @property `data` is of type `string`.
+   * @throws `ArgumentError` is thrown if argument is invalid.
    */
   static toBinary(integer: number): string
 
@@ -401,16 +401,16 @@ class IPv6 {
    * JS version lower than ES2020 does not support BigInt literals.
    * Argument passed to toBinary method must use the following example.
    * 
-   * ex.) const integer = BigInt("9007199254740991")
+   * ex.) `const integer = BigInt("9007199254740991")`
    * 
    * __where__: Positive `integer` argument to `BigInt` constructor is in 
    * `string` format to avoid losing precision of the argument.
    * 
    * @param {bigint} integer - Positive integers (greater than or equal to Number.MAX_SAFE_INTEGER or 2^53 - 1).
    * 
-   * @returns {object} An `object` with three properties: `success`, `error` and `data`.
+   * @returns {string} A string binaries.
    * 
-   * @property `data` is of type `string`.
+   * @throws `ArgumentError` is thrown if argument is invalid.
    */
   static toBinary(integer: bigint): string
   static toBinary(x: string | number | bigint): string {
@@ -516,7 +516,7 @@ class IPv6 {
         return binaries         
       }
       default:
-        throw new ArgumentError("From toBinary: Received nnvalid data type .")        
+        throw new ArgumentError("From toBinary: Received invalid data type.")        
     }
   }
 
@@ -526,40 +526,39 @@ class IPv6 {
    * 
    * @param {string} binary - A string of positive binaries.
    * 
-   * @returns {object} An `object` with three properties: `success`, `error` and `data`.
+   * @returns {string} A string of hexadecimals.
    * 
-   * @property `data` is of type `string`.
+   * @throws `ArgumentError` is thrown if argument is invalid.
    */
-  static toHex(binary: string): TIPv6ReturnData
+  static toHex(binary: string): string
 
   /**
    * This method converts positive integers into hexadecimals.
    * 
    * @param {number} integer - Positive integers (integers less than Number.MAX_SAFE_INTEGER or 2^53 - 1).
    * 
-   * @returns {object} An `object` with three properties: `success`, `error` and `data`.
+   * @returns {string} A string of hexadecimals.
    * 
-   * @property `data` is of type `string`.
+   * @throws `ArgumentError` is thrown if argument is invalid.
    */  
-  static toHex(integer: number): TIPv6ReturnData
+  static toHex(integer: number): string
 
   /**
    * This method converts positive integers into hexadecimals.
    * 
    * @param {bigint} integer - Positive integers (integers equal or greater than Number.MAX_SAFE_INTEGER or 2^53 - 1).
    * 
-   * @returns {object} An `object` with three properties: `success`, `error` and `data`.
+   * @returns {string} A string of hexadecimals.
    * 
-   * @property `data` is of type `string`.
+   * @throws `ArgumentError` is thrown if argument is invalid.
    */    
-  static toHex(integer: bigint): TIPv6ReturnData
-  static toHex(x: string | number | bigint): TIPv6ReturnData {
-
+  static toHex(integer: bigint): string
+  static toHex(x: string | number | bigint): string {
+    // Return data.
     let hexadecimals: string = ""
 
-    // Return data.
-    const hexData: TIPv6ReturnData = {success: true}
-
+    
+    // Determine which data type to work on.
     switch (typeof x) {
       case "string": {
         /*
@@ -573,7 +572,7 @@ class IPv6 {
 
         // Validate input data.
         try {
-          if (!this.isBinary(inputBinary)) throw new Error("From toHex: Provided with invalid binaries.")
+          if (!this.isBinary(inputBinary)) throw new ArgumentError("From toHex: Provided with invalid binaries.")
 
           /*
             Because number greater than (2 ** 53 - 1) loses precision we will
@@ -594,48 +593,35 @@ class IPv6 {
           hexadecimals = decimal.toString(16)
 
         } catch (error: unknown) {
-          hexData.success = false
-          hexData.error = getErrorMessage(error)
-          return hexData
+          throw new ArgumentError(`From toHex: ${getErrorMessage(error)}`)
         }
 
-        // Update return data.
-        hexData.data = hexadecimals
         // Finally
-        return hexData
+        return hexadecimals
       }
       case "number": {
         /*
           This version of the overloaded method converts positive integer
           (less than Number.MAX_SAFE_INTEGER or 2^53 - 1) into hexadecimals.
         */
-
         const inputInteger: number = x
         
 
         // Validate input data first.
-        try {
-          if (inputInteger === undefined || inputInteger === null) throw new Error("From toHex: Did not provide integers.")
+        if (inputInteger === undefined || inputInteger === null) throw new ArgumentError("From toHex: Did not provide integers.")
 
-          // Must be positive integers.
-          if (inputInteger < 0) throw new Error("From toHex: Must be positive integers.")
+        // Must be positive integers.
+        if (inputInteger < 0) throw new ArgumentError("From toHex: Must be positive integers.")
 
-          // This version of the overloaded method rejects integers >= Number.MAX_SAFE_INTEGER (2^53 - 1).
-          if (inputInteger >= Number.MAX_SAFE_INTEGER) throw new Error("From toHex: Must use the method signature for integers equal or greater than Number.MAX_SAFE_INTEGER.")
-        } catch (error: unknown) {
-          hexData.success = false
-          hexData.error = getErrorMessage(error)
-          return hexData
-        }
+        // This version of the overloaded method rejects integers >= Number.MAX_SAFE_INTEGER (2^53 - 1).
+        if (inputInteger >= Number.MAX_SAFE_INTEGER) throw new ArgumentError("From toHex: Must use the method signature for integers equal or greater than Number.MAX_SAFE_INTEGER.")
 
         // Otherwise valid.
         // Convert decimal to hexadecimals.
         hexadecimals = inputInteger.toString(16)
 
-        // Update data return.
-        hexData.data = hexadecimals
         // Finally
-        return hexData
+        return hexadecimals
       }
       case "bigint": {
         /*
@@ -648,33 +634,27 @@ class IPv6 {
 
         // Validate input data.
         try {
-          if (inputInteger === undefined || inputInteger === null) throw new Error("From toBinary: Did not provide an integer.")
+          if (inputInteger === undefined || inputInteger === null) throw new ArgumentError("From toBinary: Did not provide an integer.")
           
           // Must be positive.
-          if (inputInteger < BigInt(0)) throw new Error("From toHex: Integers must be positive.")
+          if (inputInteger < BigInt(0)) throw new ArgumentError("From toHex: Integers must be positive.")
 
           // Input integer must be in bigint format.
-          if (typeof inputInteger !== "bigint") throw new Error("From toHex: Input integers must be in bigint format.")
+          if (typeof inputInteger !== "bigint") throw new ArgumentError("From toHex: Input integers must be in bigint format.")
 
         } catch (error: unknown) {
-          hexData.success = false
-          hexData.error = getErrorMessage(error)
-          return hexData
+          throw new ArgumentError(`From toHex: ${getErrorMessage(error)}`)
         }
 
         // Otherwise valid.
         // Convert decimal to hexadecimals.
         hexadecimals = inputInteger.toString(16)        
 
-        // Update return data.
-        hexData.data = hexadecimals
         // Finally
-        return hexData
+        return hexadecimals
       }        
       default: {
-        hexData.success = false
-        hexData.error = "From toHex: Received unkown data type."
-        return hexData
+        throw new ArgumentError(`From toHex: Received invalid data type.`)
       }
     }    
   }
