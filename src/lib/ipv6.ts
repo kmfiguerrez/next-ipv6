@@ -376,7 +376,7 @@ class IPv6 {
   /**
    * This method converts hexadecimals digits to binary.
    * 
-   * __Notes__:
+   * __Note__:
    * This method include leading zeroes.
    * 
    * @param {string} hex - A string of positive hex digits.
@@ -518,6 +518,9 @@ class IPv6 {
   /**
    * This method converts a string of binaries into hexadecimals.
    * 
+   * __Note__:
+   * This method include leading zeroes.
+   * 
    * @param {string} binary - A string of positive binaries.
    * 
    * @returns {string} A string of hexadecimals.
@@ -568,26 +571,10 @@ class IPv6 {
         try {
           if (!this.isBinary(inputBinary)) throw new ArgumentError("From toHex: Provided with invalid binaries.")
 
-          /*
-            Because number greater than (2 ** 53 - 1) loses precision we will
-            use bigint too.
-            Note that the BigInt constructor throws a SyntaxError if argument
-            is invalid.
-          */
-          let decimal: bigint | number 
-          
-          // Convert binary to decimal form (integer).
-          decimal = parseInt(inputBinary, 2)
-          if (decimal >= Number.MAX_SAFE_INTEGER) {
-            // Update decimal as bigint.
-            decimal = BigInt(`0b${inputBinary}`)
-          }
-
-          // Convert decimal to hexadecimals.
-          hexadecimals = decimal.toString(16)
+          hexadecimals = this.BinaryToHex(inputBinary)
 
         } catch (error: unknown) {
-          throw new ArgumentError(`From toHex: ${getErrorMessage(error)}`)
+          throw new ArgumentError(`${getErrorMessage(error)}`)
         }
 
         // Finally
@@ -925,8 +912,9 @@ class IPv6 {
   /**
    * Converts a string binaries into hexadecimals.
    * 
-   * __Note__: 
-   * May throw an `ArgumentError` exception if `skipArgumentValidation`
+   * __Notes__: 
+   * - This method include leading zeroes.
+   * - May throw an `ArgumentError` exception if `skipArgumentValidation`
    * param is set to `false`.
    * 
    * @param {string} binary - A string of binaries.
@@ -1030,7 +1018,6 @@ class IPv6 {
       if (skipArgumentValidation === false) {
         if (!this.isValidIpv6(ipv6Address)) throw new Error("From IPv6ToBinary: Invalid IPv6 address.")
       }
-      
       
       for (const hex of ipv6Address.split(":")) {
         binaries += this.toBinary(hex)
