@@ -19,8 +19,9 @@ export type TPrefixData = {
  * This type is used in IPv6 static getPrefix method.
  * 
  * @property `field` is a parameter name.
+ * @property `message` is an error message.
  */
-type TParamError = {
+export type TParamError = {
   field: string
   message: string
 }
@@ -870,9 +871,11 @@ class IPv6 {
     /*
       Note
       The subnetToFind (Subnet number or Prefix number) is used to find
-      the desired subnet. By default set to zero (subnet zero) and of 
-      type string to avoid losing precision.
-      The subnetBits specifies the length of the subnet portion. 
+      the desired subnet number. By default set to zero (subnet zero) and of 
+      type string to avoid losing precision. It is also used to determine
+      the value of the subnet portion.
+      The subnetBits specifies the length (Up to what place value to use) 
+      of the subnet portion. 
     */
 
     // Declare objects.
@@ -988,8 +991,6 @@ class IPv6 {
     // Finally.
     return prefixData
   }
-
-
 
 
   /**
