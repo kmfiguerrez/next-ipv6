@@ -68,6 +68,7 @@ const IPv6SubnettingForm: React.FC<TIPv6FormProps> = ({ onFormSubmit }) => {
 
     // Otherwise no error.
     console.log(getPrefixResult.data)
+    onFormSubmit(getPrefixResult.data)
   }
   
   
