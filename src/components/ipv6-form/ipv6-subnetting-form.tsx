@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 
 import ipv6FormSchema, { type Tipv6Form } from '@/schemas/ipv6-form-schema'
-import IPv6, { TPrefix, TPrefixData } from "@/lib/ipv6"
+import IPv6, { TParamError, TPrefix, TPrefixData } from "@/lib/ipv6"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -34,17 +34,34 @@ const Ipv6SubnettingForm = () => {
   // 2. Define a submit handler.
   function onSubmit(values: Tipv6Form) {
     // Do something with the form values.
-    // ✅ This will be type-safe and validated.
     const ipv6Address = values.ipv6Address;
     const prefixLength = parseInt(values.prefixLength)
     const subnetBits = parseInt(values.subnetBits)
 
-    // form.setError("ipv6Address", {type: "value", message: "test lang"})
-    const prefix: TPrefixData = IPv6.getPrefix(ipv6Address, prefixLength, subnetBits)
-    console.log("Status:", prefix.success)
-    console.log("Error:", prefix.error)
-    console.log((prefix.data as TPrefix))
+    // Get prefix.
+    const getPrefixResult: TPrefixData = IPv6.getPrefix(ipv6Address, prefixLength, subnetBits)
+    
+    // Check for field error.
+    if (getPrefixResult.errorFields.length > 0) {
+      console.log("There's error.")
+      getPrefixResult.errorFields.map(paramError => {
+        // Set errors.
+        if (paramError.field.toLowerCase() === "ipv6address") {
+          form.setError("ipv6Address", {type: "value", message: paramError.message})
+        }
+        if (paramError.field.toLowerCase() === "prefixlength") {
+          form.setError("prefixLength", {type: "value", message: paramError.message})
+        }
+        if (paramError.field.toLowerCase() === "subnetbits") {
+          form.setError("subnetBits", {type: "value", message: paramError.message})
+        }
+      })
+      // Exit.
+      return
+    }
 
+    // Otherwise no error.
+    console.log(getPrefixResult.data)
   }
   
   
@@ -57,11 +74,15 @@ const Ipv6SubnettingForm = () => {
           name="ipv6Address"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>IPv6 Address</FormLabel>
+              <FormLabel >IPv6 Address</FormLabel>
               <FormControl>
-                <Input placeholder="Enter IPv6 Address here" {...field} />
+                <Input 
+                  placeholder="Enter IPv6 Address here" 
+                  {...field}
+                  className=""
+                />
               </FormControl>
-              <FormMessage />
+              <FormMessage className=""/>
             </FormItem>
           )}
         />

@@ -15,6 +15,10 @@ export const getErrorMessage = (error: unknown): string => {
     message = error.message
     return message
   }
+  else if (error instanceof RangeError) {
+    message = error.message
+    return message
+  }  
   else if (error instanceof Error) {
     message = error.message
     return message
