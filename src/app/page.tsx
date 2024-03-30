@@ -2,11 +2,11 @@
 
 import { useState } from "react";
 
-import Ipv6SubnettingForm from "@/components/ipv6-form/ipv6-subnetting-form";
+import IPv6SubnettingForm from "@/components/ipv6-form/ipv6-subnetting-form";
 import NavMenu from "@/components/nav-menu";
 import OutputDisplay from "@/components/output/output-display";
 
-import type { TInterfaceID, TPrefix } from "@/lib/ipv6";
+import type { TPrefix } from "@/lib/ipv6";
 
 
 export default function Home() {
@@ -35,7 +35,7 @@ export default function Home() {
     <>
       <NavMenu />
       <main className="container">
-        <Ipv6SubnettingForm />
+        <IPv6SubnettingForm onFormSubmit={setPrefix} />
         <br />
         <br />
         <OutputDisplay prefix={prefix} />

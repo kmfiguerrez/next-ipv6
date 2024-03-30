@@ -1,10 +1,12 @@
 'use client'
 
+import { Dispatch, SetStateAction } from "react"
+
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 
 import ipv6FormSchema, { type Tipv6Form } from '@/schemas/ipv6-form-schema'
-import IPv6, { type TPrefixData } from "@/lib/ipv6"
+import IPv6, { type TPrefix, type TPrefixData } from "@/lib/ipv6"
 
 import { inconsolata } from "@/lib/fonts"
 
@@ -20,9 +22,11 @@ import {
 } from "@/components/ui/form"
 
 
+type TIPv6FormProps = {
+  onFormSubmit: Dispatch<SetStateAction<TPrefix | undefined>>
+}
 
-
-const Ipv6SubnettingForm = () => {
+const IPv6SubnettingForm: React.FC<TIPv6FormProps> = ({ onFormSubmit }) => {
   // 1. Define your form.
   const form = useForm<Tipv6Form>({
     resolver: zodResolver(ipv6FormSchema),
@@ -140,4 +144,4 @@ const Ipv6SubnettingForm = () => {
   )
 }
 
-export default Ipv6SubnettingForm
+export default IPv6SubnettingForm
