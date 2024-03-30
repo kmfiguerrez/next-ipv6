@@ -34,7 +34,7 @@ type TBaseNumberSystem = 2 | 16
  * @property `firstUsableAddressBin` is string of binaries.
  * @property `lastUsableAddresssBin` is string of binaries.
  */
-type TInterfaceID = {
+export type TInterfaceID = {
   id: string
   bits: number
   firstUsableAddressBin: string
@@ -46,12 +46,14 @@ type TInterfaceID = {
  * @property `id` is a string of hexadecimals.
  * @property `networkPortionBin` is a string of binaries.
  * @property `subnetPortionBin` is a string of binaries.
+ * @property `subnetBits` specifies the length of the `subnetPortionBin`.
  */
 export type TPrefix = {
   id: string
   subnetNumber: bigint
   networkPortionBin: string
   subnetPortionBin: string
+  subnetBits: number
   interfaceIdPortion: TInterfaceID
   newPrefixLength: number
   firstUsableAddress: string
@@ -891,6 +893,7 @@ class IPv6 {
       newPrefixLength: 0,
       networkPortionBin: "",
       subnetPortionBin: "",
+      subnetBits: subnetBits,
       interfaceIdPortion: interfaceID,
       firstUsableAddress: "",
       lastUsableAddresss: "",
