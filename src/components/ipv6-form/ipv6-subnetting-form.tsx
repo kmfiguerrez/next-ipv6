@@ -87,47 +87,49 @@ const Ipv6SubnettingForm = () => {
           )}
         />
 
-        <FormField
-          control={form.control}
-          name="prefixLength"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Prefix length</FormLabel>
-              <FormControl>
-                <Input 
+        <div className="grid gap-x-5 grid-cols-2">
+          <FormField
+            control={form.control}
+            name="prefixLength"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Prefix length</FormLabel>
+                <FormControl>
+                  <Input 
+                    type="number"
+                    min={0}
+                    max={128}
+                    placeholder="Enter Prefix length here" 
+                    {...field} 
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />        
+
+          <FormField
+            control={form.control}
+            name="subnetBits"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Subnet bits</FormLabel>
+                <FormControl>
+                  <Input 
                   type="number"
                   min={0}
                   max={128}
-                  placeholder="Enter Prefix length here" 
+                  placeholder="Enter Subnet bits here" 
                   {...field} 
                 />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />        
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
 
-        <FormField
-          control={form.control}
-          name="subnetBits"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Subnet bits</FormLabel>
-              <FormControl>
-                <Input 
-                type="number"
-                min={0}
-                max={128}
-                placeholder="Enter Subnet bits here" 
-                {...field} 
-              />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />   
-
-        <Button type="submit">Submit</Button>
+        <Button type="submit">Subnet</Button>
 
       </form>
     </Form>
