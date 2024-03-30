@@ -4,7 +4,9 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 
 import ipv6FormSchema, { type Tipv6Form } from '@/schemas/ipv6-form-schema'
-import IPv6, { TParamError, TPrefix, TPrefixData } from "@/lib/ipv6"
+import IPv6, { type TPrefixData } from "@/lib/ipv6"
+
+import { inconsolata } from "@/lib/fonts"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -79,7 +81,7 @@ const Ipv6SubnettingForm = () => {
                 <Input 
                   placeholder="Enter IPv6 Address here" 
                   {...field}
-                  className=""
+                  className={`${inconsolata.className} text-lg`}
                 />
               </FormControl>
               <FormMessage className=""/>
@@ -100,7 +102,8 @@ const Ipv6SubnettingForm = () => {
                     min={0}
                     max={128}
                     placeholder="Enter Prefix length here" 
-                    {...field} 
+                    {...field}
+                    className={`${inconsolata.className} text-lg`}
                   />
                 </FormControl>
                 <FormMessage />
@@ -120,7 +123,8 @@ const Ipv6SubnettingForm = () => {
                   min={0}
                   max={128}
                   placeholder="Enter Subnet bits here" 
-                  {...field} 
+                  {...field}
+                  className={`${inconsolata.className} text-lg`}
                 />
                 </FormControl>
                 <FormMessage />

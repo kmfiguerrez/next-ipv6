@@ -9,6 +9,7 @@ export default function Home() {
       <main className="container">
         <Ipv6SubnettingForm />
         <br />
+        <br />
         <OutputDisplay />
       </main>
     </>
