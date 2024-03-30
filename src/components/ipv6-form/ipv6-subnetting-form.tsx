@@ -76,11 +76,16 @@ const IPv6SubnettingForm: React.FC<TIPv6FormProps> = ({ onFormSubmit }) => {
     onFormSubmit(getPrefixResult.data)
   }
   
-  const formRef = useRef<HTMLFormElement | null>(null)
+  /*
+    Show only the portal input element for subnet number
+    if the state isSubmitSuccessful has been set to true.
+  */
+  const show = useRef<boolean>(false)
+  if (form.formState.isSubmitSuccessful) show.current = true
 
   return (
     <Form {...form}>
-      <form ref={formRef} onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 mb-10">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 mb-10">
 
         <FormField
           control={form.control}
@@ -144,12 +149,13 @@ const IPv6SubnettingForm: React.FC<TIPv6FormProps> = ({ onFormSubmit }) => {
           />
         </div>
         
-        {/* Teleport this input element in the output component.
-            If there's no error after submitting, Portal works
-            because first, all elements have already committed
-            so referencing elements works like document.querySelector.
+        {/* Teleport this input element into the output component.
+            If there's no error after submitting at least once, Portal works
+            because first, one of the code branch of the output component
+            (if prefix is not undefined) have comitted so referencing 
+            elements works like document.querySelector("subnetNumber").
         */}
-        {form.formState.isSubmitted && createPortal(
+        {show.current && createPortal(
           <FormField
             control={form.control}
             name="subnetNumber"
@@ -163,16 +169,21 @@ const IPv6SubnettingForm: React.FC<TIPv6FormProps> = ({ onFormSubmit }) => {
                   max={128}
                   placeholder="Enter Subnet bits here" 
                   {...field}
-                  className={`${inconsolata.className} w-[50%] h-7`}
+                  className={`${inconsolata.className} w-[50%] h-7 bg-transparent border-0 text-lg`}
                 />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />,
-          // formRef.current?.nextElementSibling as Element
           document.querySelector("#subnetNumberContainer") as Element
         )}
+
+        <div>
+          {/* {form.formState.isSubmitSuccessful.toString()} */}
+          {show.current.toString()}
+
+        </div>
 
         <Button 
           type="submit"
