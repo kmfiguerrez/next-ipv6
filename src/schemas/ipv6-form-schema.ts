@@ -25,8 +25,10 @@ const ipv6FormSchema = z.object({
 
       return true
     },
-    { message: "Subnet bits is required" })    
+    { message: "Subnet bits is required" }),
+  subnetNumber: z.string()
 })
+.strict()
 
 type Tipv6Form = z.infer<typeof ipv6FormSchema>
 

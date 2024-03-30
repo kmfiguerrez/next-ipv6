@@ -921,7 +921,7 @@ class IPv6 {
       }
       if (BigInt(subnetToFind) < 0 || BigInt(subnetToFind) > (BigInt(2 ** subnetBits) - BigInt(1))) {
         // Set the error field (param).
-        prefixData.errorFields.push({field: "subnetToFind", message: "Subnet ${subnetToFind} does not exists."})
+        prefixData.errorFields.push({field: "subnetToFind", message: `Subnet ${subnetToFind} does not exists.`})
       }
       // Throw error if there are.
       if (prefixData.errorFields && prefixData.errorFields.length > 0) {

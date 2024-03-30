@@ -36,8 +36,6 @@ export default function Home() {
       <NavMenu />
       <main className="container">
         <IPv6SubnettingForm onFormSubmit={setPrefix} />
-        <br />
-        <br />
         <OutputDisplay prefix={prefix} />
       </main>
     </>

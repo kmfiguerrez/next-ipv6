@@ -1,6 +1,7 @@
 'use client'
 
-import { Dispatch, SetStateAction } from "react"
+import { Dispatch, SetStateAction, useRef } from "react"
+import { createPortal } from 'react-dom';
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
@@ -34,6 +35,7 @@ const IPv6SubnettingForm: React.FC<TIPv6FormProps> = ({ onFormSubmit }) => {
       ipv6Address: "",
       prefixLength: "",
       subnetBits: "",
+      subnetNumber: "0"
     },
   })
 
@@ -43,9 +45,10 @@ const IPv6SubnettingForm: React.FC<TIPv6FormProps> = ({ onFormSubmit }) => {
     const ipv6Address = values.ipv6Address;
     const prefixLength = parseInt(values.prefixLength)
     const subnetBits = parseInt(values.subnetBits)
+    const subnetNumber = values.subnetNumber
 
     // Get prefix.
-    const getPrefixResult: TPrefixData = IPv6.getPrefix(ipv6Address, prefixLength, subnetBits)
+    const getPrefixResult: TPrefixData = IPv6.getPrefix(ipv6Address, prefixLength, subnetBits, subnetNumber)
     
     // Check for field error.
     if (getPrefixResult.errorFields.length > 0) {
@@ -61,20 +64,23 @@ const IPv6SubnettingForm: React.FC<TIPv6FormProps> = ({ onFormSubmit }) => {
         if (paramError.field.toLowerCase() === "subnetbits") {
           form.setError("subnetBits", {type: "value", message: paramError.message})
         }
+        if (paramError.field.toLowerCase() === "subnettofind") {
+          form.setError("subnetNumber", {type: "value", message: paramError.message})
+        }        
       })
       // Exit.
       return
     }
-
     // Otherwise no error.
     console.log(getPrefixResult.data)
     onFormSubmit(getPrefixResult.data)
   }
   
-  
+  const formRef = useRef<HTMLFormElement | null>(null)
+
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      <form ref={formRef} onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 mb-10">
 
         <FormField
           control={form.control}
@@ -137,8 +143,43 @@ const IPv6SubnettingForm: React.FC<TIPv6FormProps> = ({ onFormSubmit }) => {
             )}
           />
         </div>
+        
+        {/* Teleport this input element in the output component.
+            If there's no error after submitting, Portal works
+            because first, all elements have already committed
+            so referencing elements works like document.querySelector.
+        */}
+        {form.formState.isSubmitted && createPortal(
+          <FormField
+            control={form.control}
+            name="subnetNumber"
+            render={({ field }) => (
+              <FormItem className="flex space-y-0">
+                <FormLabel className="font-semibold self-center text-base">Subnet: </FormLabel>
+                <FormControl>
+                  <Input 
+                  type="number"
+                  min={0}
+                  max={128}
+                  placeholder="Enter Subnet bits here" 
+                  {...field}
+                  className={`${inconsolata.className} w-[50%] h-7`}
+                />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />,
+          // formRef.current?.nextElementSibling as Element
+          document.querySelector("#subnetNumberContainer") as Element
+        )}
 
-        <Button type="submit">Subnet</Button>
+        <Button 
+          type="submit"
+          disabled={!form.formState.isValid}
+        >
+          Subnet
+        </Button>
 
       </form>
     </Form>
