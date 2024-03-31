@@ -1,6 +1,6 @@
 'use client'
 
-import { Dispatch, SetStateAction, useRef } from "react"
+import React, { Dispatch, SetStateAction, useRef } from "react"
 import { createPortal } from 'react-dom';
 
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -10,6 +10,8 @@ import gsap from "gsap"
 
 import ipv6FormSchema, { type Tipv6Form } from '@/schemas/ipv6-form-schema'
 import IPv6, { type TPrefix, type TPrefixData } from "@/lib/ipv6"
+
+import FormError from "./form-error";
 
 import { inconsolata } from "@/lib/fonts"
 
@@ -30,6 +32,8 @@ type TIPv6FormProps = {
 }
 
 const IPv6SubnettingForm: React.FC<TIPv6FormProps> = ({ onFormSubmit }) => {
+  const [formError, setFormError] = React.useState<string>()
+
   // 1. Define your form.
   const form = useForm<Tipv6Form>({
     resolver: zodResolver(ipv6FormSchema),
@@ -43,6 +47,10 @@ const IPv6SubnettingForm: React.FC<TIPv6FormProps> = ({ onFormSubmit }) => {
 
   // 2. Define a submit handler.
   function onSubmit(values: Tipv6Form) {
+    // Reset error first.
+    setFormError(undefined)
+
+
     // Do something with the form values.
     const ipv6Address = values.ipv6Address;
     const prefixLength = parseInt(values.prefixLength)
@@ -68,13 +76,14 @@ const IPv6SubnettingForm: React.FC<TIPv6FormProps> = ({ onFormSubmit }) => {
         }
         if (paramError.field.toLowerCase() === "subnettofind") {
           form.setError("subnetNumber", {type: "value", message: paramError.message})
-        }        
+          // Get the error for subnet number.
+          setFormError(paramError.message)
+        }
       })
       // Exit.
       return
     }
     // Otherwise no error.
-    console.log(getPrefixResult.data)
     onFormSubmit(getPrefixResult.data)
 
     // Animation.
@@ -158,10 +167,11 @@ const IPv6SubnettingForm: React.FC<TIPv6FormProps> = ({ onFormSubmit }) => {
           />
         </div>
         
-        {/* Teleport this input element into the output component.
+        {/* Teleport this input element and form error component 
+            into the output component.
             If there's no error after submitting at least once, Portal works
             because first, one of the code branch of the output component
-            (if prefix is not undefined) have comitted so referencing 
+            (if prefix is not undefined) have comitted, so referencing 
             elements works like document.querySelector("subnetNumber").
         */}
         {show.current && createPortal(
@@ -188,6 +198,10 @@ const IPv6SubnettingForm: React.FC<TIPv6FormProps> = ({ onFormSubmit }) => {
           />,
           document.querySelector("#subnetNumberContainer") as Element
         )}
+        {show.current && createPortal(
+          <FormError message={formError} className='mb-7'/>,
+          document.querySelector("#output-error") as Element
+        )}        
 
         <Button 
           type="submit"

@@ -9,16 +9,20 @@ import { inconsolata } from '@/lib/fonts'
 
 import OutputInitialDisplay from './output-initial-display'
 import OutputTooltip from './output-tooltip'
+import FormError from '../ipv6-form/form-error'
 
-
+/**
+ * @property `formError` is used to display subnet number error.
+ */
 type TOutputDisplayProps = {
   className?: string
-  prefix?: TPrefix 
+  prefix?: TPrefix
 }
 
 
-const OutputDisplay: React.FC<TOutputDisplayProps> = ({prefix, className}) => {
+const OutputDisplay: React.FC<TOutputDisplayProps> = ({ prefix }) => {
 
+  // Code branching.
   if (prefix === undefined) return <OutputInitialDisplay />
 
   const currentSubnetNumber: bigint = prefix.subnetNumber
@@ -35,24 +39,25 @@ const OutputDisplay: React.FC<TOutputDisplayProps> = ({prefix, className}) => {
   const formattedNetworks = new Intl.NumberFormat("en-US").format(numberOfNetworks)
   const formattedHosts = new Intl.NumberFormat("en-US").format(numberofHosts)
                  
-
+  // Animation.
   useEffect(() => {
     setTimeout(() => {
-      gsap.to("#subnetNumberInput", { border: "1px solid white", duration: 1, ease: "elastic" })
-      gsap.to("#subnetNumberInput", { border: "0px", duration: 1, delay: 1 })
+      gsap.to("#subnetNumberInput", { outline: "3px solid Aquamarine", duration: 1, ease: "elastic" })
+      gsap.to("#subnetNumberInput", { outline: "0px", duration: 1, delay: 1 })
       console.log("ayo!")
     }, 3000)
   }, [])
 
   return (
     <div className='flex flex-col'>
+
+      {/* Form error show's up here. */}
+      <div id='output-error'></div>
+
       {/* Row 1 */}
       <div id='row-1' className='grid grid-cols-3'>
         <div id='subnetNumberContainer' className='font-semibold'>
-          {/* <div className='flex'>
-            <Label htmlFor="subnetNumber-input" className='font-semibold self-center'>Subnet:</Label>
-            <Input id="subnetNumber-input" className='w-[50%] h-8 bg-transparent border-0 font-normal'/>
-          </div> */}
+          {/* Input element for subnet number will show up here. */}
         </div>
         <div className='font-semibold'>
           <OutputTooltip message='Number of subnets'>

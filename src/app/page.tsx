@@ -12,25 +12,6 @@ import type { TPrefix } from "@/lib/ipv6";
 export default function Home() {
   const [prefix, setPrefix] = useState<TPrefix>()
 
-  // const interfaceID: TInterfaceID = {
-  //   id: "",
-  //   bits: 0,
-  //   firstUsableAddressBin: "",
-  //   lastUsableAddresssBin: ""
-  // }
-    
-  // const prefix: TPrefix = {
-  //   id: "", 
-  //   subnetNumber: BigInt(0),
-  //   newPrefixLength: 0,
-  //   networkPortionBin: "",
-  //   subnetPortionBin: "",
-  //   subnetBits: 5,
-  //   interfaceIdPortion: interfaceID,
-  //   firstUsableAddress: "",
-  //   lastUsableAddresss: "",
-  // }
-
   return (
     <>
       <NavMenu />
