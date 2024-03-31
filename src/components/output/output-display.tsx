@@ -1,13 +1,14 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 
 import { Separator } from "@/components/ui/separator"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+
+import gsap from "gsap"
 
 import type { TPrefix } from '@/lib/ipv6'
 import { inconsolata } from '@/lib/fonts'
 
 import OutputInitialDisplay from './output-initial-display'
+import OutputTooltip from './output-tooltip'
 
 
 type TOutputDisplayProps = {
@@ -35,6 +36,14 @@ const OutputDisplay: React.FC<TOutputDisplayProps> = ({prefix, className}) => {
   const formattedHosts = new Intl.NumberFormat("en-US").format(numberofHosts)
                  
 
+  useEffect(() => {
+    setTimeout(() => {
+      gsap.to("#subnetNumberInput", { border: "1px solid white", duration: 1, ease: "elastic" })
+      gsap.to("#subnetNumberInput", { border: "0px", duration: 1, delay: 1 })
+      console.log("ayo!")
+    }, 3000)
+  }, [])
+
   return (
     <div className='flex flex-col'>
       {/* Row 1 */}
@@ -46,13 +55,19 @@ const OutputDisplay: React.FC<TOutputDisplayProps> = ({prefix, className}) => {
           </div> */}
         </div>
         <div className='font-semibold'>
-          Network<span className='text-sm font-light'>(s)</span>: 
+          <OutputTooltip message='Number of subnets'>
+            <span>Network</span>
+          </OutputTooltip>
+          <span className='text-sm font-light'>(s)</span>: 
           <span className={`${inconsolata.className} font-normal ms-2`}>
             {formattedNetworks}
           </span>
         </div>
         <div className='font-semibold'>
-          Hosts:<span className={`${inconsolata.className} font-normal ms-2`}>{formattedHosts}</span>
+          <OutputTooltip message='Hosts per subnet'>
+            <span>Hosts:</span>
+          </OutputTooltip>
+          <span className={`${inconsolata.className} font-normal ms-2`}>{formattedHosts}</span>
         </div>
       </div>
 

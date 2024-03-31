@@ -172,7 +172,8 @@ const IPv6SubnettingForm: React.FC<TIPv6FormProps> = ({ onFormSubmit }) => {
               <FormItem className="flex space-y-0">
                 <FormLabel className="font-semibold self-center text-base">Subnet: </FormLabel>
                 <FormControl>
-                  <Input 
+                  <Input
+                  id="subnetNumberInput"
                   type="number"
                   min={0}
                   max={128}
