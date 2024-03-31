@@ -6,6 +6,8 @@ import { createPortal } from 'react-dom';
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 
+import gsap from "gsap"
+
 import ipv6FormSchema, { type Tipv6Form } from '@/schemas/ipv6-form-schema'
 import IPv6, { type TPrefix, type TPrefixData } from "@/lib/ipv6"
 
@@ -74,6 +76,13 @@ const IPv6SubnettingForm: React.FC<TIPv6FormProps> = ({ onFormSubmit }) => {
     // Otherwise no error.
     console.log(getPrefixResult.data)
     onFormSubmit(getPrefixResult.data)
+
+    // Animation.
+    const tl = gsap.timeline()
+    tl.fromTo("#prefixId", {opacity: 0}, {opacity: 1, duration: .1})
+    tl.fromTo("#firstUsableAddress", {opacity: 0}, {opacity: 1, duration: .1})
+    tl.fromTo("#lastUsableAddress", {opacity: 0}, {opacity: 1, duration: .1})
+
   }
   
   /*
@@ -167,23 +176,17 @@ const IPv6SubnettingForm: React.FC<TIPv6FormProps> = ({ onFormSubmit }) => {
                   type="number"
                   min={0}
                   max={128}
-                  placeholder="Enter Subnet bits here" 
+                  placeholder="" 
                   {...field}
                   className={`${inconsolata.className} w-[50%] h-7 bg-transparent border-0 text-lg`}
                 />
                 </FormControl>
-                <FormMessage />
+                {/* <FormMessage /> */}
               </FormItem>
             )}
           />,
           document.querySelector("#subnetNumberContainer") as Element
         )}
-
-        <div>
-          {/* {form.formState.isSubmitSuccessful.toString()} */}
-          {show.current.toString()}
-
-        </div>
 
         <Button 
           type="submit"

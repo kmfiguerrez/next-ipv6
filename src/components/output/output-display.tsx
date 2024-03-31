@@ -77,7 +77,7 @@ const OutputDisplay: React.FC<TOutputDisplayProps> = ({prefix, className}) => {
       <div id='row-3' className='grid grid-cols-3 mb-2'>
         <div className='font-semibold'>First Usable Address:</div>
         <div className={`${inconsolata.className} border`}>
-          <span id='firstUsableAddresss'>
+          <span id='firstUsableAddress'>
             {firstUsableAddress}
           </span>
         </div>
