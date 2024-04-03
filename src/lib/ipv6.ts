@@ -387,6 +387,9 @@ class IPv6 {
   /**
    * This method converts hexadecimals digits to binary.
    * 
+   * __Note__: This method can also convert hexadecimals greater than
+   * `Number.MAX_SAFE_INTEGER`.
+   * 
    * @param {THexObj} hex - An `object` with two properties: `hexadecimals` and `includeLeadingZeroes`.
    * 
    * @returns {string} A string binaries.
@@ -537,6 +540,9 @@ class IPv6 {
 
   /**
    * This method converts a string of binaries into hexadecimals.
+   * 
+   * __Note__: This method can also convert binaries greater than
+   * `Number.MAX_SAFE_INTEGER`.
    * 
    * @param {TBinObj} binary - An `object` with two properties: `binaries` and `includeLeadingZeroes`.
    * 
