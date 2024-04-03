@@ -2,7 +2,10 @@ import { ArgumentError } from "./custom-error"
 import { getErrorMessage } from "./error-message"
 
 
-
+type THexObj = {
+  hexadecimals: string
+  includeLeadingZeroes: boolean
+}
 
 /**
  * This type is used in IPv6 static getPrefix method.
@@ -388,7 +391,7 @@ class IPv6 {
    * 
    * @throws `ArgumentError` is thrown if argument is invalid.
    */
-  static toBinary(hex: string): string
+  static toBinary(hex: THexObj): string
 
   /**
    * This method converts positive integers to binary.
@@ -419,21 +422,25 @@ class IPv6 {
    * @throws `ArgumentError` is thrown if argument is invalid.
    */
   static toBinary(integer: bigint): string
-  static toBinary(x: string | number | bigint): string {
+  static toBinary(x: THexObj | number | bigint): string {
     // Return data
     let binaries: string = ""
 
 
     // Find out which data to work on.
     switch (typeof x) {
-      case "string": {
+      case "object": {
         /*
           This version of the overloaded method converts string hex digit
           to string binaries.
         */
 
+        // Regex pattern.
+        const leadingZeroPattern = /^0+/
+
         // Sanitize input data first.
-        const inputHex = x.trim().toLowerCase()
+        const inputHex = x.hexadecimals.trim().toLowerCase()
+
 
         // Validate input data first.
         if (!this.isHex(inputHex)) throw new ArgumentError("From toBinary: Invalid hex digits provided.")
@@ -458,6 +465,14 @@ class IPv6 {
           const zeroesToPrepend = 4 - binary.length
           binaries += "0".repeat(zeroesToPrepend) + binary
           
+        }
+
+        /*
+          Leading zeroes does not affect the final value of binaries.
+          Can be omitted by default in this method.
+        */
+        if (x.includeLeadingZeroes === false) {
+          binaries = binaries.replace(leadingZeroPattern, "")
         }
 
         // Finally
@@ -576,7 +591,7 @@ class IPv6 {
 
           /*
             The private static BinaryToHex is used instead of the 
-            built-in methods is because to include leading zeroes
+            built-in methods because of to include leading zeroes
             and built-in methods don't do that.
           */
           hexadecimals = this.BinaryToHex(inputBinary)
@@ -1030,7 +1045,7 @@ class IPv6 {
       }
       
       for (const hex of ipv6Address.split(":")) {
-        binaries += this.toBinary(hex)
+        binaries += this.toBinary({hexadecimals: hex, includeLeadingZeroes: true})
       }      
     } catch (error: unknown) {
       if (error instanceof ArgumentError) throw new ArgumentError(getErrorMessage(error))
