@@ -42,7 +42,6 @@ const OutputDisplay: React.FC<TOutputDisplayProps> = ({ prefix }) => {
     setTimeout(() => {
       gsap.to("#subnetNumberInput", { outline: "3px solid Aquamarine", duration: 1, ease: "elastic" })
       gsap.to("#subnetNumberInput", { outline: "0px", duration: 1, delay: 1 })
-      console.log("ayo!")
     }, 3000)
   }, [])
 

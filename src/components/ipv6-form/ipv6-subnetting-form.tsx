@@ -66,17 +66,25 @@ const IPv6SubnettingForm: React.FC<TIPv6FormProps> = ({ onFormSubmit }) => {
     setFormError(undefined)
 
     // Do something with the form values.
-    const ipv6Address = values.ipv6Address;
-    const prefixLength = parseInt(values.prefixLength)
-    const subnetBits = parseInt(values.subnetBits)
-    const subnetNumber = values.subnetNumber
+    const ipv6Address: string = values.ipv6Address;
+    const prefixLength: number = parseInt(values.prefixLength)
+    const subnetBits: number = parseInt(values.subnetBits)
+    const subnetNumber: bigint = BigInt(values.subnetNumber)
 
+    /*
+      Before getting the prefix, check first if the current input values
+      are the same thing as the previous values. If they are then don't
+      even bother getting the prefix data.
+    */
+    if (sameValues(ipv6Address, prefixLength, subnetBits, subnetNumber)) {
+      // Exit out of the submit handler immediately.
+      return
+    }
     // Get prefix.
     const getPrefixResult: TPrefixData = IPv6.getPrefix(ipv6Address, prefixLength, subnetBits, subnetNumber)
     
     // Check for field error.
     if (getPrefixResult.errorFields.length > 0) {
-      console.log("There's error.")
       getPrefixResult.errorFields.map(paramError => {
         // Set errors.
         if (paramError.field.toLowerCase() === "ipv6address") {
@@ -114,12 +122,23 @@ const IPv6SubnettingForm: React.FC<TIPv6FormProps> = ({ onFormSubmit }) => {
     }
 
     // Set the current value as previous value.
+    prefixPreviousValue.current.ipv6Address = ipv6Address
     prefixPreviousValue.current.prefixLength = getPrefixResult.data!.networkPortionBin.length
     prefixPreviousValue.current.subnetBits = subnetBits
     prefixPreviousValue.current.subnetNumber = getPrefixResult.data!.subnetNumber
+  }
 
-
-
+  const sameValues = (ipv6Address: string, prefixLength: number, subnetBits: number, subnetNumber: bigint ): boolean => {
+    if (ipv6Address === prefixPreviousValue.current.ipv6Address 
+      && prefixLength === prefixPreviousValue.current.prefixLength
+      && subnetBits === prefixPreviousValue.current.subnetBits
+      && subnetNumber === prefixPreviousValue.current.subnetNumber
+    ) {
+      console.log("Same value. Exiting the submit handler immediately.")
+      return true
+    }
+    // Otherwise return false.
+    return false
   }
   
   /*
