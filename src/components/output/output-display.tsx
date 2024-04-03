@@ -9,11 +9,9 @@ import { inconsolata } from '@/lib/fonts'
 
 import OutputInitialDisplay from './output-initial-display'
 import OutputTooltip from './output-tooltip'
-import FormError from '../ipv6-form/form-error'
 
-/**
- * @property `formError` is used to display subnet number error.
- */
+
+
 type TOutputDisplayProps = {
   className?: string
   prefix?: TPrefix
@@ -27,7 +25,7 @@ const OutputDisplay: React.FC<TOutputDisplayProps> = ({ prefix }) => {
 
   const currentSubnetNumber: bigint = prefix.subnetNumber
   const subnetBits: number = prefix.subnetBits
-  const numberOfNetworks: bigint = BigInt(2 ** subnetBits) - BigInt(1)
+  const numberOfNetworks: bigint = BigInt(2 ** subnetBits)
   const interfaceIdBits: number = prefix.interfaceIdPortion.bits
   const numberofHosts: bigint = BigInt(2 ** interfaceIdBits) - BigInt(1)
   const prefixId: string = prefix.id
@@ -50,7 +48,6 @@ const OutputDisplay: React.FC<TOutputDisplayProps> = ({ prefix }) => {
 
   return (
     <div className='flex flex-col'>
-
       {/* Form error show's up here. */}
       <div id='output-error'></div>
 
@@ -122,6 +119,7 @@ const OutputDisplay: React.FC<TOutputDisplayProps> = ({ prefix }) => {
           </span>
         </div>
       </div>
+
     </div>
   )
 }

@@ -868,7 +868,7 @@ class IPv6 {
    * @property `errorFields` is an array of parameters of `getPrefix` method. It is not empty if this method fails to complete.
    * 
    */
-  static getPrefix(ipv6Address: string, prefixLength: number, subnetBits: number, subnetToFind: string = "0"): TPrefixData {
+  static getPrefix(ipv6Address: string, prefixLength: number, subnetBits: number, subnetToFind: bigint = BigInt(0)): TPrefixData {
     /*
       Note
       The subnetToFind (Subnet number or Prefix number) is used to find
@@ -919,7 +919,7 @@ class IPv6 {
         // Set the error field (param).
         prefixData.errorFields.push({field: "subnetBits", message: "Invalid subnet bits."})
       }
-      if (BigInt(subnetToFind) < 0 || BigInt(subnetToFind) > (BigInt(2 ** subnetBits) - BigInt(1))) {
+      if (subnetToFind < 0 || subnetToFind > (BigInt(2 ** subnetBits) - BigInt(1))) {
         // Set the error field (param).
         prefixData.errorFields.push({field: "subnetToFind", message: `Subnet ${subnetToFind} does not exists.`})
       }
@@ -937,7 +937,7 @@ class IPv6 {
       const interfaceIdBits: number = 128 - newPrefixLength
       // Get the network portion binary.
       const networkPortionBin: string = this.#IPv6ToBinary(expandedIPv6Address, false).slice(0, prefixLength)
-      const subnetNumber: bigint = BigInt(subnetToFind)
+      const subnetNumber: bigint = subnetToFind
 
 
       // Initialize the interfaceID object (Host portion).

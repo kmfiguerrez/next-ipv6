@@ -3,15 +3,13 @@ import React, { useState } from 'react'
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
-import { type IPv6ReturnData } from '@/lib/ipv6'
-
 import { inconsolata } from '@/lib/fonts'
 import { cn } from '@/lib/utils'
 
 
 type FeaturesOutputBoxProps = {
   className?: string
-  result: IPv6ReturnData | undefined
+  result: string | undefined
 }
 
 
@@ -27,9 +25,9 @@ const FeaturesOutputBox: React.FC<FeaturesOutputBoxProps> = ({ className, result
         id='output-box' 
         type="text" 
         placeholder="Result displays here"
-        value={result?.success ? result.data : ""}
+        value={result ? result : ""}
         className={cn(`${inconsolata.className} mt-2 text-base`, 
-          {"border-green-500": result?.success} 
+          {"border-green-500": result} 
         )}
       />
 
@@ -38,7 +36,7 @@ const FeaturesOutputBox: React.FC<FeaturesOutputBoxProps> = ({ className, result
       </div> */}
 
       {/* Input validation message */}
-      {result?.success &&
+      {result &&
         <p className='text-green-500 text-sm mt-1'>Success</p>
       }
     </div>

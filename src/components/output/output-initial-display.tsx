@@ -1,6 +1,7 @@
 import React from 'react'
 
 import { Separator } from '../ui/separator'
+import OutputTooltip from './output-tooltip'
 
 const OutputInitialDisplay = () => {
   return (
@@ -8,13 +9,21 @@ const OutputInitialDisplay = () => {
       {/* Row 1 */}
       <div id='row-1' className='grid grid-cols-3'>
         <div className='font-semibold'>
-          Subnet:
+          <span>Subnet:</span>
+          <span className='font-normal ms-3'>x</span>
         </div>
         <div className='font-semibold'>
-          Network<span className='text-sm font-light'>(s)</span>:
+          <OutputTooltip message='Number of subnets'>
+            <span>Network</span>
+          </OutputTooltip>
+          <span className='text-sm font-light'>(s)</span>:
+          <span className='font-normal ms-3'>x</span>
         </div>
         <div className='font-semibold'>
-          Hosts:
+        <OutputTooltip message='Hosts per subnet'>
+          <span>Hosts:</span>
+        </OutputTooltip>
+        <span className='font-normal ms-3'>x</span>
         </div>
       </div>
 

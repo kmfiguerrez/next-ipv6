@@ -31,8 +31,23 @@ type TIPv6FormProps = {
   onFormSubmit: Dispatch<SetStateAction<TPrefix | undefined>>
 }
 
+type TPrefixPrevValue = {
+  ipv6Address: string
+  prefixLength: number
+  subnetBits: number
+  subnetNumber: bigint
+}
+
 const IPv6SubnettingForm: React.FC<TIPv6FormProps> = ({ onFormSubmit }) => {
   const [formError, setFormError] = React.useState<string>()
+  // Used for animation.
+  const prefixPreviousValue = useRef<TPrefixPrevValue>({
+    ipv6Address: "",
+    prefixLength: -1,
+    subnetBits: -1,
+    subnetNumber: BigInt(-1)
+  })
+
 
   // 1. Define your form.
   const form = useForm<Tipv6Form>({
@@ -49,7 +64,6 @@ const IPv6SubnettingForm: React.FC<TIPv6FormProps> = ({ onFormSubmit }) => {
   function onSubmit(values: Tipv6Form) {
     // Reset error first.
     setFormError(undefined)
-
 
     // Do something with the form values.
     const ipv6Address = values.ipv6Address;
@@ -87,10 +101,24 @@ const IPv6SubnettingForm: React.FC<TIPv6FormProps> = ({ onFormSubmit }) => {
     onFormSubmit(getPrefixResult.data)
 
     // Animation.
-    const tl = gsap.timeline()
-    tl.fromTo("#prefixId", {opacity: 0}, {opacity: 1, duration: .1})
-    tl.fromTo("#firstUsableAddress", {opacity: 0}, {opacity: 1, duration: .1})
-    tl.fromTo("#lastUsableAddress", {opacity: 0}, {opacity: 1, duration: .1})
+    // const tl = gsap.timeline()
+    // tl.fromTo("#prefixId", {opacity: 0}, {opacity: 1, duration: .1})
+    // tl.fromTo("#firstUsableAddress", {opacity: 0}, {opacity: 1, duration: .1})
+    // tl.fromTo("#lastUsableAddress", {opacity: 0}, {opacity: 1, duration: .1})
+
+    // Animate subnet number change.
+    if (prefixPreviousValue.current.subnetNumber !== BigInt(subnetNumber)) {
+      gsap.fromTo("#prefixId", {opacity: 0}, {opacity: 1, duration: .1})
+      gsap.fromTo("#firstUsableAddress", {opacity: 0}, {opacity: 1, duration: .1})
+      gsap.fromTo("#lastUsableAddress", {opacity: 0}, {opacity: 1, duration: .1})
+    }
+
+    // Set the current value as previous value.
+    prefixPreviousValue.current.prefixLength = getPrefixResult.data!.networkPortionBin.length
+    prefixPreviousValue.current.subnetBits = subnetBits
+    prefixPreviousValue.current.subnetNumber = getPrefixResult.data!.subnetNumber
+
+
 
   }
   

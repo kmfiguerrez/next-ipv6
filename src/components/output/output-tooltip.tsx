@@ -15,8 +15,8 @@ type TOutputTooltipProps = {
 
 const OutputTooltip: React.FC<TOutputTooltipProps> = ({ children, message}) => {
   return (
-    <TooltipProvider delayDuration={400}>
-      <Tooltip>
+    <TooltipProvider>
+      <Tooltip delayDuration={0}>
         <TooltipTrigger asChild>{children}</TooltipTrigger>
         <TooltipContent>
           <p>{message}</p>

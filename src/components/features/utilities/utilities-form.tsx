@@ -8,7 +8,7 @@ import { useForm } from "react-hook-form"
 
 import utilitiesFormSchema, { type TutilitiesForm } from "@/schemas/utilities-form-schema"
 
-import IPv6, { type TIPv6ReturnData } from "@/lib/ipv6"
+import IPv6 from "@/lib/ipv6"
 
 import FeaturesOutputBox from '../features-output-box'
 
@@ -31,7 +31,7 @@ type UtilitiesFormProps = {
 }
 
 const UtilitiesForm: React.FC<UtilitiesFormProps> = ({ operation }) => {
-  const [output, setOutput] = useState<TIPv6ReturnData>()
+  const [output, setOutput] = useState<string>()
 
   // 1. Define your form.
   const form = useForm<TutilitiesForm>({
@@ -45,8 +45,7 @@ const UtilitiesForm: React.FC<UtilitiesFormProps> = ({ operation }) => {
   function onSubmit(values: TutilitiesForm) {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
-    
-    let result: TIPv6ReturnData
+    let result: string
 
     if (operation.toLowerCase() === "expand") {
       result = IPv6.expand(values.ipv6Address)
@@ -87,6 +86,7 @@ const UtilitiesForm: React.FC<UtilitiesFormProps> = ({ operation }) => {
 
         <Button 
           type="submit"
+          disabled={!form.formState.isValid}
           onClick={() => setOutput(undefined)}
         >
           {operation}
