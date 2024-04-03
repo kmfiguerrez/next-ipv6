@@ -7,6 +7,11 @@ type THexObj = {
   includeLeadingZeroes: boolean
 }
 
+type TBinObj = {
+  binaries: string
+  includeLeadingZeroes: boolean  
+}
+
 /**
  * This type is used in IPv6 static getPrefix method.
  * 
@@ -382,10 +387,7 @@ class IPv6 {
   /**
    * This method converts hexadecimals digits to binary.
    * 
-   * __Note__:
-   * This method include leading zeroes.
-   * 
-   * @param {string} hex - A string of positive hex digits.
+   * @param {THexObj} hex - An `object` with two properties: `hexadecimals` and `includeLeadingZeroes`.
    * 
    * @returns {string} A string binaries.
    * 
@@ -536,16 +538,13 @@ class IPv6 {
   /**
    * This method converts a string of binaries into hexadecimals.
    * 
-   * __Note__:
-   * This method include leading zeroes.
-   * 
-   * @param {string} binary - A string of positive binaries.
+   * @param {TBinObj} binary - An `object` with two properties: `binaries` and `includeLeadingZeroes`.
    * 
    * @returns {string} A string of hexadecimals.
    * 
    * @throws `ArgumentError` is thrown if argument is invalid.
    */
-  static toHex(binary: string): string
+  static toHex(binary: TBinObj): string
 
   /**
    * This method converts positive integers into hexadecimals.
@@ -568,21 +567,24 @@ class IPv6 {
    * @throws `ArgumentError` is thrown if argument is invalid.
    */    
   static toHex(integer: bigint): string
-  static toHex(x: string | number | bigint): string {
+  static toHex(x: TBinObj | number | bigint): string {
     // Return data.
     let hexadecimals: string = ""
 
     
     // Determine which data type to work on.
     switch (typeof x) {
-      case "string": {
+      case "object": {
         /*
           This version of the overloaded method converst a string binaries
           into hexadecimals.
         */
 
+        // Regex pattern.
+        const leadingZeroPattern = /^0+/
+
         // Sanitize input data first.
-        const inputBinary: string = x.trim()
+        const inputBinary: string = x.binaries.trim()
 
 
         // Validate input data.
@@ -591,7 +593,7 @@ class IPv6 {
 
           /*
             The private static BinaryToHex is used instead of the 
-            built-in methods because of to include leading zeroes
+            built-in methods is because of to include leading zeroes
             and built-in methods don't do that.
           */
           hexadecimals = this.BinaryToHex(inputBinary)
@@ -599,6 +601,14 @@ class IPv6 {
         } catch (error: unknown) {
           throw new ArgumentError(`${getErrorMessage(error)}`)
         }
+
+        /*
+          Leading zeroes does not affect the final value of hexadecimals.
+          Can be omitted by in this method.
+        */
+          if (x.includeLeadingZeroes === false) {
+            hexadecimals = hexadecimals.replace(leadingZeroPattern, "")
+          }
 
         // Finally
         return hexadecimals
@@ -1095,7 +1105,7 @@ class IPv6 {
       }
       
       // Convert first to hexadecimals.
-      hexadecimals = this.toHex(binary)
+      hexadecimals = this.toHex({binaries: binary, includeLeadingZeroes: true})
 
       // Get each segment.
       for (let index = 0; index < hexadecimals.length; index += 4) {
