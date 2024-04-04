@@ -91,7 +91,6 @@ const BinToHexForm: React.FC<TConversionFormProps> = ({ operation }) => {
             value={inputValue}
           />
         ) : (
-
           <FromInputTag
             ref={inputRef}
             label='Hexadecimals'

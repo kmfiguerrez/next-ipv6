@@ -28,7 +28,6 @@ const FeaturesOutputBox: React.FC<TFeaturesOutputBoxProps> = ({ label, formError
   }
 
 
-
   return (
     <div className={cn(``, className)}>
       <Label htmlFor="featuresOutputBox">
@@ -46,7 +45,7 @@ const FeaturesOutputBox: React.FC<TFeaturesOutputBoxProps> = ({ label, formError
       />
       {/* Input validation message */}
       {success &&
-        <div className='text-green-500 text-sm mt-1'>Success</div>
+        <div className='font-semibold text-green-500 text-sm mt-1'>Success</div>
       }
     </div>
   )

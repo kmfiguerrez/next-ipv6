@@ -26,7 +26,7 @@ const FromInputTag = forwardRef<HTMLInputElement, TFromInputTagProps>(function F
     <div className='flex flex-col mb-4'>
       <Label
         htmlFor="convertion-from"
-        className={cn(`mb-4`, { "text-red-500": formMessage })}
+        className={cn(`mb-4`, { "text-red-500 font-semibold": formMessage })}
       >
         {label}
       </Label>
@@ -40,7 +40,7 @@ const FromInputTag = forwardRef<HTMLInputElement, TFromInputTagProps>(function F
       />
       {formMessage &&
         <div
-          className={`text-red-500 mt-1`}
+          className={`font-semibold text-sm text-red-500 mt-1`}
         >
           {formMessage}
         </div>
