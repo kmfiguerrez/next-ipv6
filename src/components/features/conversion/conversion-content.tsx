@@ -36,6 +36,21 @@ const ConversionContent = () => {
           </Button>
         </FeaturesDialog>
       </li>
+
+      <li>
+        <FeaturesDialog
+          title='Conversion'
+          description='This action converts Hexadecimals to decimals and vice versa.'
+          feature={{category: "conversion", operation: "convert", action: "HexToDec"}}
+        >
+          <Button
+            variant={'ghost'}
+            size={'sm'}
+          >
+            Hex To Dec
+          </Button>
+        </FeaturesDialog>
+      </li>      
     </ul>
   )
 }

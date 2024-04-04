@@ -1,5 +1,12 @@
 import { ArgumentError } from "./custom-error"
 
+/**
+ * Gets the error message of the input unknown error object.
+ * 
+ * @param {object} error - An unknown error object. 
+ * 
+ * @returns A string of error message.
+ */
 export const getErrorMessage = (error: unknown): string => {
   let message: string = "Something went wrong."
 

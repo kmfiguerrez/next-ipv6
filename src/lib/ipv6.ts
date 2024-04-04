@@ -385,7 +385,7 @@ class IPv6 {
 
 
   /**
-   * Validates if type string integers is valid.
+   * Validates if type string integers is valid integers.
    * 
    * @param {string} integers - Integers in string format.
    * 

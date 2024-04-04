@@ -32,28 +32,28 @@ const BinToHexForm: React.FC<TConversionFormProps> = ({ operation }) => {
     // Reset error first.
     setError(undefined)
 
-    let hexadecimals = inputValue as string
-    let binaries = inputValue as string
+    let hexadecimals = inputValue ? inputValue : ""
+    let binaries = inputValue ? inputValue : ""
 
     try {
       // Determine what action to perform.
-      if (action === "HexToBin") {
-        binaries = IPv6.toBinary({hexadecimals: hexadecimals, includeLeadingZeroes: false})
-        setOutput(binaries)
+      if (action === "BinToHex") {
+        hexadecimals = IPv6.toHex({binaries: binaries, includeLeadingZeroes: false})
+        setOutput(hexadecimals)
         return
       }
-      // Otherwise Binary to Hexadecimals.
-      hexadecimals = IPv6.toHex({binaries: binaries, includeLeadingZeroes: false})
-      setOutput(hexadecimals)
+      // Otherwise Hexadecimal to Binary.
+      binaries = IPv6.toBinary({hexadecimals: hexadecimals, includeLeadingZeroes: false})
+      setOutput(binaries)
     } 
     catch (error: unknown) {
       let errorMessage: string = getErrorMessage(error)
-      if (errorMessage.startsWith("From toBinary")) {
-        errorMessage = "Invalid hexadecimals"
+      if (errorMessage.startsWith("From toHex")) {
+        errorMessage = "Invalid binaries"
       }
       else {
-        // Otherwise starts with: From toHex
-        errorMessage = "Invalid binaries"
+        // Otherwise starts with: From toBinary.
+        errorMessage = "Invalid hexadecimals"
       }
       setError(errorMessage)
 
@@ -115,7 +115,7 @@ const BinToHexForm: React.FC<TConversionFormProps> = ({ operation }) => {
 
       {/* Output */}
       <FeaturesOutputBox
-        label={action === "BinToHex" ? "Hexadecimals" : "Binary"}
+        label={action === "BinToHex" ? "Hexadecimal" : "Binary"}
         formError={error}
         result={output}
         className='mb-8'

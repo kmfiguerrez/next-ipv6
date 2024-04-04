@@ -4,6 +4,7 @@ import UtilitiesForm from './utilities/utilities-form'
 
 import BinToHexForm from './conversion/bin-to-hex-form'
 import DecToBinForm from './conversion/dec-to-bin-form'
+import HexToDecForm from './conversion/hex-to-dec-form'
 
 import {
   Dialog,
@@ -66,7 +67,13 @@ const FeaturesDialog: React.FC<FeaturesDialogProps> = ({ children, title, featur
             <DecToBinForm
               operation='Convert'
             />            
-          }          
+          }
+
+          {feature.category === "conversion" && feature.action === "HexToDec" &&
+            <HexToDecForm
+              operation='Convert'
+            />            
+          }                  
         </div>
       </DialogContent>
     </Dialog>

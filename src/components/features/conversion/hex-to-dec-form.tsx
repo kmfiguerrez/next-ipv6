@@ -19,11 +19,11 @@ type TConversionFormProps = {
 }
 
 
-const DecToBinForm: React.FC<TConversionFormProps> = ({ operation }) => {
+const HexToDecForm: React.FC<TConversionFormProps> = ({ operation }) => {
   const [inputValue, setInputValue] = useState<string>()
   const [error, setError] = useState<string>()
   const [output, setOutput] = useState<string>()
-  const [action, setAction] = useState<"DecToBin" | "BinToDec">("DecToBin")
+  const [action, setAction] = useState<"HexToDec" | "DecToHex">("HexToDec")
 
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -33,50 +33,54 @@ const DecToBinForm: React.FC<TConversionFormProps> = ({ operation }) => {
     // Reset error first.
     setError(undefined)
 
+    let hexadecimals: string = inputValue ? inputValue : ""
     let decimals: number = parseInt(inputValue as string)
-    let binaries = inputValue ? inputValue : ""
-
+    
     let bigInteger: bigint
 
     try {
       // Determine what action to perform.
-      if (action === "DecToBin") {
-        // Validate input decimal first.
-        if (isNaN(decimals) || (inputValue as string).includes(".") || !IPv6.isDecimal(inputValue as string)) {
-          throw new ArgumentError("Invalid integers.")
-        }
+      if (action === "HexToDec") {
+        // Validate input hexadecimals first.
+        if (!IPv6.isHex(hexadecimals)) throw new ArgumentError("Invalid hexadecimals.")
 
+        decimals = parseInt(hexadecimals, 16)
         if (decimals >= Number.MAX_SAFE_INTEGER) {
-          // Passed decimals as string to avoid losing precision.
-          bigInteger = BigInt(inputValue as string)
-          binaries = IPv6.toBinary(bigInteger)
-          setOutput(binaries)
+          bigInteger = IPv6.toBigIntDecimal(hexadecimals, 16)
+          setOutput(bigInteger.toString())
           return
         }
-        // Otherwise decimals is less than safe integers.
-        binaries = IPv6.toBinary(decimals)
-        setOutput(binaries)
+        // Otherwise hexadecimals is less than safe integers.
+        decimals = IPv6.toDecimal(hexadecimals, 16)
+        setOutput(decimals.toString())
         return
       }
 
-      // Otherwise action is Binary to decimals.
+      // Otherwise action is decimals to hexadecimals .
+      // Validate input decimal first.
+      if (isNaN(decimals) || (inputValue as string).includes(".") || !IPv6.isDecimal(inputValue as string)) {
+        throw new ArgumentError("Invalid integers.")
+      }
+
       if (decimals >= Number.MAX_SAFE_INTEGER) {
-        bigInteger = IPv6.toBigIntDecimal(binaries, 2)
-        setOutput(bigInteger.toString())
+        // Passed decimals as string to avoid losing precision.
+        bigInteger = BigInt(inputValue as string)
+        hexadecimals = IPv6.toHex(bigInteger)
+        setOutput(hexadecimals)
         return
       }
-      // Otherwise binary is less than safe integers.
-      decimals = IPv6.toDecimal(binaries, 2)
-      setOutput(decimals.toString())
+      // Otherwise decimals is less than safe integers.
+      hexadecimals = IPv6.toHex(decimals)
+      setOutput(hexadecimals)
     }
     catch (error: unknown) {
       let errorMessage: string = getErrorMessage(error)
-      if (errorMessage.startsWith("From toBinary") || errorMessage.startsWith("Invalid integers")) {
-        errorMessage = "Invalid integers"
+      if (errorMessage.startsWith("From toDecimal") || errorMessage.startsWith("Invalid hexadecimals")) {
+        errorMessage = "Invalid hexadecimals"
       }
       else {
-        // Otherwise starts with: From toDecimal
-        errorMessage = "Invalid binaries"
+        // Otherwise starts with: From toHex
+        errorMessage = "Invalid integers"
       }
       setError(errorMessage)
 
@@ -91,12 +95,12 @@ const DecToBinForm: React.FC<TConversionFormProps> = ({ operation }) => {
     setError(undefined)
     setInputValue(undefined)
 
-    if (action === "DecToBin") {
-      setAction("BinToDec")
+    if (action === "HexToDec") {
+      setAction("DecToHex")
       return
     }
     // Otherwise
-    setAction("DecToBin")
+    setAction("HexToDec")
   }
 
 
@@ -104,22 +108,22 @@ const DecToBinForm: React.FC<TConversionFormProps> = ({ operation }) => {
     <form onSubmit={handleSubmit}>
 
       {/* Input tag */}
-      {action === "DecToBin" ? (
+      {action === "HexToDec" ? (
         <FromInputTag
           ref={inputRef}
-          label='Decimal'
-          placeholder='Enter integers here'
-          onChange={setInputValue}
           formMessage={error}
+          label='Hexadecimal'
+          placeholder='Enter hexadecimals here'
+          onChange={setInputValue}
           value={inputValue}
         />
       ) : (
         <FromInputTag
           ref={inputRef}
-          label='Binary'
-          placeholder='Enter binaries here'
-          onChange={setInputValue}
           formMessage={error}
+          label='Decimal'
+          placeholder='Enter integers here'
+          onChange={setInputValue}
           value={inputValue}
         />
       )
@@ -138,7 +142,7 @@ const DecToBinForm: React.FC<TConversionFormProps> = ({ operation }) => {
 
       {/* Output */}
       <FeaturesOutputBox
-        label={action === "DecToBin" ? "Binary" : "Decimal"}
+        label={action === "HexToDec" ? "Decimal" : "Hexadecimal"}
         formError={error}
         result={output}
         className='mb-8'
@@ -152,4 +156,4 @@ const DecToBinForm: React.FC<TConversionFormProps> = ({ operation }) => {
 }
 
 
-export default DecToBinForm
+export default HexToDecForm
