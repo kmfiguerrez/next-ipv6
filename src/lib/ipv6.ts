@@ -385,6 +385,31 @@ class IPv6 {
 
 
   /**
+   * Validates if type string integers is valid.
+   * 
+   * @param {string} integers - Integers in string format.
+   * 
+   * @returns Boolean
+   */
+  static isDecimal(integers: string) {
+    // Sanitize user input first.
+    integers = integers.trim()
+
+    // Regex pattern.
+    const decimalPattern = /[^0-9]/
+
+
+    // Check input first.
+    if (integers === undefined || integers === null || integers === "") return false    
+
+    const invalidDecimal: boolean = decimalPattern.test(integers)
+    if (invalidDecimal) return false
+
+    // Finally
+    return true    
+  }
+
+  /**
    * This method converts hexadecimals digits to binary.
    * 
    * __Note__: This method can also convert hexadecimals greater than
