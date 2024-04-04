@@ -18,15 +18,17 @@ const NavMenu = () => {
   return (
     <header className="mb-5 mt-1 max-sm:px-1 sm:container">
       <nav className='flex justify-between '>
-        
         <h1 className="flex items-center font-semibold text-lg uppercase">IPv6 Subnetting</h1>
 
-        <ModeToggle />
+        <ModeToggle className="max-sm:hidden" />
 
         <NavLinks className="max-sm:hidden sm:flex sm:flex-row"/>
-        {/* Mobile links */}
-        <NavDropDownTrigger className="sm:hidden"/>
 
+        {/* Mobile links */}
+        <div className="flex space-x-2 sm:hidden">
+          <ModeToggle />
+          <NavDropDownTrigger />
+        </div>
       </nav>
       {/* Nav dropdown content */}
       <NavDropdownContent>

@@ -1,5 +1,10 @@
 import React from 'react'
 
+import { Separator } from "@/components/ui/separator"
+
+import UtilitiesContent from './utilities/utilities-content'
+import ConversionContent from './conversion/conversion-content'
+
 import {
   Sheet,
   SheetContent,
@@ -15,8 +20,7 @@ import {
   SidebarAccordionItem, 
   SidebarAccordionTrigger
 } from './sidebar-accordion'
-import UtilitiesContent from './utilities/utilities-content'
-import ConversionContent from './conversion/conversion-content'
+
 
 
 type OffCanvasProps = {
@@ -37,8 +41,9 @@ const OffCanvas: React.FC<OffCanvasProps> = ({ children }) => {
           </SheetDescription> */}
         </SheetHeader>
         
+        <Separator />
+
         {/* Features list */}
-        <div>
         <SidebarAccordion className='mt-5'>
           
           <SidebarAccordionItem key='item-1'>
@@ -56,8 +61,6 @@ const OffCanvas: React.FC<OffCanvasProps> = ({ children }) => {
           </SidebarAccordionItem>
 
         </SidebarAccordion>
-
-        </div>
       </SheetContent>
     </Sheet>
   )
