@@ -19,6 +19,7 @@ import {
   SidebarAccordionTrigger
 } from './sidebar-accordion'
 import UtilitiesContent from './utilities/utilities-content'
+import ConversionContent from './conversion/conversion-content'
 
 
 type OffCanvasProps = {
@@ -46,18 +47,7 @@ const OffCanvas: React.FC<OffCanvasProps> = ({ children }) => {
           <SidebarAccordionItem key='item-1'>
             <SidebarAccordionTrigger>Conversion</SidebarAccordionTrigger>
             <SidebarAccordionContent>
-              <FeaturesDialog 
-                title='Conversion'
-                description='This action will convert hexadecimals to binaries.'
-                feature={{category: "conversion", operation: "convert"}}
-              >
-                <Button
-                  variant={'ghost'}
-                  size={'sm'}
-                >
-                  Hex To Bin
-                </Button>
-              </FeaturesDialog>
+              <ConversionContent />
             </SidebarAccordionContent>
           </SidebarAccordionItem>
 

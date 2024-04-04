@@ -36,6 +36,5 @@ yarn-error.log*
 next-env.d.ts
 
 # Temporary
-src/components/features/conversion/
-src/schemas/conversion-form-schema.ts
+
 

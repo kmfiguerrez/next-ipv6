@@ -7,7 +7,7 @@ import { inconsolata } from '@/lib/fonts'
 import { cn } from '@/lib/utils'
 
 
-type FeaturesOutputBoxProps = {
+type TFeaturesOutputBoxProps = {
   label: string
   className?: string
   result?: string
@@ -15,7 +15,7 @@ type FeaturesOutputBoxProps = {
 }
 
 
-const FeaturesOutputBox: React.FC<FeaturesOutputBoxProps> = ({ label, formError, className, result }) => {
+const FeaturesOutputBox: React.FC<TFeaturesOutputBoxProps> = ({ label, formError, className, result }) => {
   let value: string = ""
   let success: boolean = false
 
@@ -31,12 +31,12 @@ const FeaturesOutputBox: React.FC<FeaturesOutputBoxProps> = ({ label, formError,
 
   return (
     <div className={cn(``, className)}>
-      <Label htmlFor="output-box">
+      <Label htmlFor="featuresOutputBox">
         {label}
       </Label>
       <Input 
         readOnly 
-        id='output-box'
+        id='featuresOutputBox'
         type="text" 
         placeholder="Result displays here"
         value={value}
