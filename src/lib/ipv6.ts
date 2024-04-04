@@ -493,7 +493,10 @@ class IPv6 {
         
         // Validate input data.
         if (inputInteger === undefined || inputInteger === null) throw new ArgumentError("From toBinary: Did not provide an argument.")
-        
+
+        // Must be an integer.
+        if (!Number.isInteger(inputInteger)) throw new ArgumentError("From toBinary: Must be an integer.")
+
         // Must be positive.
         if (inputInteger < 0) throw new ArgumentError("From toBinary: Argument integer must be positive.")
 
@@ -629,6 +632,9 @@ class IPv6 {
 
         // Validate input data first.
         if (inputInteger === undefined || inputInteger === null) throw new ArgumentError("From toHex: Did not provide integers.")
+
+        // Must be an integer.
+        if (!Number.isInteger(inputInteger)) throw new ArgumentError("From toHex: Must be an integer.")
 
         // Must be positive integers.
         if (inputInteger < 0) throw new ArgumentError("From toHex: Must be positive integers.")
@@ -801,8 +807,8 @@ class IPv6 {
         const hexadecimals: string = binOrHex.trim()
 
         // Validate input data.
-        if (hexadecimals === undefined || hexadecimals === null || hexadecimals === "" || !this.isBinary(hexadecimals)) {
-          throw new ArgumentError("From toDecimal: Must provide a valid binaries.");
+        if (hexadecimals === undefined || hexadecimals === null || hexadecimals === "" || !this.isHex(hexadecimals)) {
+          throw new ArgumentError("From toDecimal: Must provide a valid hexadecimals.");
         }
         
         /*
@@ -862,8 +868,8 @@ class IPv6 {
           const hexadecimals: string = binOrHex.trim()
 
           // Validate input data.
-          if (hexadecimals === undefined || hexadecimals === null || hexadecimals === "" || !this.isBinary(hexadecimals)) {
-            throw new ArgumentError("From toDecimal: Must provide a valid binaries.");
+          if (hexadecimals === undefined || hexadecimals === null || hexadecimals === "" || !this.isHex(hexadecimals)) {
+            throw new ArgumentError("From toDecimal: Must provide a valid hexadecimals.");
           }
           
           // Convert binaries to decimal form (integer).
