@@ -45,16 +45,23 @@ const UtilitiesForm: React.FC<UtilitiesFormProps> = ({ operation }) => {
   function onSubmit(values: TutilitiesForm) {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
+    setOutput(undefined)
     let result: string
 
-    if (operation.toLowerCase() === "expand") {
-      result = IPv6.expand(values.ipv6Address)
-      setOutput(result)
+    try {
+      if (operation.toLowerCase() === "expand") {
+        result = IPv6.expand(values.ipv6Address)
+        setOutput(result)
+      }
+      else {
+        result = IPv6.abbreviate(values.ipv6Address)
+        setOutput(result)
+      }      
+    } catch (error: unknown) {
+      // Set error
+      form.setError('ipv6Address', {type: "value", message: "Invalid IPv6 address"})
     }
-    else {
-      result = IPv6.abbreviate(values.ipv6Address)
-      setOutput(result)
-    }
+
   }
   
   
@@ -82,12 +89,15 @@ const UtilitiesForm: React.FC<UtilitiesFormProps> = ({ operation }) => {
         />
 
         {/* Output */}
-        <FeaturesOutputBox result={output}/>
+        <FeaturesOutputBox 
+          label='Output'
+          formError={form.formState.errors.ipv6Address?.message}
+          result={output}
+        />
 
         <Button 
           type="submit"
           disabled={!form.formState.isValid}
-          onClick={() => setOutput(undefined)}
         >
           {operation}
         </Button>

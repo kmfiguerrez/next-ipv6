@@ -4,12 +4,12 @@ import { z } from "zod"
 const utilitiesFormSchema = z.object({
   ipv6Address: z
     .string()
-    .refine((value) => {
-      if (IPv6.isValidIpv6(value) === false) return false
+    // .refine((value) => {
+    //   if (value.length === 0) return false
 
-      return true
-    },
-    { message: "Invalid IPv6 Address" })
+    //   return true
+    // },
+    // { message: "Invalid IPv6 Address" })
 })
 
 type TutilitiesForm = z.infer<typeof utilitiesFormSchema>

@@ -90,7 +90,7 @@ const SidebarAccordionItem = ({children, key}: {key: string, children: React.Rea
   )
 }
 
-const SidebarAccordionTrigger = ({children}: {children: React.ReactNode}) => {
+const SidebarAccordionTrigger = ({children, className}: {children: React.ReactNode, className?: string}) => {
   const open = useRef(false)
 
   // Event handler
@@ -136,7 +136,7 @@ const SidebarAccordionTrigger = ({children}: {children: React.ReactNode}) => {
       className="sa-trigger"
     >
       <ChevronRight />
-      <div>
+      <div className={cn(``, className)}>
         {children}
       </div>
     </Button>  

@@ -4,6 +4,10 @@ import { Button } from '@/components/ui/button'
 
 import FeaturesDialog from '@/components/features/features-dialog'
 
+import { ArrowRightLeft } from 'lucide-react'
+
+
+
 const ConversionContent = () => {
   return (
     <ul>
@@ -17,7 +21,11 @@ const ConversionContent = () => {
             variant={'ghost'}
             size={'sm'}
           >
-            Bin To Hex
+            <div className='flex items-center'>
+              <span>Bin</span>
+              <ArrowRightLeft className='h-4 w-4 ms-1 me-1' />
+              <span>Hex</span>
+            </div>
           </Button>
         </FeaturesDialog>
       </li>
@@ -32,7 +40,11 @@ const ConversionContent = () => {
             variant={'ghost'}
             size={'sm'}
           >
-            Dec To Bin
+            <div className='flex items-center'>
+              <span>Dec</span>
+              <ArrowRightLeft className='h-4 w-4 ms-1 me-1' />
+              <span>Bin</span>
+            </div>
           </Button>
         </FeaturesDialog>
       </li>
@@ -47,7 +59,11 @@ const ConversionContent = () => {
             variant={'ghost'}
             size={'sm'}
           >
-            Hex To Dec
+            <div className='flex items-center'>
+              <span>Hex</span>
+              <ArrowRightLeft className='h-4 w-4 ms-1 me-1' />
+              <span>Dec</span>
+            </div>
           </Button>
         </FeaturesDialog>
       </li>      
