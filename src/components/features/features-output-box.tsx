@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -8,36 +8,45 @@ import { cn } from '@/lib/utils'
 
 
 type FeaturesOutputBoxProps = {
+  label: string
   className?: string
-  result: string | undefined
+  result?: string
+  formError?: string
 }
 
 
-const FeaturesOutputBox: React.FC<FeaturesOutputBoxProps> = ({ className, result }) => {
+const FeaturesOutputBox: React.FC<FeaturesOutputBoxProps> = ({ label, formError, className, result }) => {
+  let value: string = ""
+  let success: boolean = false
+
+  if (result && !formError) {
+    // Display data.
+    value = result
+
+    // Show border and message.
+    success = true
+  }
+
+
 
   return (
-    <div>
+    <div className={cn(``, className)}>
       <Label htmlFor="output-box">
-        Output
+        {label}
       </Label>
       <Input 
         readOnly 
-        id='output-box' 
+        id='output-box'
         type="text" 
         placeholder="Result displays here"
-        value={result ? result : ""}
+        value={value}
         className={cn(`${inconsolata.className} mt-2 text-base`, 
-          {"border-green-500": result} 
+          {"border-green-500/50": success} 
         )}
       />
-
-      {/* <div id='output-box' className={`${inconsolata.className} border rounded-md h-10 py-2 px-3`}>
-        <p className='slashed-zero'>0000:0aO</p>
-      </div> */}
-
       {/* Input validation message */}
-      {result &&
-        <p className='text-green-500 text-sm mt-1'>Success</p>
+      {success &&
+        <div className='text-green-500 text-sm mt-1'>Success</div>
       }
     </div>
   )
