@@ -6,6 +6,8 @@ import BinToHexForm from './conversion/bin-to-hex-form'
 import DecToBinForm from './conversion/dec-to-bin-form'
 import HexToDecForm from './conversion/hex-to-dec-form'
 
+import { Separator } from "@/components/ui/separator"
+
 import {
   Dialog,
   DialogContent,
@@ -42,13 +44,16 @@ const FeaturesDialog: React.FC<FeaturesDialogProps> = ({ children, title, featur
   return (
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent>
+      <DialogContent className='dark:bg-zinc-900'>
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>
             {description}
           </DialogDescription>
         </DialogHeader>
+
+        <Separator orientation='horizontal' className=''/>
+
         <div>
           {/* Form here */}
           {feature.category === 'utilities' &&

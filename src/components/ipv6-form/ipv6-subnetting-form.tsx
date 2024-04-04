@@ -170,7 +170,7 @@ const IPv6SubnettingForm: React.FC<TIPv6FormProps> = ({ onFormSubmit }) => {
           )}
         />
 
-        <div className="grid gap-x-5 grid-cols-2">
+        <div className="grid grid-cols-1 gap-y-8 md:gap-x-5 md:grid-cols-2">
           <FormField
             control={form.control}
             name="prefixLength"
@@ -253,6 +253,7 @@ const IPv6SubnettingForm: React.FC<TIPv6FormProps> = ({ onFormSubmit }) => {
         <Button 
           type="submit"
           disabled={!form.formState.isValid}
+          className="max-sm:w-full "
         >
           Subnet
         </Button>

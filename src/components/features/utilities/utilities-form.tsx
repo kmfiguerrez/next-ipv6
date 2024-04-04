@@ -60,6 +60,7 @@ const UtilitiesForm: React.FC<UtilitiesFormProps> = ({ operation }) => {
     } catch (error: unknown) {
       // Set error
       form.setError('ipv6Address', {type: "value", message: "Invalid IPv6 address"})
+      form.setFocus('ipv6Address')
     }
 
   }

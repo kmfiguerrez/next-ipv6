@@ -51,7 +51,7 @@ const OutputDisplay: React.FC<TOutputDisplayProps> = ({ prefix }) => {
       <div id='output-error'></div>
 
       {/* Row 1 */}
-      <div id='row-1' className='grid grid-cols-3'>
+      <div id='row-1' className='grid lg:grid-cols-3'>
         <div id='subnetNumberContainer' className='font-semibold'>
           {/* Input element for subnet number will show up here. */}
         </div>
@@ -75,7 +75,7 @@ const OutputDisplay: React.FC<TOutputDisplayProps> = ({ prefix }) => {
       <Separator className='mb-2 dark:bg-white/20'/>
 
       {/* Row 2 */}
-      <div id='row-2' className='grid grid-cols-3 mb-2'>
+      <div id='row-2' className='grid mb-2 lg:grid-cols-3'>
         <div className='font-semibold'>Prefix:</div>
         <div className={`${inconsolata.className} border`}>
           <span id='prefixId'>
@@ -90,7 +90,7 @@ const OutputDisplay: React.FC<TOutputDisplayProps> = ({ prefix }) => {
       </div>
 
       {/* Row 3 */}
-      <div id='row-3' className='grid grid-cols-3 mb-2'>
+      <div id='row-3' className='grid mb-2 lg:grid-cols-3'>
         <div className='font-semibold'>First Usable Address:</div>
         <div className={`${inconsolata.className} border`}>
           <span id='firstUsableAddress'>
@@ -105,7 +105,7 @@ const OutputDisplay: React.FC<TOutputDisplayProps> = ({ prefix }) => {
       </div>
 
       {/* Row 4 */}
-      <div id='row-4' className='grid grid-cols-3'>
+      <div id='row-4' className='grid mb-2 lg:grid-cols-3'>
         <div className='font-semibold'>Last Usable Address:</div>
         <div className={`${inconsolata.className} border`}>
           <span id='lastUsableAddress'>

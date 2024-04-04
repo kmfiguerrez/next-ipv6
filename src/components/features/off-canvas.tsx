@@ -1,6 +1,5 @@
 import React from 'react'
 
-import { Button } from '../ui/button'
 import {
   Sheet,
   SheetContent,
@@ -9,8 +8,6 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet"
-
-import FeaturesDialog from './features-dialog'
 
 import { 
   SidebarAccordion, 
@@ -33,7 +30,7 @@ const OffCanvas: React.FC<OffCanvasProps> = ({ children }) => {
       <SheetTrigger asChild>{children}</SheetTrigger>
       <SheetContent side={'left'}>
         <SheetHeader>
-          <SheetTitle>Features</SheetTitle>
+          <SheetTitle className='text-left'>Features</SheetTitle>
           {/* <SheetDescription>
             This action cannot be undone. This will permanently delete your account
             and remove your data from our servers.

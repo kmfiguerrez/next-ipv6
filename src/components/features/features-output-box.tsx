@@ -39,7 +39,7 @@ const FeaturesOutputBox: React.FC<TFeaturesOutputBoxProps> = ({ label, formError
         type="text" 
         placeholder="Result displays here"
         value={value}
-        className={cn(`${inconsolata.className} mt-2 text-base`, 
+        className={cn(`${inconsolata.className} mt-2 text-base overflow-x-scroll`, 
           {"border-green-500/50": success} 
         )}
       />

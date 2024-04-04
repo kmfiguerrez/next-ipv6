@@ -14,7 +14,7 @@ const ConversionContent = () => {
       <li>
         <FeaturesDialog
           title='Conversion'
-          description='This action converts hexadecimals to binary and vice versa.'
+          description='This action converts Binary to Hexadecimals and vice versa.'
           feature={{category: "conversion", operation: "convert", action: "BinToHex"}}
         >
           <Button
@@ -33,7 +33,7 @@ const ConversionContent = () => {
       <li>
         <FeaturesDialog
           title='Conversion'
-          description='This action converts decimals to binary and vice versa.'
+          description='This action converts Decimals to Binary and vice versa.'
           feature={{category: "conversion", operation: "convert", action: "DecToBin"}}
         >
           <Button
@@ -52,7 +52,7 @@ const ConversionContent = () => {
       <li>
         <FeaturesDialog
           title='Conversion'
-          description='This action converts Hexadecimals to decimals and vice versa.'
+          description='This action converts Hexadecimals to Decimals and vice versa.'
           feature={{category: "conversion", operation: "convert", action: "HexToDec"}}
         >
           <Button

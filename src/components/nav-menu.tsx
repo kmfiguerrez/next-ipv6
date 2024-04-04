@@ -7,7 +7,7 @@ import { ModeToggle } from "./theme-color/theme-toggler"
 
 const NavMenu = () => {
   return (
-    <header className="container mb-5 mt-1">
+    <header className="mb-5 mt-1 max-sm:px-1 sm:container">
       <nav className='flex justify-between '>
         
         <h1 className="flex items-center">IPv6 Subnetting</h1>
