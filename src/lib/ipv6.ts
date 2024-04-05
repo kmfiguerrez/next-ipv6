@@ -1223,7 +1223,7 @@ class IPv6 {
    * Generates the Interface ID portion of an IPv6 address using the
    * modified extended unique identifier (EUI-64) logic.
    * 
-   * __Note__: 
+   * __Notes__: 
    * - Argument validation can be turned off if the optional 
    * `skipArgumentValidation`param is set to `true`. 
    * 
@@ -1261,7 +1261,7 @@ class IPv6 {
       Notes: Argument validation can be turned off if the method caller that
       calls this method validates the same data (mac address).
     */
-    if (skipArgumentValidation) {
+    if (!skipArgumentValidation) {
       if (!this.isValidMacAddress(macAddress)) throw new ArgumentError("From eui64: Invalid MAC Address provided.")
     }
 
