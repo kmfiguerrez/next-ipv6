@@ -17,13 +17,14 @@ type TFromInputTagProps = {
   onChange: React.Dispatch<React.SetStateAction<string | undefined>>
   formMessage?: string
   value?: string
+  className?: string
 }
 
 const FromInputTag = forwardRef<HTMLInputElement, TFromInputTagProps>(function FromInputTag(props, ref) {
-  const {label, placeholder, onChange, formMessage, value} = props
+  const {label, placeholder, onChange, formMessage, value, className} = props
 
   return (
-    <div className='flex flex-col mb-4'>
+    <div className={cn(`flex flex-col mb-4`, className)}>
       <Label
         htmlFor="convertion-from"
         className={cn(`mb-4`, { "text-red-500 font-semibold": formMessage })}

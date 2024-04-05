@@ -12,7 +12,7 @@ const UtilitiesContent = () => {
         <FeaturesDialog 
           title='Expand'
           description='This action will expand abbreviated IPv6 addresss.'
-          feature={{category: "utilities", operation: "expand"}}
+          feature={{category: "utilities"}}
         >
           <Button
             variant={'ghost'}
@@ -27,7 +27,7 @@ const UtilitiesContent = () => {
         <FeaturesDialog 
           title='Abbreviate'
           description='This action will abbreviate IPv6 addresss.'
-          feature={{category: "utilities", operation: "abbreviate"}}
+          feature={{category: "utilities"}}
         >
           <Button
             variant={'ghost'}

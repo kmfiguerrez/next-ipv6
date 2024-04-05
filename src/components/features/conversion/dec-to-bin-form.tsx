@@ -3,13 +3,13 @@ import React, { useRef, useState } from 'react'
 import { Button } from "@/components/ui/button"
 
 import FeaturesOutputBox from '@/components/features/shared/features-output-box'
+import FromInputTag from '@/components/features/shared/features-input-tag'
 
 import IPv6 from "@/lib/ipv6"
 
 import { ArrowRightLeft } from 'lucide-react'
 
 import { getErrorMessage } from '@/lib/error-message'
-import FromInputTag from '../shared/features-input-tag'
 
 import { ArgumentError } from '@/lib/custom-error'
 

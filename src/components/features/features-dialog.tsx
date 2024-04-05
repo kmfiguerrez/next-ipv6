@@ -16,21 +16,25 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
+import ValidationForm from './validation/validation-form'
 
 
 
 type TUtilities = {
   category: "utilities"
-  operation: "expand" | "abbreviate"
+}
+
+type TValidation = {
+  category: "validation"
+  action?: "validate-maca" | "validate-ipv6"
 }
 
 type TConversion = {
   category: "conversion"
-  operation: "convert"
-  action: "BinToHex" | "DecToBin" | "HexToDec"
+  action?: "BinToHex" | "DecToBin" | "HexToDec"
 }
 
-type TFeature = TUtilities | TConversion
+type TFeature = TUtilities | TValidation | TConversion
 
 
 type FeaturesDialogProps = {
@@ -78,7 +82,22 @@ const FeaturesDialog: React.FC<FeaturesDialogProps> = ({ children, title, featur
             <HexToDecForm
               operation='Convert'
             />            
-          }                  
+          }
+
+          {feature.category === "validation" && feature.action === "validate-maca" &&
+            <ValidationForm
+              operation='Validate'
+              action={"validate-maca"}
+            />            
+          }
+
+          {feature.category === "validation" && feature.action === "validate-ipv6" &&
+            <ValidationForm
+              operation='Validate'
+              action={"validate-ipv6"}
+            />            
+          }          
+
         </div>
       </DialogContent>
     </Dialog>
