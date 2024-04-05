@@ -36,6 +36,10 @@ const GeneratorForm: React.FC<TGeneratorFormProps> = ({ operation, action}) => {
       outputLabel = "Interface ID"
       break;
     }
+    case "link-local": {
+      outputLabel = "Link-Local Unicast Address"
+      break;
+    }    
     default:
       outputLabel = "Output"
       break;
@@ -49,11 +53,12 @@ const GeneratorForm: React.FC<TGeneratorFormProps> = ({ operation, action}) => {
     // Reset error first.
     setError(undefined)
 
+    const macAddress: string = inputValue ? inputValue : ""
+
     try {
       // Determine what action to perform.
       switch (action) {
         case "eui64": {
-          const macAddress: string = inputValue ? inputValue : ""
           const interfaceID: string = IPv6.eui64(macAddress)
           setOutput(interfaceID.toUpperCase())
 
@@ -68,9 +73,24 @@ const GeneratorForm: React.FC<TGeneratorFormProps> = ({ operation, action}) => {
             
           // Set current input value as previous value.
           inputPrevValue.current = macAddress
-          
-
           return
+        }
+        case "link-local": {
+          const linkLocalAddress = IPv6.getLinkLocalAddress(macAddress)
+          setOutput(linkLocalAddress.toUpperCase())
+
+          /*
+            Animation.
+            If the input value is the same don't animate.
+          */
+            if (macAddress !== inputPrevValue.current) {
+              gsap.fromTo("#featuresOutputBox", {opacity: 0}, {opacity: 1, duration: .1})
+              gsap.fromTo("#featuresOutputBoxMessage", {opacity: 0}, {opacity: 1, duration: .1})
+            }
+            
+          // Set current input value as previous value.
+          inputPrevValue.current = macAddress
+          return          
         }
         default:
           console.error("Could not determine generator's action!")
@@ -79,7 +99,7 @@ const GeneratorForm: React.FC<TGeneratorFormProps> = ({ operation, action}) => {
     } 
     catch (error: unknown) {
       const errorMessage = getErrorMessage(error)
-      if (errorMessage.startsWith("From eui64")) {
+      if (errorMessage.startsWith("From eui64") || errorMessage.startsWith("From getLinkLocalAddress")) {
         setError("Invalid MAC addrress")
         return
       }

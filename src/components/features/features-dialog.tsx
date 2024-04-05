@@ -55,7 +55,7 @@ const FeaturesDialog: React.FC<FeaturesDialogProps> = ({ children, title, featur
   return (
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className='dark:bg-zinc-900'>
+      <DialogContent className='bg-neutral-50 dark:bg-zinc-900'>
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>
@@ -110,7 +110,14 @@ const FeaturesDialog: React.FC<FeaturesDialogProps> = ({ children, title, featur
               operation='Generate'
               action={"eui64"}
             />            
-          }                   
+          }
+
+          {feature.category === "generator" && feature.action === "link-local" &&
+            <GeneratorForm
+              operation='Generate'
+              action={"link-local"}
+            />            
+          }                             
 
         </div>
       </DialogContent>

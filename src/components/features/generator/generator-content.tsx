@@ -19,6 +19,21 @@ const GeneratorContent = () => {
           </Button>
         </FeaturesDialog>
       </li>
+
+      <li>
+        <FeaturesDialog
+          title='Generator'
+          description='This action generates a Unicast Link-Local IPv6 Address.'
+          feature={{category: "generator", action:"link-local"}}
+        >
+          <Button
+            variant={'ghost'}
+            size={'sm'}
+          >
+            Link-Local Address
+          </Button>
+        </FeaturesDialog>
+      </li>      
     </ul>
   )
 }

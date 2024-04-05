@@ -1329,6 +1329,12 @@ class IPv6 {
    * Generates a Unicast Link-Local address using the prefix FE80/10
    * and EUI-64 logic.
    * 
+   * __Notes__: 
+   * - Argument validation can be turned off if the optional 
+   * `skipArgumentValidation`param is set to `true`. 
+   * 
+   * - This happen if the excecution context that calls this method 
+   * validates the same data (mac address)
    * 
    * @param {string} macAddress - A string of MAC address.
    * @param {boolean} skipArgumentValidation - An optional boolean param set to `false` by default.
@@ -1363,7 +1369,7 @@ class IPv6 {
         calls this method validates the same data (mac address).
       */
       if (!skipArgumentValidation) {
-        if (!this.isValidMacAddress(macAddress)) throw new ArgumentError("From eui64: Invalid MAC Address provided.")
+        if (!this.isValidMacAddress(macAddress)) throw new ArgumentError("From getLinkLocalAddress: Invalid MAC Address provided.")
       }
 
       // Generate the interface ID using the EUI-64 logic.
@@ -1376,6 +1382,7 @@ class IPv6 {
     /*
       Combine the Link-Local prefix and the interface ID to generate the
       unicast link-local address.
+      We usually see the link-local unicast abbreviated on host(s).
     */
     linkLocalAddress = linkLocalPrefix + interfaceID
 
@@ -1384,7 +1391,89 @@ class IPv6 {
   }
 
 
+  /**
+   * Generates a Solicited-Node Multicast Address using the prefix
+   * FF02::1:FF and the last six hex digits.
+   * 
+   * __Notes__: 
+   * - Argument validation can be turned off if the optional 
+   * `skipArgumentValidation`param is set to `true`. 
+   * 
+   * - This happen if the excecution context that calls this method 
+   * validates the same data (ipv6 address)
+   * 
+   * @param {string} ipv6Address - A string of IPv6 address.
+   * @param {boolean} skipArgumentValidation - An optional boolean param set to `false` by default.
+   */
+  static getSolicitedNodeAddress(ipv6Address: string, skipArgumentValidation: boolean = false): string {
+    /*
+      This method will generate a Solicited-Node Multicast Address.
+      All solicited-node starts with the predefined /104 prefix (26 hex digits),
+      which is FF02::1:FF defined by RFC. Then the last 24 bits (6 hex digits)
+      will the last 6 hex digits of a unicast IPv6 address into the solicited-node
+      address.
+    */
 
+    // sanitize input ipv6 addresss first.
+    ipv6Address = ipv6Address.trim().toLowerCase()
+
+    let counter: number = 0
+    // Solicited Node prefix: FF02::1:FF /104.
+    const solicitedNodePrefix = "ff0200000000000000000001ff";
+    // Return data.
+    let solicitedNodeAddress: string = ""
+
+
+    try {
+      /*
+        Validate input data first.
+        Notes: Argument validation can be turned off if the method caller that
+        calls this method validates the same data (ipv6 address).
+      */
+      if (!skipArgumentValidation) {
+        if (!this.isValidIpv6(ipv6Address)) throw new ArgumentError("From getSolicitedNodeAddress: Invalid IPv6 Address provided.")
+      }
+
+      /*
+        Get the last 6 hex digits of an ipv6 unicast address.
+        Make sure that the input address in not abbreviated.             
+      */ 
+      const expandedIPv6: string = this.expand(ipv6Address)
+      const segments: Array<string> = expandedIPv6.split(":")
+      const sixHexDigits: string = segments.join("").slice(-6)
+
+      // Combine the solicited-node prefix and the last 6 hex digits.
+      const tempAddress = solicitedNodePrefix + sixHexDigits
+
+      // Add a colon every four hex digits.
+      for (const hex of tempAddress) {
+        if (counter === 4) {                    
+            solicitedNodeAddress += ":";
+            // reset the count.
+            counter = 0;
+        }
+        solicitedNodeAddress += hex
+        counter++;
+      }
+
+      // We usually see the solicited-node unicast abbreviated on host(s).
+      solicitedNodeAddress = this.abbreviate(solicitedNodeAddress)      
+    } 
+    catch (error: unknown) {
+      let errorMessage: string = getErrorMessage(error)
+      if (errorMessage.startsWith("From expand")) {
+        throw new ArgumentError("From getSolicitedNodeAddress: Expanding part failed.")
+      }
+      if (errorMessage.startsWith("From abbreviate")) {
+        throw new ArgumentError("From getSolicitedNodeAddress: Abbreviating part failed.")
+      }
+      // Otherwise input ipv6 address.
+      throw new ArgumentError(errorMessage)
+    }
+
+    // Finally.
+    return solicitedNodeAddress
+  }
 }
 
 export default IPv6
