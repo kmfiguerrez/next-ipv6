@@ -1181,18 +1181,38 @@ class IPv6 {
       2. Hyphen notation.
       3. Contiguous hexadecimals.
     */
-    const macaPattern = /^(([a-f0-9]{2}(-|:)?){6})$/i;
+   const colonNotation = /^[a-f0-9]{2}:[a-f0-9]{2}:[a-f0-9]{2}:[a-f0-9]{2}:[a-f0-9]{2}:[a-f0-9]{2}$/i
+   const hyphenNotation = /^[a-f0-9]{2}-[a-f0-9]{2}-[a-f0-9]{2}-[a-f0-9]{2}-[a-f0-9]{2}-[a-f0-9]{2}$/i
+   const contiguousHexNotation = /^([a-f0-9]{2}){6}$/i;
+   
     let isValid: boolean
 
-    
+    const firstElement = macAddress[0]
+    const lastElement = macAddress[macAddress.length - 1]
+
+
     // Validate input data first.
     if (macAddress === undefined || macAddress === null || macAddress === "") {
       return false
     }
+    if (firstElement === ":" || firstElement === "-" || lastElement === ":" || lastElement === "-") {
+      return false
+    }
 
     // Test input mac address.
-    isValid = macaPattern.test(macAddress)
-    if (!isValid) return false
+    if (macAddress.includes(":")) {
+      isValid = colonNotation.test(macAddress)
+      if (!isValid) return false  
+    }
+    else if (macAddress.includes("-")) {
+      isValid = hyphenNotation.test(macAddress)
+      if (!isValid) return false
+    }
+    else {
+      // Otherwise mac address is contiguous hex.
+      isValid = contiguousHexNotation.test(macAddress)
+      if (!isValid) return false
+    }
 
     // Otherwise valid.
     return true
