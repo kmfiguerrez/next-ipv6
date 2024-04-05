@@ -1223,13 +1223,21 @@ class IPv6 {
    * Generates the Interface ID portion of an IPv6 address using the
    * modified extended unique identifier (EUI-64) logic.
    * 
+   * __Note__: 
+   * - Argument validation can be turned off if the optional 
+   * `skipArgumentValidation`param is set to `true`. 
+   * 
+   * - This happen if the excecution context that calls this method 
+   * validates the same data (mac address)
+   * 
    * @param {string} macAddress - A string of MAC address.
+   * @param {boolean} skipArgumentValidation - An optional boolean param set to `false` by default.
    * 
    * @returns  A string of Interface ID.
    * 
    * @throws `ArgumentError` is thrown if param `macAddress` is invalid.
    */
-  static eui64(macAddress: string): string {
+  static eui64(macAddress: string, skipArgumentValidation: boolean = false): string {
     /*
       Algorithm for eui-64 to generate the interface ID.
       1. Split the mac address in two halves.
@@ -1248,9 +1256,14 @@ class IPv6 {
     // Return data.
     let interfaceID: string = ""
 
-
-    // Validate input data first.
-    if (!this.isValidMacAddress(macAddress)) throw new ArgumentError("From eui64: Invalid MAC Address provided.")
+    /*
+      Validate input data first.
+      Notes: Argument validation can be turned off if the method caller that
+      calls this method validates the same data (mac address).
+    */
+    if (skipArgumentValidation) {
+      if (!this.isValidMacAddress(macAddress)) throw new ArgumentError("From eui64: Invalid MAC Address provided.")
+    }
 
     /*
       Create an index signature so that accessing prop value of object
