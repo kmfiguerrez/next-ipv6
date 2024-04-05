@@ -1325,6 +1325,64 @@ class IPv6 {
   }
 
 
+  /**
+   * Generates a Unicast Link-Local address using the prefix FE80/10
+   * and EUI-64 logic.
+   * 
+   * 
+   * @param {string} macAddress - A string of MAC address.
+   * @param {boolean} skipArgumentValidation - An optional boolean param set to `false` by default.
+   * 
+   * @returns  A string of Unicast Link-Local address.
+   * 
+   * @throws `ArgumentError` is thrown if param `macAddress` is invalid.
+   */
+  static getLinkLocalAddress(macAddress: string, skipArgumentValidation: boolean = false): string {
+    /*
+      This method will generate the ipv6 unicast Link-Local address
+      that we see on host(s). It will use the cisco router's way of
+      making the interface ID part of the address and that is using
+      the eui-64 method. Note that the Link-Local unicast starts with
+      the prefix FE80/10 with the remaining 54 bits should be all 0s
+      per RFC: FE80::/64.
+    */
+
+    // Sanitize input mac address first.
+    macAddress = macAddress.trim().toLowerCase()
+
+    const linkLocalPrefix: string = "fe80::"
+    let interfaceID: string
+    // Return data.
+    let linkLocalAddress: string
+
+
+    try {
+      /*
+        Validate input data first.
+        Notes: Argument validation can be turned off if the method caller that
+        calls this method validates the same data (mac address).
+      */
+      if (!skipArgumentValidation) {
+        if (!this.isValidMacAddress(macAddress)) throw new ArgumentError("From eui64: Invalid MAC Address provided.")
+      }
+
+      // Generate the interface ID using the EUI-64 logic.
+      interfaceID = this.eui64(macAddress, true)
+    } 
+    catch (error: unknown) {
+      throw new ArgumentError(getErrorMessage(error))    
+    }
+
+    /*
+      Combine the Link-Local prefix and the interface ID to generate the
+      unicast link-local address.
+    */
+    linkLocalAddress = linkLocalPrefix + interfaceID
+
+    // Finally.
+    return linkLocalAddress
+  }
+
 
 
 }
