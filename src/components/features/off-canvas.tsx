@@ -5,6 +5,7 @@ import { Separator } from "@/components/ui/separator"
 import UtilitiesContent from './utilities/utilities-content'
 import ConversionContent from './conversion/conversion-content'
 import ValidationContent from './validation/validation-content'
+import GeneratorContent from './generator/generator-content'
 
 import {
   Sheet,
@@ -59,7 +60,14 @@ const OffCanvas: React.FC<OffCanvasProps> = ({ children }) => {
             <SidebarAccordionContent className='ps-7'>
               <ValidationContent />
             </SidebarAccordionContent>
-          </SidebarAccordionItem>          
+          </SidebarAccordionItem>
+
+          <SidebarAccordionItem key='item-2'>
+            <SidebarAccordionTrigger className='font-semibold'>Generator</SidebarAccordionTrigger>
+            <SidebarAccordionContent className='ps-7'>
+              <GeneratorContent />
+            </SidebarAccordionContent>
+          </SidebarAccordionItem>               
 
           <SidebarAccordionItem key='item-2'>
             <SidebarAccordionTrigger className='font-semibold'>Utilities</SidebarAccordionTrigger>

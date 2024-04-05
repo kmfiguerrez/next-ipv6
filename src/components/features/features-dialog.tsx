@@ -5,6 +5,8 @@ import UtilitiesForm from './utilities/utilities-form'
 import BinToHexForm from './conversion/bin-to-hex-form'
 import DecToBinForm from './conversion/dec-to-bin-form'
 import HexToDecForm from './conversion/hex-to-dec-form'
+import ValidationForm, { type TValidationActions } from './validation/validation-form'
+import GeneratorForm, { type TGeneratorActions } from './generator/generator-form'
 
 import { Separator } from "@/components/ui/separator"
 
@@ -16,7 +18,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import ValidationForm from './validation/validation-form'
+
 
 
 
@@ -26,7 +28,7 @@ type TUtilities = {
 
 type TValidation = {
   category: "validation"
-  action?: "validate-maca" | "validate-ipv6"
+  action?: TValidationActions
 }
 
 type TConversion = {
@@ -34,7 +36,12 @@ type TConversion = {
   action?: "BinToHex" | "DecToBin" | "HexToDec"
 }
 
-type TFeature = TUtilities | TValidation | TConversion
+type TGenerator = {
+  category: "generator"
+  action?: TGeneratorActions
+}
+
+type TFeature = TUtilities | TValidation | TGenerator | TConversion
 
 
 type FeaturesDialogProps = {
@@ -96,7 +103,14 @@ const FeaturesDialog: React.FC<FeaturesDialogProps> = ({ children, title, featur
               operation='Validate'
               action={"validate-ipv6"}
             />            
-          }          
+          }   
+
+          {feature.category === "generator" && feature.action === "eui64" &&
+            <GeneratorForm
+              operation='Generate'
+              action={"eui64"}
+            />            
+          }                   
 
         </div>
       </DialogContent>

@@ -12,9 +12,11 @@ import gsap from 'gsap'
 import { getErrorMessage } from '@/lib/error-message'
 
 
+export type TGeneratorActions = "eui64" | "link-local" | "socilited-node"
+
 type TGeneratorFormProps = {
   operation: string
-  action: "eui64" | "link-local" | "socilited-node"
+  action: TGeneratorActions
 }
 
 
@@ -25,7 +27,21 @@ const GeneratorForm: React.FC<TGeneratorFormProps> = ({ operation, action}) => {
   
   const inputRef = useRef<HTMLInputElement>(null)
   // Used for animation.
-  const inputPrevValue = useRef<string>("initial value") 
+  const inputPrevValue = useRef<string>("initial value")
+
+  // Set output label.
+  let outputLabel: string
+  switch (action) {
+    case "eui64": {
+      outputLabel = "Interface ID"
+      break;
+    }
+    default:
+      outputLabel = "Output"
+      break;
+  }
+
+
   
   // Event handler.
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -39,7 +55,7 @@ const GeneratorForm: React.FC<TGeneratorFormProps> = ({ operation, action}) => {
         case "eui64": {
           const macAddress: string = inputValue ? inputValue : ""
           const interfaceID: string = IPv6.eui64(macAddress)
-          setOutput(interfaceID)
+          setOutput(interfaceID.toUpperCase())
 
           /*
             Animation.
@@ -52,6 +68,7 @@ const GeneratorForm: React.FC<TGeneratorFormProps> = ({ operation, action}) => {
             
           // Set current input value as previous value.
           inputPrevValue.current = macAddress
+          
 
           return
         }
@@ -71,7 +88,7 @@ const GeneratorForm: React.FC<TGeneratorFormProps> = ({ operation, action}) => {
 
   return (
     <form onSubmit={handleSubmit}>
-      {action === "eui64" || action === "link-local" &&
+      {action === "eui64" &&
         <FromInputTag
           ref={inputRef}
           label='MAC Address'
@@ -79,6 +96,19 @@ const GeneratorForm: React.FC<TGeneratorFormProps> = ({ operation, action}) => {
           onChange={setInputValue}
           formMessage={error}
           value={inputValue}
+          className='mb-8'
+        />
+      }
+
+      {action === "link-local" &&
+        <FromInputTag
+          ref={inputRef}
+          label='MAC Address'
+          placeholder='Enter MAC address here'
+          onChange={setInputValue}
+          formMessage={error}
+          value={inputValue}
+          className='mb-8'
         />
       }
 
@@ -90,12 +120,13 @@ const GeneratorForm: React.FC<TGeneratorFormProps> = ({ operation, action}) => {
           onChange={setInputValue}
           formMessage={error}
           value={inputValue}
+          className='mb-8'
         />
       }      
 
       {/* Output */}
       <FeaturesOutputBox
-        label={"Output"}
+        label={outputLabel}
         formError={error}
         result={output}
         className='mb-8'

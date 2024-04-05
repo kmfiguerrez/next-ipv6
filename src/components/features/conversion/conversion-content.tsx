@@ -1,5 +1,3 @@
-import React from 'react'
-
 import { Button } from '@/components/ui/button'
 
 import FeaturesDialog from '@/components/features/features-dialog'

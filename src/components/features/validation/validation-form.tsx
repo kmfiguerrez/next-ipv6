@@ -10,9 +10,11 @@ import IPv6 from '@/lib/ipv6'
 import gsap from 'gsap'
 
 
+export type TValidationActions = "validate-maca" | "validate-ipv6"
+
 type TValidationFormProps = {
   operation: string
-  action: "validate-maca" | "validate-ipv6"
+  action: TValidationActions
 }
 
 const ValidationForm: React.FC<TValidationFormProps> = ({ operation, action }) => {
@@ -99,6 +101,7 @@ const ValidationForm: React.FC<TValidationFormProps> = ({ operation, action }) =
           onChange={setInputValue}
           formMessage={error}
           value={inputValue}
+          className='mb-8'
         />
       }
 
@@ -110,6 +113,7 @@ const ValidationForm: React.FC<TValidationFormProps> = ({ operation, action }) =
           onChange={setInputValue}
           formMessage={error}
           value={inputValue}
+          className='mb-8'
         />
       }      
 
