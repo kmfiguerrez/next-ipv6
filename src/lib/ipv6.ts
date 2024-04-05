@@ -1163,6 +1163,40 @@ class IPv6 {
   }  
 
 
+  /**
+   * Validates input MAC address.
+   * 
+   * @param {string} macAddress - A string of MAC address.
+   * 
+   * @returns Boolean.
+   */
+  static isValidMacAddress(macAddress: string): boolean {
+    // Sanitize input data first.
+    macAddress = macAddress.trim().toLowerCase()
+
+    /*
+      Regex pattern.
+      This will match three valid mac address format:
+      1. Colon notation.
+      2. Hyphen notation.
+      3. Contiguous hexadecimals.
+    */
+    const macaPattern = /^(([a-f0-9]{2}(-|:)?){6})$/i;
+    let isValid: boolean
+
+    
+    // Validate input data first.
+    if (macAddress === undefined || macAddress === null || macAddress === "") {
+      return false
+    }
+
+    // Test input mac address.
+    isValid = macaPattern.test(macAddress)
+    if (!isValid) return false
+
+    // Otherwise valid.
+    return true
+  }
 
 
 

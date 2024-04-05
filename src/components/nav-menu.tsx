@@ -41,7 +41,7 @@ const NavMenu = () => {
 
 const NavDropdownContent = ({children}: {children: React.ReactNode}) => {
   return (
-    <div id="navDropdownContent" className="h-0 overflow-hidden">
+    <div id="navDropdownContent" className="h-0 overflow-hidden sm:hidden">
       {children}
     </div>
   )

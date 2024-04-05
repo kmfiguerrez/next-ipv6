@@ -162,7 +162,7 @@ const IPv6SubnettingForm: React.FC<TIPv6FormProps> = ({ onFormSubmit }) => {
                 <Input 
                   placeholder="Enter IPv6 Address here" 
                   {...field}
-                  className={`${inconsolata.className} text-lg`}
+                  className={`${inconsolata.className} text-lg border-black/50`}
                 />
               </FormControl>
               <FormMessage className=""/>
@@ -184,7 +184,7 @@ const IPv6SubnettingForm: React.FC<TIPv6FormProps> = ({ onFormSubmit }) => {
                     max={128}
                     placeholder="Enter Prefix length here" 
                     {...field}
-                    className={`${inconsolata.className} text-lg`}
+                    className={`${inconsolata.className} text-lg border-black/50`}
                   />
                 </FormControl>
                 <FormMessage />
@@ -205,7 +205,7 @@ const IPv6SubnettingForm: React.FC<TIPv6FormProps> = ({ onFormSubmit }) => {
                   max={128}
                   placeholder="Enter Subnet bits here" 
                   {...field}
-                  className={`${inconsolata.className} text-lg`}
+                  className={`${inconsolata.className} text-lg border-black/50`}
                 />
                 </FormControl>
                 <FormMessage />
