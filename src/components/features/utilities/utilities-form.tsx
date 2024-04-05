@@ -10,7 +10,7 @@ import utilitiesFormSchema, { type TutilitiesForm } from "@/schemas/utilities-fo
 
 import IPv6 from "@/lib/ipv6"
 
-import FeaturesOutputBox from '../features-output-box'
+import FeaturesOutputBox from '../shared/features-output-box'
 
 import { inconsolata } from '@/lib/fonts'
 
