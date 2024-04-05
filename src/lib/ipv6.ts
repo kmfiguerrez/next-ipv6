@@ -1219,6 +1219,98 @@ class IPv6 {
   }
 
 
+  /**
+   * Generates the Interface ID portion of an IPv6 address using the
+   * modified extended unique identifier (EUI-64) logic.
+   * 
+   * @param {string} macAddress - A string of MAC address.
+   * 
+   * @returns  A string of Interface ID.
+   * 
+   * @throws `ArgumentError` is thrown if param `macAddress` is invalid.
+   */
+  static eui64(macAddress: string): string {
+    /*
+      Algorithm for eui-64 to generate the interface ID.
+      1. Split the mac address in two halves.
+      2. Insert FFFE in the middle.
+      3. Convert the resulting interface ID to binaries, 
+          invert the seventh bit of the interface ID.
+      4. Convert it back to hexadecimals and add a colon every
+          four hex digits.
+    */
+
+    // Sanitize input data first.
+    macAddress = macAddress.trim().toLowerCase()
+
+    let counter: number = 0
+    let hexadecimals: Array<string>
+    // Return data.
+    let interfaceID: string = ""
+
+
+    // Validate input data first.
+    if (!this.isValidMacAddress(macAddress)) throw new ArgumentError("From eui64: Invalid MAC Address provided.")
+
+    /*
+      Create an index signature so that accessing prop value of object
+      literal inside for-in loop will work.
+    */
+    interface StringArray {
+      [index: string]: string
+    }
+    const seventhBitConversion: StringArray = {
+      0: "2", 1: "3", 2: "0", 3: "1", 4: "6", 5: "7", 6: "4", 7: "5",
+      8: "a", 9: "b", a: "8", b: "9", c: "e", d: "f", e: "c", f: "d",
+    }
+
+    // Turn the input mac address into array of hexadecimals.
+    if (macAddress.includes(":")) {
+      hexadecimals = macAddress.split(":")
+    }
+    else if (macAddress.includes("-")) {
+      hexadecimals = macAddress.split("-")
+    }
+    else {
+      hexadecimals = macAddress.split("")
+    }
+
+    // Split the mac adddress in two havles and insert FFFE in the middle.
+    const toInsertAt = hexadecimals.length / 2;
+    hexadecimals.splice(toInsertAt, 0, "FFFE");
+
+    /*
+      In here instead of converting the hexs into binaries, we're gonna use
+      the decimal shortcuts of inverting the seventh bit. Because inverting 
+      the seventh bit means changing the value of the second hex of the 
+      interface ID. So make sure that the macArray is an array of single hex
+      digits.
+    */
+    hexadecimals = hexadecimals.join("").split("")
+
+    // Change the value of the second hex(invert the seventh bit) based on the seventhBitConversion above.
+    const secondHex = hexadecimals[1];
+    for (const key in seventhBitConversion) {
+        if (secondHex === key) {
+            hexadecimals[1] = seventhBitConversion[key]
+        }                
+    }
+
+    // Add a colon every four hex digits.
+    for (const hex of hexadecimals) {
+      if (counter === 4) {                    
+          interfaceID += ":";
+          // reset the count.
+          counter = 0;
+      }
+      interfaceID += hex
+      counter++;
+    }
+
+    // Finally.
+    return interfaceID
+  }
+
 
 
 
