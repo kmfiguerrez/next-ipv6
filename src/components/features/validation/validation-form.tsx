@@ -7,6 +7,8 @@ import { Button } from '@/components/ui/button'
 
 import IPv6 from '@/lib/ipv6'
 
+import gsap from 'gsap'
+
 
 type TValidationFormProps = {
   operation: string
@@ -19,6 +21,8 @@ const ValidationForm: React.FC<TValidationFormProps> = ({ operation, action }) =
   const [output, setOutput] = useState<string>()
   
   const inputRef = useRef<HTMLInputElement>(null)
+  // Used for animation.
+  const inputPrevValue = useRef<string>("initial value") 
   
   // Event handler.
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -39,9 +43,47 @@ const ValidationForm: React.FC<TValidationFormProps> = ({ operation, action }) =
         }
         // Otherwise valid.
         setOutput("Valid MAC Address")
+
+        /*
+          Animation.
+          If the input value is the same don't animate.
+        */
+        if (macAddress !== inputPrevValue.current) {
+          gsap.fromTo("#featuresOutputBox", {opacity: 0}, {opacity: 1, duration: .1})
+          gsap.fromTo("#featuresOutputBoxMessage", {opacity: 0}, {opacity: 1, duration: .1})
+        }
+        
+        // Set current input value as previous value.
+        inputPrevValue.current = macAddress
+
         return
       }
+      case "validate-ipv6": {
+        const ipv6Address = inputValue ? inputValue : ""
+        isValid = IPv6.isValidIpv6(ipv6Address)
+        if (!isValid) {
+          setError("Invalid IPv6 Address.")
+          return
+        }
+        // Otherwise valid.
+        setOutput("Valid IPv6 Address")
+
+        /*
+          Animation.
+          If the input value is the same don't animate.
+        */
+          if (ipv6Address !== inputPrevValue.current) {
+            gsap.fromTo("#featuresOutputBox", {opacity: 0}, {opacity: 1, duration: .1})
+            gsap.fromTo("#featuresOutputBoxMessage", {opacity: 0}, {opacity: 1, duration: .1})
+          }
+          
+        // Set current input value as previous value.
+        inputPrevValue.current = ipv6Address
+
+        return        
+      }
       default: {
+        console.error("Could not determine validation action!")
         break;
       }
     }

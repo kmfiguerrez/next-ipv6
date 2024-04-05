@@ -45,7 +45,7 @@ const FeaturesOutputBox: React.FC<TFeaturesOutputBoxProps> = ({ label, formError
       />
       {/* Input validation message */}
       {success &&
-        <div className='font-semibold text-green-500 text-sm mt-1'>Success</div>
+        <div id='featuresOutputBoxMessage' className='font-semibold text-green-500 text-sm mt-1'>Success</div>
       }
     </div>
   )
