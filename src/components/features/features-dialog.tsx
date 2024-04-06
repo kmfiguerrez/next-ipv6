@@ -103,7 +103,14 @@ const FeaturesDialog: React.FC<FeaturesDialogProps> = ({ children, title, featur
               operation='Validate'
               action={"validate-ipv6"}
             />            
-          }   
+          }
+
+          {feature.category === "validation" && feature.action === "get-type" &&
+            <ValidationForm
+              operation='Validate'
+              action={"get-type"}
+            />            
+          }            
 
           {feature.category === "generator" && feature.action === "eui64" &&
             <GeneratorForm

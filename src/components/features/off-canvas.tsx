@@ -62,14 +62,14 @@ const OffCanvas: React.FC<OffCanvasProps> = ({ children }) => {
             </SidebarAccordionContent>
           </SidebarAccordionItem>
 
-          <SidebarAccordionItem key='item-2'>
+          <SidebarAccordionItem key='item-3'>
             <SidebarAccordionTrigger className='font-semibold'>Generator</SidebarAccordionTrigger>
             <SidebarAccordionContent className='ps-7'>
               <GeneratorContent />
             </SidebarAccordionContent>
           </SidebarAccordionItem>               
 
-          <SidebarAccordionItem key='item-2'>
+          <SidebarAccordionItem key='item-4'>
             <SidebarAccordionTrigger className='font-semibold'>Utilities</SidebarAccordionTrigger>
             <SidebarAccordionContent className='ps-7'>
               <UtilitiesContent />

@@ -35,7 +35,22 @@ const ValidationContent = () => {
             IPv6 Address Format
           </Button>
         </FeaturesDialog>
-      </li>         
+      </li>
+
+      <li>
+        <FeaturesDialog
+          title='Validation'
+          description='This action determines the type of IPv6 address.'
+          feature={{category: "validation", action:"get-type"}}
+        >
+          <Button
+            variant={'ghost'}
+            size={'sm'}
+          >
+            IPv6 Address Type
+          </Button>
+        </FeaturesDialog>
+      </li>           
     </ul>
   )
 }
