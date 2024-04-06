@@ -18,7 +18,7 @@ export default function Home() {
     <>
       <NavMenu />
       <main>
-        <section className="max-sm:px-1 min-h-screen sm:container">
+        <section className="max-sm:px-1 max-md:mb-28 min-h-screen sm:container">
           <IPv6SubnettingForm onFormSubmit={setPrefix} />
           <OutputDisplay prefix={prefix} />
         </section>

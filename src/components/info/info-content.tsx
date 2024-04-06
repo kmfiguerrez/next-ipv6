@@ -100,15 +100,15 @@ const AboutFeaturesContent = () => {
             <h5 className='font-semibold'>IPv6 Address Type</h5>
             <p>
               This option determines the type of the input IPv6 address.
-              <br />
-              The types are:
-              <ul className='list-inside list-disc'>
-                <li>Global Unicast Address (Public address)</li>
-                <li>Unique Local Unicast Address (Private address)</li>
-                <li>Multicast Address</li>
-                <li>Link-Local Unicast Address</li>
-              </ul>
             </p>
+            <p className="mt-1 mb-1">The types are:</p>
+            <ul className='list-inside list-disc'>
+              <li>Global Unicast Address (Public address)</li>
+              <li>Unique Local Unicast Address (Private address)</li>
+              <li>Multicast Address</li>
+              <li>Link-Local Unicast Address</li>
+            </ul>
+            
           </li>
         </ul>
       </li>     
