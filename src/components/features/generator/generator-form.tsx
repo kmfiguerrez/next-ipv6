@@ -39,7 +39,11 @@ const GeneratorForm: React.FC<TGeneratorFormProps> = ({ operation, action}) => {
     case "link-local": {
       outputLabel = "Link-Local Unicast Address"
       break;
-    }    
+    }
+    case "socilited-node": {
+      outputLabel = "Solicited-Node Multicast Address"
+      break;
+    }     
     default:
       outputLabel = "Output"
       break;
@@ -92,6 +96,25 @@ const GeneratorForm: React.FC<TGeneratorFormProps> = ({ operation, action}) => {
           inputPrevValue.current = macAddress
           return          
         }
+        case "socilited-node": {
+          const ipv6Address: string = inputValue ? inputValue : ""
+          const solicitedNodeAddress: string = IPv6.getSolicitedNodeAddress(ipv6Address)
+          setOutput(solicitedNodeAddress.toUpperCase())
+
+          /*
+            Animation.
+            If the input value is the same don't animate.
+          */
+            if (ipv6Address !== inputPrevValue.current) {
+              gsap.fromTo("#featuresOutputBox", {opacity: 0}, {opacity: 1, duration: .1})
+              gsap.fromTo("#featuresOutputBoxMessage", {opacity: 0}, {opacity: 1, duration: .1})
+            }
+            
+          // Set current input value as previous value.
+          inputPrevValue.current = ipv6Address
+          return            
+
+        }
         default:
           console.error("Could not determine generator's action!")
           break;
@@ -103,6 +126,8 @@ const GeneratorForm: React.FC<TGeneratorFormProps> = ({ operation, action}) => {
         setError("Invalid MAC addrress")
         return
       }
+      // Otherwise error is from getSolicitedNodeAddress method.
+      setError("Invalid IPv6 address")
     }
   }
 

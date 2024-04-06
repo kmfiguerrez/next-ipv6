@@ -1339,7 +1339,7 @@ class IPv6 {
    * @param {string} macAddress - A string of MAC address.
    * @param {boolean} skipArgumentValidation - An optional boolean param set to `false` by default.
    * 
-   * @returns  A string of Unicast Link-Local address.
+   * @returns  A string of abbreviated Unicast Link-Local IPv6 address.
    * 
    * @throws `ArgumentError` is thrown if param `macAddress` is invalid.
    */
@@ -1404,6 +1404,10 @@ class IPv6 {
    * 
    * @param {string} ipv6Address - A string of IPv6 address.
    * @param {boolean} skipArgumentValidation - An optional boolean param set to `false` by default.
+   * 
+   * @returns  A string of abbreviated Solicited-Node Multicast IPv6 address.
+   * 
+   * @throws `ArgumentError` is thrown if param `ipv6Address` is invalid.
    */
   static getSolicitedNodeAddress(ipv6Address: string, skipArgumentValidation: boolean = false): string {
     /*

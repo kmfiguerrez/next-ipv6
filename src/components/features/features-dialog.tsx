@@ -117,7 +117,14 @@ const FeaturesDialog: React.FC<FeaturesDialogProps> = ({ children, title, featur
               operation='Generate'
               action={"link-local"}
             />            
-          }                             
+          }
+
+          {feature.category === "generator" && feature.action === "socilited-node" &&
+            <GeneratorForm
+              operation='Generate'
+              action={"socilited-node"}
+            />            
+          }                                   
 
         </div>
       </DialogContent>

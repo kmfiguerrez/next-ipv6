@@ -33,7 +33,22 @@ const GeneratorContent = () => {
             Link-Local Address
           </Button>
         </FeaturesDialog>
-      </li>      
+      </li>  
+
+      <li>
+        <FeaturesDialog
+          title='Generator'
+          description='This action generates a Solicited-Node Multicast IPv6 Address.'
+          feature={{category: "generator", action:"socilited-node"}}
+        >
+          <Button
+            variant={'ghost'}
+            size={'sm'}
+          >
+            Solicited-Node Address
+          </Button>
+        </FeaturesDialog>
+      </li>          
     </ul>
   )
 }
