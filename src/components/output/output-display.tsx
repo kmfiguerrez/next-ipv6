@@ -40,7 +40,7 @@ const OutputDisplay: React.FC<TOutputDisplayProps> = ({ prefix }) => {
   // Animation.
   useEffect(() => {
     setTimeout(() => {
-      gsap.to("#subnetNumberInput", { outline: "3px solid Aquamarine", duration: 1, ease: "elastic" })
+      gsap.to("#subnetNumberInput", { outline: "3px solid DarkTurquoise", duration: 1, ease: "elastic" })
       gsap.to("#subnetNumberInput", { outline: "0px", duration: 1, delay: 1 })
     }, 3000)
   }, [])

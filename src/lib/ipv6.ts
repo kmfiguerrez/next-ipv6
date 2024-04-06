@@ -1471,12 +1471,109 @@ class IPv6 {
       if (errorMessage.startsWith("From abbreviate")) {
         throw new ArgumentError("From getSolicitedNodeAddress: Abbreviating part failed.")
       }
-      // Otherwise input ipv6 address.
+      // Otherwise input ipv6 address is invalid.
       throw new ArgumentError(errorMessage)
     }
 
     // Finally.
     return solicitedNodeAddress
+  }
+
+
+  /**
+   * Determines the type of the given IPv6 address.
+   * 
+   * __Notes__: 
+   * - Argument validation can be turned off if the optional 
+   * `skipArgumentValidation`param is set to `true`. 
+   * 
+   * - This happen if the excecution context that calls this method 
+   * validates the same data (ipv6 address)
+   * 
+   * @param {string} ipv6Address - A string of IPv6 address.
+   * @param {boolean} skipArgumentValidation - An optional boolean param set to `false` by default.
+   * 
+   * @returns Type of IPv6 address.
+   * 
+   * @throws `ArgumentError` is thrown if param `ipv6Address` is invalid.
+   */
+  static getAddressType(ipv6Address: string, skipArgumentValidation: boolean = false): string {
+    /*
+      This method will determine if the input address is any of these types:
+      Global Unicast Address (Public address), Unique Local Unicast Address
+      (Private Address), Multicast Address and Link-Local Unicast Address.
+      Global Unicast starts with: 2 or 3.
+      Unique Local starts with: FD.
+      Multicasts starts with: FF.
+      Link-Local starts with: FE80.
+    */
+
+    // Sanitize input ipv6 address first.
+    ipv6Address = ipv6Address.trim().toLowerCase()
+
+    const twoHexReserved = ["02", "00", "fe", "f8", "08", "04"];
+    const oneHexReserved = ["f", "e", "c", "a", "8", "6", "4", "1"];
+    let expandedIPv6: string
+    // Return data.
+    let addressType:string
+
+
+    try {
+      /*
+        Validate input data first.
+        Notes: Argument validation can be turned off if the method caller that
+        calls this method validates the same data (ipv6 address).
+      */
+      if (!skipArgumentValidation) {
+        if (!this.isValidIpv6(ipv6Address)) throw new ArgumentError("From getAddressType: Invalid IPv6 Address provided.")
+      }
+
+      // Make sure the input ipv6 address is in expanded form.
+      expandedIPv6 = this.expand(ipv6Address)
+    } 
+    catch (error: unknown) {
+      let errorMessage: string = getErrorMessage(error)
+      if (errorMessage.startsWith("From expand")) {
+        throw new ArgumentError("From getAddressType: Expanding part failed.")
+      }
+      // Otherwise input ipv6 address is invalid.
+      throw new ArgumentError(errorMessage)      
+    }
+
+    // Determine address type.
+    if (expandedIPv6.slice(0, 2) === "fd" || expandedIPv6.slice(0, 2) === "fc") {
+      addressType = "Unique Local Unicast Address (Private Address)";
+      return addressType
+    }
+    else if (expandedIPv6.slice(0, 2) === "ff") {
+      addressType = "Multicast Address";
+      return addressType
+    }
+    else if (expandedIPv6.slice(0, 4) === "fe80") {
+      addressType = "Link-Local Unicast Addresss";
+      return addressType
+    }
+    else if (expandedIPv6.slice(0, 3) === "fec") {
+      addressType = "Reserved by IETF";
+      return addressType
+    }
+    else if (twoHexReserved.includes(expandedIPv6.slice(0, 2))) {
+      addressType = "Reserved by IETF";
+      return addressType
+    }
+    else if (oneHexReserved.includes(expandedIPv6.slice(0, 1))) {
+      addressType = "Reserved by IETF";
+      return addressType
+    }
+    else {
+      /*
+      Otherwise not reserved, then it is a Global unicast address.
+      */
+      addressType = "Global Unicast Address (Public Address)"
+    }
+
+    // Finally.
+    return addressType
   }
 }
 
