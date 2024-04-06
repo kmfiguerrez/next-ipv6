@@ -12,6 +12,7 @@ import { Menu, X } from "lucide-react"
 
 import gsap from "gsap"
 
+import Link from 'next/link'
 
 
 const NavMenu = () => {
@@ -64,7 +65,7 @@ const NavLinks = ({className}: {className?: string}) => {
       <Button
         variant={"link"}
       >
-        Info
+        <Link href="/#info-container">Info</Link>
       </Button>
       </li>      
     </ul>

@@ -1,5 +1,3 @@
-import React from 'react'
-
 import { AboutFeaturesContent, AboutOutputContent, HowToUseContent, IntroContent } from './info-content'
 
 import {
@@ -12,7 +10,7 @@ import {
 
 const InfoContainer = () => {
   return (
-    <div>
+    <div id='info-container'>
       <h2 className='text-center text-4xl mb-8'>IPv6 Subnetting Program</h2>
 
       <Accordion type="single" collapsible>
