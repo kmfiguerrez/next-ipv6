@@ -8,6 +8,7 @@ import OutputDisplay from "@/components/output/output-display";
 
 import type { TPrefix } from "@/lib/ipv6";
 import InfoContainer from "@/components/info/info-container";
+import FooterNav from "@/components/footer-nav";
 
 
 export default function Home() {
@@ -17,14 +18,15 @@ export default function Home() {
     <>
       <NavMenu />
       <main>
-        <section className="max-sm:px-1 min-h-screen border sm:container">
+        <section className="max-sm:px-1 min-h-screen sm:container">
           <IPv6SubnettingForm onFormSubmit={setPrefix} />
           <OutputDisplay prefix={prefix} />
         </section>
       </main>
-      <section className="max-sm:px-1 min-h-screen border sm:container">
+      <section className="max-sm:px-1 min-h-screen sm:container">
         <InfoContainer />         
       </section>
+      <FooterNav />
     </>
   );
 }

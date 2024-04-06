@@ -32,10 +32,10 @@ const OutputInitialDisplay = () => {
       {/* Row 2 */}
       <div id='row-2' className='grid mb-2 lg:grid-cols-3'>
         <div className='font-semibold'>Prefix:</div>
-        <div className={`border`}>
+        <div>
           xxxx : xxxx : xxxx : xxxx : xxxx : xxxx : xxxx : xxxx
         </div>
-        <div className={`border`}>
+        <div>
         /x
         </div>
       </div>
@@ -43,10 +43,10 @@ const OutputInitialDisplay = () => {
       {/* Row 3 */}
       <div id='row-3' className='grid mb-2 lg:grid-cols-3'>
         <div className='font-semibold'>First Usable Address:</div>
-        <div className={`border`}>
+        <div>
           xxxx : xxxx : xxxx : xxxx : xxxx : xxxx : xxxx : xxxx
         </div>
-        <div className={`border`}>
+        <div>
         /x
         </div>
       </div>
@@ -54,10 +54,10 @@ const OutputInitialDisplay = () => {
       {/* Row 4 */}
       <div id='row-4' className='grid mb-2 lg:grid-cols-3'>
         <div className='font-semibold'>Last Usable Address:</div>
-        <div className={`border`}>
+        <div>
           xxxx : xxxx : xxxx : xxxx : xxxx : xxxx : xxxx : xxxx
         </div>
-        <div className={`border`}>
+        <div>
           /x
         </div>
       </div>

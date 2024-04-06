@@ -77,12 +77,12 @@ const OutputDisplay: React.FC<TOutputDisplayProps> = ({ prefix }) => {
       {/* Row 2 */}
       <div id='row-2' className='grid mb-2 lg:grid-cols-3'>
         <div className='font-semibold'>Prefix:</div>
-        <div className={`${inconsolata.className} border`}>
+        <div className={`${inconsolata.className}`}>
           <span id='prefixId'>
             {prefixId}
           </span>
         </div>
-        <div className={`${inconsolata.className} border`}>
+        <div className={`${inconsolata.className}`}>
           <span className='cidr'>
             /{newPrefixLength}
           </span>
@@ -92,12 +92,12 @@ const OutputDisplay: React.FC<TOutputDisplayProps> = ({ prefix }) => {
       {/* Row 3 */}
       <div id='row-3' className='grid mb-2 lg:grid-cols-3'>
         <div className='font-semibold'>First Usable Address:</div>
-        <div className={`${inconsolata.className} border`}>
+        <div className={`${inconsolata.className}`}>
           <span id='firstUsableAddress'>
             {firstUsableAddress}
           </span>
         </div>
-        <div className={`${inconsolata.className} border`}>
+        <div className={`${inconsolata.className}`}>
           <span className='cidr'>
             /{newPrefixLength}
           </span>
@@ -107,12 +107,12 @@ const OutputDisplay: React.FC<TOutputDisplayProps> = ({ prefix }) => {
       {/* Row 4 */}
       <div id='row-4' className='grid mb-2 lg:grid-cols-3'>
         <div className='font-semibold'>Last Usable Address:</div>
-        <div className={`${inconsolata.className} border`}>
+        <div className={`${inconsolata.className}`}>
           <span id='lastUsableAddress'>
             {lastUsableAddress}
           </span>
         </div>
-        <div className={`${inconsolata.className} border`}>
+        <div className={`${inconsolata.className}`}>
           <span className='cidr'>
             /{newPrefixLength}
           </span>

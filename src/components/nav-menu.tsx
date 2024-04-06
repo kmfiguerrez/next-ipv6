@@ -17,7 +17,7 @@ import Link from 'next/link'
 
 const NavMenu = () => {
   return (
-    <header className="mb-5 mt-1 max-sm:px-1 sm:container">
+    <header id="nav-header" className="mb-5 mt-1 max-sm:px-1 sm:container">
       <nav className='flex justify-between '>
         <h1 className="flex items-center font-semibold text-lg uppercase">IPv6 Subnetting</h1>
 
